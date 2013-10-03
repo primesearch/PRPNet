@@ -1,0 +1,15 @@
+This is a list of future features to be considered for PRPNet.
+
+1)  Add the ability to inactivate numbers on the server without having to
+    shutdown and restart the server.
+
+2)  Determine how to intelligently use master/slave configurations.
+
+3)  More documentation.
+
+4)  Support for generic PFGW projects.
+
+5)  Complete support for Cunningham Chain searches.
+
+If you have anything else you would like to see added, please contact me at
+rogue@wi.rr.com.

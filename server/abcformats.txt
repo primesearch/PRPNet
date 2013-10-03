@@ -1,0 +1,37 @@
+This file contains a list of ABC file formats supported by the server.
+
+Note that the server only supports c = 1 or c = -1.
+
+   $a*<base>^$a+1	        fixed base Cullen only
+   $a*<base>^$a-1         fixed base Woodall only
+   $a*<base>^$a$b         fixed base Cullen and Woodall
+
+   $a*$b^$a+1             variable base Cullen only
+   $a*$b^$a-1             variable base Woodall only
+   $a*$b^$a$c             variable base Cullen and Woodall
+
+	<k>*$a^$b+1            fixed k, c=1, variable base and n
+	<k>*$a^$b-1            fixed k, c=-1, variable base and n
+	<k>*$a^$b$c            fixed k, variable base, n, and c
+
+	$a*<base>^$b+1         fixed base, c=1, variable k and n
+	$a*<base>^$b-1         fixed base, c=-1, variable k and n
+	$a*<base>^$b$c         fixed base, variable k, n, and c
+
+	$a*$b^<n>+1            fixed n, c=1, variable k and base
+	$a*$b^<n>11            fixed n, c=-1, variable k and base
+	$a*$b^<n>$c            fixed n, variable k, base, and c
+	
+	$a*$b^$c+1             c=1, variable k, base and n
+	$a*$b^$c-1             c=-1, variable k, base and n
+	$a*$b^$c$d             variable k, base, n, and c
+
+   $a!+1                  factorial, c=1
+   $a!-1                  factorial, c=-1
+   $a!+$b                 factorial, variable c
+
+   $a#+1                  primorial, c=1
+   $a#-1                  primorial, c=-1
+   $a#+$b                 primorial, variable c
+
+   $a^$b+1                GFN (b must be a power of 2)

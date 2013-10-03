@@ -1,0 +1,42 @@
+I try to keep these up to date on this website:  http://www.mersenneforum.org/showthread.php?t=13464.
+Another site with a list of projects is this:  http://vcn94.homelinux.org/PRPNet
+
+
+Server: prpnet.primegrid.com
+
+port: 12000 - Sophie Germain Prime Search: k*2^666666-1
+port: 12001 - 121 Prime Search: 121*2^n+1, 121*2^n-1
+port: 12002 - Factorial Prime Search: n!+1, n!-1
+port: 12003 - Generalized Fermat Prime Search: b^65536+1
+port: 12004 - Generalized Cullen/Woodall Prime Search: n*b^n+1, n*b^n-1
+port: 12005 - Generalized Fermat Prime Search: b^32768+1
+port: 12006 - 27121 Prime Search: 27*2^n+1, 27*2^n-1, 121*2^n+1
+port: 12007 - Proth Prime Search Extended: k*b^n+1, 1200<k<10000, n>1000000
+port: 12008 - Primorial Prime Search: p#+1, p#-1
+
+
+Server: pgllr.mine.nu
+
+port:  9000 - Extended Sierpinski Prime Search
+port: 10000 - Proth Prime Search Extended: k*b^n+1, 1200<k<10000, 130000<n<140000
+
+
+Server: prime2u.com
+
+port: 10000 - Proth Prime Search Extended: k*b^n+1, 1200<k<10000, n<200000
+port: 11000 - Proth Prime Search Extended: k*b^n+1, 1200<k<10000, 140000<n<150000
+port: 11001 - Generalized Fermat Prime Search: b^524288+1
+port: 11002 - Generalized Fermat Prime Search: b^262144+1
+port: 11003 - Riesel Prime Search Double-check
+
+
+Server: www.noprimeleftbehind.net
+
+port:  1300 - Conjectures 'R Us (Sierpinki/Riesel searches for various bases)
+port:  9000 - No Prime Left Behind (k*2^n-1): 400<k<600, 600000<n<1000000
+
+
+Server:  www.psp-project.de
+
+port:  7100 - Prime Sierpinski Prime
+

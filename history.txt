@@ -1,0 +1,1118 @@
+This history file covers all modifications made to PRPNet Client/Server.
+
+Version 5.3.0:  September 19, 2013 - New Release
+          all:  Cleaned up compiler warnings with sockets.
+                Use PRId64/PRIu64 where needed.
+                Convert to using the string datatype for most function parameters.
+    prpserver:  Added notifylowwork= option to the prpserver.ini.  When set to a
+                non-zero value, the server will send an e-mail once a day notifying
+                the distribution list that the server is running low on work.
+                This change triggered the refactoring of some server code,
+                specifically the moving of logic from prpserver.cpp to helper
+                classes specific to the server type.
+                
+
+Version 5.2.8:  August 29, 2013 - Patch Release
+          all:  Fixed a logging issue that prevented debug logging from working
+                as intended.
+    prpclient:  Add support for OpenCL based genefer.  It will be treated as if
+                it is equivalent to the CUDA version of genefer.
+    prpserver:  Fix log issue where prpserver.log would sometimes duplicate a line
+                written to it.
+                Ensure database transaction is using REPEATABLE READ option.
+                Check return codes when setting connection attributes in database.
+                Add support for OpenCL based genefer.  It will be treated as if
+                it is equivalent to the CUDA version of genefer.
+                Fixed an issue with loading Cullen-Woodall candidates that prevented
+                loading of multiple bases.
+
+
+Version 5.2.7:  July 29, 2013 - Patch Release
+    prpserver:  Fix bug introduced with 5.2.6.
+  
+
+Version 5.2.6:  June 24, 2013 - Patch Release
+    prpserver:  If client returns a residue with '.', remove it.
+                Add localtimezone=2 setting to disable appending timestamp in the
+                log with a timezone.
+    prpclient:  Fixed issue where '.' wasn't removed from residue when using llr.
+
+
+Version 5.2.5:  June 12, 2013 - Patch Release
+    prpserver:  For Wall-Sun-Sun, reject results from wwwwcl prior to version 2.2.5.
+                Add noexpire=1 option to inhibit task expiration.
+                Add nonewwork=1 option to disable new work from be sent to clients.
+                Add keys to tables to improve efficiency with larger databases.
+                Multiple WWWW bug fixes.
+                
+
+Version 5.2.4:  April 19, 2013 - Patch Release
+    prpserver:  Update SharedMemoryitem to simplify use of mutexes.
+                Fix ^C on server so that it waits for client connections to close
+                instead of immediately closing.
+                Fix computation of remaining days as it was dividing by 84400
+                seconds per day, not 86400.
+                If localtimelog is set to 2, then don't print timezone in log.
+    prpadmin:   Fix loading of candidate from ABC.  Although it worked before, it
+                would sometimes give an erroneous messge.
+
+
+Version 5.2.3:  January 7, 2013 - Patch Release
+    prpclient:  If client detects an error when starting up, show the error, then
+                sleep for 10 seconds so that user can see the error.  This addresses
+                an issue for users who double-click on the application but the window
+                closes immediately due to a configuration error.
+    prpserver:  Fixed *nix compile bug with the server.
+                Added serverstatssummaryonly= option to prpserver.ini.  When set to 1
+                the server will only show the summary line on server_stats.html.
+                Add sorting capability to a number of html tables.
+                Refactored much of the HTML generation code.
+                Fix crash when database connection is closed.
+
+
+Version 5.2.2:  December 18, 2012 - Patch Release
+    prpserver:  Change onekperclient to onekperinstance and fix a bug related to it
+                that was created in 5.2.0.
+          all:  Fix logging issue where timezone would show as '???'.
+                Added 64-bit build options for Windows.
+
+
+Version 5.2.1:  November 26, 2012 - Patch Release
+          all:  Fix a problem splitting messages read from socket as code was using strcpy
+                where both source and target were in same string buffer.  Apparently some
+                flavors of Linux do not like that.
+                Upgrade Visual Studio solution for VS2010.
+
+
+Version 5.2.0:  November 1, 2012 - New Release
+    prpclient:  Replace clientid in ini with machineid and instanceid.
+                Fix bug for wwww projects where client couldn't extract program name.
+    prpserver:  Rename column ClientID in database to MachineID.  Add InstanceID.
+                Modify doublechecker to use machine id instead of clientid.
+                Fix bug in Sierpinski/Riesel stats to ensure prime listed in table
+                has the smallest n.
+                Modify Sierpinski/Riesel stats updater to set HasSierpinskiRieselPrime
+                flag on new Candidates that are inserted if a prime was already found
+                for the k, b, c.
+                Removed support for clients older than 4.3.
+                Added brieftestlog to prpserver.ini.  This flag can be used to shorten
+                the output on consoles.
+                Added estimate of days left to Wieferich/WallSunSun server_stats.html.
+
+  Note:  If migrating from PRPNet 5.x, you must run this SQL on the database to rename the
+         ClientID column and to add the InstanceID column before starting the server.
+
+    alter table UserWWWWs change column ClientID MachineID varchar(200) collate latin1_bin;
+    alter table UserWWWWs add column InstanceID varchar(200) collate latin1_bin;
+    alter table UserPrimes change column ClientID MachineID varchar(200) collate latin1_bin;
+    alter table UserPrimes add column InstanceID varchar(200) collate latin1_bin;
+    alter table CandidateTest change column ClientID MachineID varchar(200) collate latin1_bin;
+    alter table CandidateTest add column InstanceID varchar(200) collate latin1_bin;
+    alter table CandidateGFNDivisor change column ClientID MachineID varchar(200) collate latin1_bin;
+    alter table CandidateGFNDivisor add column InstanceID varchar(200) collate latin1_bin;
+    alter table WWWWRangeTest change column ClientID MachineID varchar(200) collate latin1_bin;
+    alter table WWWWRangeTest add column InstanceID varchar(200) collate latin1_bin;
+    
+    update UserWWWWs set InstanceID = MachineID;
+    update UserPrimes set InstanceID = MachineID;
+    update CandidateTest set InstanceID = MachineID;
+    update CandidateGFNDivisor set InstanceID = MachineID;
+    update WWWWRangeTest set InstanceID = MachineID;
+
+
+Version 5.1.0:  September 5, 2012 - Patch Release
+    prpserver:  Fixed debug message.
+    prpclient:  Allow only one instance of a client to run at a time from the directory.
+
+
+Version 5.0.9:  May 26, 2012 - Patch Release
+    prpserver:  Verify client is using correct helper programs for PRPing projects.
+
+
+Version 5.0.8:  May 12, 2012 - Patch Release
+    prpserver:  Added support for wwwwcl helper program.
+                Use coalesce() for PostgreSQL database and ifnull() for MySQL.
+    prpclient:  Added support for wwwwcl helper program.
+
+
+Version 5.0.7:  March 2012 - Patch Release
+    prpclient:  Since primality tests take a long time for primorials/factorials,
+                and as the pfgw doesn't checkpoint primality tests, the client
+                will no longer do them for numbers of those forms.
+                If the ini file was modified to remove all servers and the client
+                has completed all tests and returned them, then shut down.
+
+
+Version 5.0.6:  February 2012 - Patch Release
+    prpclient:  Fix bug that prevents 5.x clients from working with 4.0.x servers.
+
+
+Version 5.0.5:  January 2012 - Patch Release
+    prpclient:  Fix bug (introduced in 5.0) that causes client to send Twin and SG
+                workunits back to the server even though the client didn't have to do
+                the test for them.
+                Fix bug that allows users to not specify any servers in the ini file.
+                Change "genefercuda-boinc" to "genefercuda" as they are technically the
+                same program and the server doesn't recognize "genefercuda-boinc".
+
+
+Version 5.0.4:  January 2012 - Patch Release
+    prpclient:  Fix crash in client when wwww near miss is found.
+
+
+Version 5.0.3:  January 2012 - Patch Release
+          all:  Fix potential crashes found thanks to gcc compiler warnings.
+    prpclient:  Log wwww results and near misses to test_results.log.
+                Added startoption/stopoption 7, to complete all work then shut
+                down without reporting completed work.
+                Normalize work percentage for each configured server if total
+                percentage != 100.
+    prpserver:  Order by descending total score on Team and User stats HTML pages.
+                Add ability to sort by clicking on a column on user and team
+                stats pages.  This is done through prpserver.ini configuration.
+
+
+Version 5.0.2:  December 2011 - Patch Release
+     prpadmin:  Added option 10, which allows admins to expire workunits manually.
+    prpclient:  When connecting to a 5.0.2 server and above, don't send acknowledgement
+                that workunit has been received.
+    prpserver:  When connected to a 5.0.2 client and above, don't expect acknowledgement.
+                Added support or admin expire option.
+                When logging SQL statements, substitute bound values for '?' in logs.
+
+    Note:  In this release I reverted the change from 4.3.0 that required the server to get
+           an acknowledgement from the client before reserving the workunit.  Although this
+           prevented the server from having workunits that no client was working on, it caused
+           a worse problem where clients would work on something, then report back to the server
+           only to have the server reject the work because it hadn't received the initial
+           acknowledgement.  By adding the "expire" option to prpadmin, this alleviates the
+           problem of lost workunits on the server that have to wait for the time to expire
+           them.  Obviously manual intervention is still required, but it is an improvement
+           over how it was handled previously.
+
+
+Version 5.0.1:  December 2011 - Patch Release
+    prpserver:  Fix bug that prevented some clients from returning completed workunits.
+                Use same e value for all numbers on stats pages for a given project.
+              
+
+
+Version 5.0.0:  December 2011 - New Release
+          all:  Added support for Wieferich, Wolstenholme, Wilson and Wall-Sun-Sun
+                searches (note that wwww client only handles Wieferich and Wall-Sun-Sun
+                at this time).
+    prpclient:  For GFN searches, do not do primality test for n >= 262144 because
+                PFGW requires many days to do the test and it doesn't checkpoint.
+    prpserver:  Added localtimehtml= to prpserver.ini
+                Renamed localtime= to localtimelog= in prpserver.ini
+                On server_stats.html page, groups with no remaining candidates to
+                be tested will have a background color of aqua.
+                On Sierpinski/Riesel server stats, display a summary table if multiple
+                conjectures are loaded into the server.
+
+  There is no database upgrade script from 4.3.x to 5.0.  New tables and columns are only
+  referenced by servers configured for wwww searches.
+
+
+Version 4.3.7:  November 2011 - Patch Release
+    prpclient:  Fix bug when loading GFN divisors from save file upon startup.
+                When getting work from multiple servers, get work from each server
+                before trying to balance work across all servers.
+
+
+Version 4.3.6:  November 2011 - Patch Release
+    prpclient:  Fix bug where client is unable to extract PRP test time when using genefer.
+    prpserver:  Add links to other web pages for the project to top of every page.
+                For HTML generation, evaluate if GFN divisibility checks can
+                be done and make user_gfns.html available only if true.
+                For HTML generation, make team HTML pages available only if
+                there are any teams are running against the server.  This
+                is re-evaluated every 10 minutes.
+                Added estimate for the number of days left of work in the server.  This
+                works best if all workunits require similar test times.
+
+
+Version 4.3.5:  June 2011 - Patch Release
+    prpserver:  Added onekperclient option.  This is used with Sierpinski/Riesel
+                server to ensure that each k goes to one and only one client at
+                a time.  This should be used when there are many more k values
+                to be tested than clients.
+                Fixed a bug with work selection that would prevent the server
+                from returning work if it exhausted its cursor of 100 records
+                before finding an appropriate workunit to send.
+    prpclient:  Fixed bug where client would delete genefer checkpoint file
+                upon restart.
+                Fixed bug with GFN testing where client would report that it
+                completed when it hadn't.
+
+
+Version 4.3.4:  June 2011 - Patch Release
+          all:  Modify loglimit in ini files to by in megabytes, not bytes.
+    prpserver:  Added information to pending_tests.html that tells how long
+                before a test will expire.
+    prpclient:  Correctly fix bug when using startoption=3.
+   
+
+Version 4.3.3:  May 2011 - Patch Release
+    prpserver:  Now supports dsn based ODBC connections.
+                Added version of create_tables script that works on PostgreSQL.
+    prpclient:  Fix bug when using startoption=3.
+
+
+Version 4.3.2:  April 2011 - Patch Release
+     prpadmin:  Fix a problem that occurs when ABC file has less than 101 entries.
+    prpserver:  Fixed candidate loading of GFNs (wasn't fixed correctly in 4.3.1).
+                Fixed work selection issue with GFNs.
+                Fixed server stats computation issues with GFNs. 
+
+
+Version 4.3.1:  April 2011 - Patch Release
+          all:  Change socket debug messages so that different types of sockets could
+                log different information.
+    prpclient:  Fix crash when logging debug messages
+    prpserver:  Fix stats computation on GFN servertype.
+                Fix candidate loading of GFNs, primorials, and factorials.
+
+
+Version 4.3.0:  March 2011 - New Release
+    prpadmin:   Ignore ERR messages when sending ABC files and factor files to the server.
+    prpclient:  If starting client and all work is done, return it immediately so that 
+                client can get more work rather than sleeping due to error timeout.
+                Changed protocol when getting work to ensure that server knows that
+                client has received it.
+    prpserver:  Move static variable to instance variable to avoid SQL_INVALID_HANDLE
+                when loading candidates.
+                Fixed bug in HTML generation of team_primes.html.
+                Changed protocol when getting work to ensure that server knows that
+                client has received it.
+
+
+Version 4.2.3:  March 2011 - Patch release
+    prpclient:  Fix bug (created in 4.2.2) where client would sleep, but then not try to
+                connect to any servers.
+    prpserver:  Fix function sequence error bug when inserting new candidates.
+                Fix bug where first candidate inserted would have no name.
+
+
+Version 4.2.2:  March 2011 - Patch Release
+    prpclient:  Add more logging for debuglevel=3..
+                Fix bug where client would not return completed work because it thought that
+                the work was still in progress.
+                Fix bug where client would not sleep for designated amount of time if unable
+                to connect to any servers.
+
+
+Version 4.2.1:  February 2011 - Patch Release
+    prpclient:  Do not attempt primality test if c != 1/-1.  Just return PRP to the server.
+                Ensure genefer.ckpt is deleted, except in case when ^C was used to stop the client.
+                After returning work to the server, if there are no more workunits to be returned
+                to any servers, then the client will re-read the ini file to get the current
+                server confugations.  Any changes made to server configuration, whether it be
+                percentage, number of entries, etc. will result in the client resetting all 
+                counters WRT work percentages.  Note that if changes were made and not done
+                correctly, that the client can shut down.
+                Minor change to start options (option 5 is now option 9).
+                Added new stop options.
+                Added stop ASAP options (to shutdown between tests).
+                When ^C is hit, re-read the ini file to get the current stopoption.
+                Before starting another test, re-read ini file to get updated debuglevel.
+                Added server suffix to test_results.log.
+    prpserver:  Modified so that "Leading Edge" on the server_stats.html page shows the lowest
+                value, i.e. the next value to be sent by the server.
+                Once every 256 seconds, re-read ini file to get updated debuglevel.
+                Add CSS support to generated HTML.
+
+
+Version 4.2.0:  February 2011 - New Release
+    prpclient:  Added new startoptions.  Read prpclient.ini for more information.
+                Use llrpi to prove primality on k*b^n+/-1 numbers if phrot is
+                used for the PRP test.  Note that phrot should only be needed on
+                non-x86 hardware.
+    prpserver:  Fix computation of decimal lengths of primorials.
+                Changed Twin server type to be fixed b/n/c with variable k rather
+                than fixed b/k/c with variable n.
+                Rewrote all SQL to use bound variables.  This will allow user,
+                client, and team names to have characters such as a single quote in
+                them.
+                Added userteam_stats.html and teamuser_stats.html.
+                Added support for c != 1 for all forms except Sophie-Germain.
+
+                Run this script to create a new database tables:
+
+      alter table CandidateGFNDivisor add TeamID varchar(200)   collate latin1_bin;
+      create table UserTeamStats (
+         UserID                  varchar(200)   collate latin1_bin,
+         TeamID                  varchar(200)   collate latin1_bin,
+         TestsPerformed          int,
+         PRPsFound               int,
+         PrimesFound             int,
+         GFNDivisorsFound        int,
+         TotalScore              double,
+         primary key (UserID, TeamID)
+      ) ENGINE=InnoDB;
+
+
+Version 4.1.4:  January 2011 - Patch Release
+     prpserver: Fix issue with bad team IDs because variable wasn't initialized.
+
+                
+Version 4.1.3:  January 2011 - Patch Release
+     prpclient: Fix program name sent to the server for GFN tests. 
+                Fix issue where client loses track of workunits when it hasn't had
+                confirmation from the server that they were accepted.
+
+
+Version 4.1.2:  January 2011 - Patch Release
+     prpclient: Fix issue with deleting genefer checkpoint. Added check to handle
+                condition of running a different version of genefer than previous
+                checkpoint.
+                Support GPU affinity for genefercuda.
+                Exit correctly if ^C when running genefer.
+     prpserver: Fix HTML when TeamID is null.
+                Fixed decimal length calculation for primorials.
+
+
+Version 4.1.1:  January 2011 - Patch Release
+    prpclient:  Support GPU affinity for genefercuda.
+    prpserver:  Fix HTML when TeamID is null.
+
+
+Version 4.1.0:  December 2010 - New Release
+    prpclient:  Added teamid= option to the prpclient.ini file.  This allows the client to
+                do tests on behalf of a team.
+                Added support for "genefer_cuda" version of genefer.
+    prpserver:  Added support for "genefer_cuda" version of genefer.
+                Added support for the team reported by a client.  A team ID is captured
+                for each test, thus it is possible for clients (and users) to have some
+                tests for one team and other tests for another team.
+                Added team_stats.html and team_primes.html.
+                Added "Team" column to user_stats.html, user_primes.html, and pending_tests.html.
+                Fixed an issue with inserting GFNs as the value for column c was not set.
+                
+                Run this script to update your database tables:
+                
+      alter table UserPrimes add TeamID varchar(200)   collate latin1_bin;
+      alter table CandidateTest add TeamID varchar(200)   collate latin1_bin;
+      create table TeamStats (
+         TeamID                  varchar(200)   collate latin1_bin,
+         TestsPerformed          int,
+         PRPsFound               int,
+         PrimesFound             int,
+         GFNDivisorsFound        int,
+         TotalScore              double,
+         primary key (TeamID)
+      ) ENGINE=InnoDB;
+
+
+Version 4.0.6:  December 2010 - Patch Release
+    prpserver:  Removed experimental code that caused server to keep database connections 
+                open.
+
+
+Version 4.0.5:  December 2010 - Patch Release
+    prpserver:  Made a few changes to eliminate some complaints from valgrind.
+                On *nix, detach threads after creating them as they cause the server
+                to use large amounts of virtual memory.
+                Fix bug so that server respects log limits.
+                Exit if unable to lock mutex.
+                Add "if exists" to "drop table" in create tables script.
+    prpclient:  Removed iodbc from client link.
+                Fix bug so that client respects log limits.
+
+
+Version 4.0.4:  December 2010 - Patch Release
+    prpclient:  Fixed and issue using genefer as client due to variable not being set.
+
+
+Version 4.0.3:  November 2010 - Patch Release
+    prpclient:  Fixed issue when using genefer as client would sometimes not do any testing
+                with it, even when available.
+
+
+Version 4.0.2:  November 2010 - Patch Release
+    prpclient:  Verify that INFO message from server is for the specific candidate
+                before treating it as accepted by the server.
+                Do not sent sub-workunits that have not had a test done.
+                The client will remove a workunit from its list only if the server
+                responds with an INFO message for that workunit.
+                If the client gets an error when reporting a workunit to a server,
+                it will close the socket and try again later rather than trying to
+                send any additional workunits.
+                Fix parsing of GFN factors as client excluded first character of
+                string sent back to the server.
+    prpserver:  Fix problems with loading candidates for Sophie-Germain servers.
+                On pending_tests.html, add CandidateName to the sorting.
+                Fixed a memory leak when sending mail.
+                Made a change to eliminate the "Error in my_thread_global_end(): 1 threads didn't exit"
+                message from MySQL.  In doing so, the server will always have at least one active
+                connection to the MySQL server.
+                Return "test accepted" message if the test has already been marked as
+                completed.  This can occur if the client didn't receive the INFO message
+                the first time it sent the test and eliminates potential confusion that
+                the test was rejected.
+
+
+Version 4.0.1:  October 2010 - Patch Release
+    prpclient:  Fixed an issue introduced in 4.0.0 with Primorial/Factorial searches.
+    prpserver:  Add time zone to date of mail so that time shows up in the correct time zone
+                in mail in-boxes.
+                Populate new TestResult column on UserPrimes and fix SQL behind the view to use it.
+                Do not send e-mail if SMTP authentication needed and password not supplied.
+
+
+Version 4.0.0:  October 2010 - New Release
+          all:  Added support for Sophie/Germain prime searches.
+                Fixed many compiler warnings on *nix.
+                Stripped "<candidate> is a Factor of" from GFN divisors.
+    prpclient:  Much of this has been rewritten to support Sophie/Germain and other prime
+                searches, such as Cunningham chains and Arithmethic Progressinos(which has
+                yet to be written).  One result of this is that the client will log more
+                messages for certain server types.
+                Added support for usellroverpfgw setting from server.  When set, the
+                client will use LLR instead of PFGW for primality tests.
+                Always check for GFN divisiblity when b = 2 and c = 1.  This could happen
+                for Twin and Sophie-Germain prime searches.
+                Return version of helper program used by the client.
+                Fixed an issue where the client would think that the server accepted a
+                workunit when it didn't.
+    prpserver:  As part of the Sophie-Germain prime search, the server will now log additional
+                messages for that server type.
+                Fixed a stats issue with "Completed Thru" on the GFN server stats webpage.
+                Reworked e-mail messages to be a little more readable.
+                Added user_gfns.html webpage for GFN divisors by user.
+                Added projectname= to prpserver.ini for the Prime Pages project name.
+                Added usellroverpfgw= option to prpserver.ini.
+                Modified sortoption= in prpserver.ini to provide maximum flexibility.
+                Show if candidate was prime or PRP on user_primes.html.
+                Significantly improved speed loading of Candidates via prpadmin.
+                On Sierpinski/Riesel stats page, do not include k with a PRP/prime when
+                determining the "Completed Thru" column.
+                Added new columns for tracking the version the helper programs used by the
+                client.
+                Fixed a memory leak due to not releasing the database connection handle.
+
+                With the changes for this release, you will need to run the upgrade_3.3_to_3.4.sql
+                script in the source directory to bring the database up to date.  Because there
+                are signficant changes in this release, it is HIGHLY recommend to do a backup
+                before executing that script.
+
+
+
+Version 3.3.6:  August 2010 - Patch Release
+    prpserver:  Add localtime= to prpserver.ini.  By default it is set to 1 which
+                will log everything in the local time zone of the server.  By
+                setting to 0, the server will log using the GMT time zone.
+
+
+Version 3.3.5:  July 2010 - Patch Release
+          all:  Display correct time zone in logs.
+
+
+Version 3.3.4:  July 2010 - Patch Release
+          all:  Use local time instead of GMT in logs.
+    prpserver:  Fix sending of e-mail for found primes.  This was broken in 3.3.0.
+                Fix issue where log file sometimes does not display date of message.
+
+
+Version 3.3.3:  July 2010 - Patch Release
+    prpclient:  The fix for 3.3.2 for clients connecting to the server was done
+                incorrectly.  It was fixed correctly in this release.
+
+
+Version 3.3.2:  June 2010 - Patch Release
+    prpclient:  Fixed crash that occurs when client cannot connect to the server.
+                Fixed behavioral issue when starting client so that it can continue
+                to work on other servers if unable to return work.
+                
+
+Version 3.3.1:  June 2010 - Patch Release
+    prpserver:  Added CountInProgress column to create_tables.sql script.
+                Change summary lines on Sierpinski/Riesel HTML to bold text.
+
+
+Version 3.3.0:  May 2010 - New Release
+          all:  Code infrastructure changes WRT sockets.  The Socket class was
+                cumbersome.  I changed it so that Socket is an ancestor class and
+                that specific server/client/mail functionality would be in descendent
+                classes.
+                Buffer no more than 4000 bytes at a time before sending data across
+                the socket.  This should improve performance on large data transfers.
+                Use a static buffer for receiving data from a socket.
+                Use a static buffer when logging messages.
+    prpclient;  Fixed an issue when testing for twin primes.
+                When the startoption is to report and abort, shut down the client
+                immediately after communicating with the server.
+    prpserver:  Added maxclients= to prpserver.ini to limit how many concurrent
+                clients the server will handle.
+                Removed -u option for upgrading from version 2.x.
+                Removed behavior to insert into UserPrimes at startup since
+                nobody (that I know of) is using a version of 3.x that is pre-3.2.
+                Renamed ClientThread.cpp to HelperThread.cpp.
+                Changed threading architecture to address memory allocation issue.
+                Do not set LastUpdateTime when a test is sent to a client.
+                When sorting by LastUpdateTime, include DecimalLength as an
+                additional criteria in case multiple rows have the same LastUpdateTime.
+                Moved logic from ClientHandler.cpp to HelperThread.cpp.
+                Added CompletedThru to group stats.
+                Added CountInProgress to group stats.
+                Added summary line to group stats.
+                Added a new index to Candidate to improve performance.
+                Fixed an issue with BIGINT datatypes.  With this change a number
+                of columns have been changed from varchar(20) to bigint.
+                
+                Run this script in mysql to apply all database changes for this release:
+
+      alter table Candidate modify k bigint;
+      alter table Candidate modify LastUpdateTime bigint;
+      alter table CandidateTest modify TestID bigint;
+      alter table CandidateGroupStats modify k bigint default 0;
+      alter table CandidateGroupStats modify MinInGroup bigint default 0;
+      alter table CandidateGroupStats modify MaxInGroup bigint default 0;
+      alter table CandidateGroupStats modify LeadingEdge bigint default 0;
+      alter table CandidateGroupStats add CompletedThru bigint default 0;
+      alter table CandidateGroupStats add CountInProgress int default 0;
+      alter table UserPrimes modify DateReported bigint;
+      alter table Candidate add index ix_bnck (b, n, c, k);
+
+
+
+Version 3.2.5:  April 2010 - Patch Release
+    prpclient:  Fix loop that occurs when doing work for a Sierpinski/Riesel
+                server if a prime/PRP is found.
+    prpserver:  Fixed a crash that can occur if unable to connect to SMTP
+                server.
+
+                
+Version 3.2.4:  April 2010 - Patch Release
+    prpclient:  Skip workunits on Sierpinski/Riesel type servers on matching
+                k/b/c with higher n if a prime/PRP is found.
+                Use -gxo instead of -gx when searching for GFN divisors since
+                primality test has already been done.
+                This release of PRPNet requires PFGW 3.2.4 if used on any 
+                projects that can test for GFN divisibility.  PFGW 3.2.4 outputs
+                a string that the client requires before it can tell the server
+                that it has successfully tested for GFN divisors.
+    prpserver:  Added code for loading GFNs from an ABC file.  Somehow I had
+                overlooked it.
+                Added abcformats.txt to describe supported ABC formats.
+                If unhideprimehours is set to 0, show primes immediately on
+                user_primes.html page.
+                Have server send out tests for lower n on Sierpinski/Riesel
+                servers even if a prime/PRP is found for a higher n.
+                If a Sierpinski/Riesel prime is found, then do not count
+                candidates with a higher n against the "untested candidates"
+                count on the server stats page.
+                Fixed an issue that prevented double checks from being correctly
+                updated in the database.
+                Fixed e-mail message for Proth numbers to state that client
+                searched for GFN divisors, but did not find any instead of saying
+                that search wasn't done.
+                Fixed console output issue when PRP is found.
+                Fixed server_stats.html for FixedBNC servers.
+                Modified columns on CandidateGroupStats to work with FixedBNC
+                servers.  Use the following statements to modify the columns:
+                
+                alter table CandidateGroupStats modify MinInGroup varchar(20);
+                alter table CandidateGroupStats modify MaxInGroup varchar(20);
+                alter table CandidateGroupStats modify LeadingEdge varchar(20);
+
+
+Version 3.2.3:  March 2010 - Patch Release
+          all:  Fixed a crash that can occur if the socket connection is
+                lost when sending data across it.
+    prpserver:  Fixed SQL so that GFN divisors are inserted into the database.
+                Fixed two issues that could lead to the server looping when a
+                client requests work.
+                Added new debug messages when fetching from a cursor.
+                Change format of messages in completed_tests.log to match
+                formatting from 3.2.0.
+                Added sortoption=A, sorting by oldest candidate.
+
+Version 3.2.2:  March 2010 - Patch Release
+          all:  Added client socket ID to all log messages so that it is easier
+                to track connection traffic.
+    prpclient:  Fixed bug where base 2 tests were using PFGW instead of LLR/phrot.
+    prpserver:  Use server_stats.html as the default webpage.
+                Fix prime/PRP counts on server stats webpage.
+                Fixed SELECT statement for FixedKBC servers when updating group stats.
+                Sync group stats about three times per hour rather than whenever
+                a completed test is sent, unless a prime/PRP is returned.
+                Modified main work sender loop to retrieve fewer records, but to
+                be re-iterated multiple times until enough work is sent or until
+                there are no more records returned by the cursor.
+                Added a new index to CandidateTest to be added through MySQL with
+                the following command:
+                
+                alter table CandidateTest add index ix_residue (CandidateName, Residue);
+
+Version 3.2.1:  February 2010 - Patch Release
+          all:  Added memory leak detection logic (Windows only) and fixed
+                numerous memory leaks.
+                Changed sockets to include TCP_NODELAY setting.
+                Fixed a number of memory leaks.
+                Changed "char *fmt" to "const char *fmt" to eliminate a
+                number of compiler warnings.
+    prpclient:  Accept "keepalive" message from server when getting work.
+                Modify so that client can connect to a server that needs
+                a non-blocking or blocking socket.
+    prpserver:  Fixed two crashes, one with webpage generation and one with
+                unhiding primes.
+                Fixed an issue with the display of Fixed K/B/C server stats.
+                Send "keepalive" to client when opening work work cursor
+                so that client doesn't time out.
+                Fixed ordering of k on server_stats.html.
+                Added all.html as the default webpage.
+
+Version 3.2.0:  February 2010 - New Release
+          all:  Fixed an issue on Linux builds with an uninitialized mutex
+                causing the software to crash.
+    prpclient:  Added "echotest" option to prpclient.ini.  Setting this to 0
+                will tell the client not to echo "INFO" messages to the console
+                for accepted tests.
+                Fixed a bug when using the client to test GFNs.  When a roundoff
+                error would occur, the client would neglect to delete temporary
+                files generated.  The next version of genefer would run, but 
+                read the same roundoff error instead of the actual test result.
+                Modified client to wait up to 60 seconds to get a response from
+                the server.
+    prpserver:  Added "echotest" option to prpserver.ini.  Setting this to 0
+                will tell the server not to echo "Test sent" and "Test received"
+                messages to the console.
+                Changed HTML format of Sierpinski/Riesel server_stats.html to
+                create a separate table for each base along with a header and
+                summary row for the base.  The summary row will now be shown in
+                red if all k have a prime or PRP.
+                Added UserPrimes table, which is populated upon server start
+                up if the table is empty.  If the server fails to load the
+                table, then it will not run until the problem is fixed.
+                Added user_primes.html to show all primes found, grouped by user.
+                Added unhideprimehours= to prpserver.ini.  This is used to control
+                how long a prime/PRP is hidden from user_primes.html before it
+                can be viewed by the public.
+                Added server version to HTML title on webpages.
+                Replaced "Other k/n/b/c" with "Fixed b/n/c" in prpserver.ini.  This
+                changes the grouping and sorting of server stats.
+                Limit size of result set on server when getting work because loading
+                large numbers (100000 or more) into memory when opening the cursor
+                can lead to the client timing out.
+                Changes locking mechanism when getting work since MySQL does not
+                seem to always respect "for update" on InnoDB database.
+                Added socket to logs to aid in trouble-shooting.
+                Changed LengthCalculator to select blocks of records at a time
+                so that it is less likely to timeout the admin tool.
+
+Version 3.1.5:  January 2010 - Patch Release
+          all:  Changed logging so that debug.log data is written to 
+                prpserver.log/prpclient.log depending upon debuglevel. This was
+                done to make it easier to find debug information when enabled
+                instead of having to look through multiple files.
+    prpclient:  Write all results to test_results.log instead of helper program
+                specific log files.
+    prpserver:  Use mutex to guarantee that only one thread can update the
+                database at a time when getting work.
+
+Version 3.1.4:  January 2010 - Patch Release
+          all:  Changed socket behavior to use Sleep() before select()
+                because select() does not relinquish control of the CPU.
+    prpclient:  Add GFN support for phrot.
+                Use -e with PFGW on primality proofs to increase likelihood
+                that it can get to 33% factorization, which is necessary for
+                the proof.
+
+Version 3.1.3:  January 2010 - Patch Release
+    prpclient:  Fix crash with getting time of LLR test no 64-bit Linux.
+                Fix bug where the client did not part LLR time correctly and
+                would return 0.
+     prpadmin:  Buffer 100 candidates/factors at a time instead of 1000 to
+                hopefully address Linux issues with large buffers and sockets.
+
+Version 3.1.2:  January 2010 - Patch Release
+    prpserver:  Lock Candidate record to prevent two different clients from
+                getting test for the same candidate at a time.
+                Change database engine to InnoDB because it supports record
+                level locking, which is necessary for PRPNet.  It also improves
+                performance significantly.
+                Flush printf() output from admin process.
+     prpadmin:  Flush printf() output from server.
+
+Version 3.1.1:  January 2010 - Patch Release
+    prpserver:  Fix bug with handling factors from admin tool.
+
+Version 3.1.0:  January 2010 - New Release
+    prpserver:  Send a single INFO or ERROR message for each workunit instead of
+                an acknowledgement and then immediately commit/rollback the
+                transaction in the database.  This will significantly reduce the
+                possibility of one happening without the other.
+                The "End of WorkUnit" message must now specify the CandidateName
+                and TestID for the workunit that it references.
+                Add SecondsForTest to CandidateTest table.
+                In theory this server is backward compatible with previous versions
+                of the clients, but has not been tested. 
+    prpclient:  Add CandidateName and TestID to the "End of WorkUnit" message to
+                that the server matches the begin and end of the message for that
+                workunit.  Without it, the server might record the test results
+                against the wrong candidate.
+                Instead of sending all workunits then waiting for a response,
+                send them one at at time and wait for the server to send an INFO or
+                ERROR message before sending the next one.
+                The client now sends the number of seconds for the PRP test back
+                to the server.
+                In theory this client is backward compatible with previous versions
+                of the server, but has not been tested.                
+
+Version 3.0.1:  January 2010 - Patch Release
+          all:  Fixed issue with large buffered messages to avoid memory leak.
+     prpadmin:  Send 1000 entries at a time to the server and wait for a response
+                before continuing.  This has been done to prevent the admin tool
+                from flooding the server's socket, thus preventing new clients
+                from connecting.
+    prpserver:  Send positive confirmation to prpadmin after every 1000 entries
+                has been processed so that the admin tool can continue.
+                The server can now hand out candidates by n.  Check out
+                sortoption= in the prpserver.ini file.
+                Send greeting as part of GETWORK message.  GETGREETING is no
+                longer supported.
+                Changed CandidateGroupStats table column names and meanings, thus
+                affecting server_stats.html.  If upgrading from 3.0.0, this table
+                must be dropped and recreated and repopulated.  It can be repopulated
+                through the admin tool.
+                Changed servertype FixedKBNC to FixedBKC.
+                Changed servertype OtherKBNC to FixedBNC.
+                Close SQL cursor so successive updates are executed.  This caused
+                multiple issues where database updates would not be synchronized.
+    prpclient:  New logic to handle greeting from the server.
+                When using PFGW, do not create ABC file, just write candidate
+                to input as it will reduce the amount of output generated by PFGW.
+
+Version 3.0.0:  January 2010 - New Release
+     prpadmin:  Buffer factors and candidates from ABC files to reduce the
+                number of send/receive requests on the socket.
+    prpserver:  The server now runs with a MySQL database instead of the
+                prpserver.candidates file.  Use the -u option to import the
+                candidates and current stats into the database.
+                The server is now multi-threaded.  Multiple clients can
+                connect at one time to get work.
+
+Version 2.4.7:  December 2009 - Patch Release
+    prpserver:  When a client connects, turn off buffering flags in case they
+                were not reset before closing previous connection.
+                Add support for pending_tests.html.
+                Add sortoption to prpserver.ini to affect how tests are 
+                handed out and how the candidates file is saved.
+                Send GFN tests to client if PFGW, LLR, or phrot are configured
+                and genefer80 had a round-off error.
+    prpclient:  If all genefers had a round-off error with GFN test, use PFGW,
+                LLR, or phrot.
+
+Version 2.4.6:  November 2009 - Patch Release
+          all:  Use select() on the socket before receiving.  On Linux (and
+                only Linux), recv() will not return if there is nothing to
+                be read from the socket.  select() can be configured to
+                timeout if there is nothing to be received.  On all other OSs
+                (Windows, Mac OS X, HP-UX, and Solaris) recv() return a 0
+                if there is nothing to be received.
+                Force close of socket if nothing is received.
+     prpadmin:  Change order of includes to address builds on Unix.
+                Fixed an error where messages from server would not print.
+    prpserver:  Modified generic server stats to not list GFN divisors found.
+                Added HTML classes for GFNs, Primorials, and Factorials
+
+Version 2.4.5:  November 2009 - Patch Release
+          all:  Fixed a crash that can occur when logging is turned on.  This
+                was inadvertantly added in 2.4.4
+                Modified handling of large messages since some OSs return the
+                buffer size and some return the number of bytes read when
+                receiving messages on a socket.
+                Reduced socket timeout to 10 seconds.
+
+Version 2.4.4:  November 2009 - Patch Release
+          all:  Fixed a crash that occurs when large messages (> 1000 bytes)
+                are received.
+    prpserver:  Prevent server from double-checking primes.
+                Output a message if unable to open one of the .removed files
+                and keep candidate in the main file until the .removed file
+                can be opened.  This addresses a potential crash in which the
+                server presumed that the .removed could be opened. 
+
+Version 2.4.3:  October 2009 - Official Patch Release
+    prpclient:  Fixed a logging issue with the client to address potential
+                segfaults.
+                Fixed issue when loading workunits for GFN projects.
+                Fixed issue with GFN testing that prevented client from choosing
+                the correct executable for PRP tests.
+
+Version 2.4.2:  October 2009 - Un-official Patch Release
+          all:  Fixed a buffering issue with large messages.  This would normally
+                affect prpadmin and prpserver, but could affect prpclient as well.
+                Print error when unable to write to log.
+    prpclient:  Output server version after getting work from the server.
+                Fix issues with genefX64 that do not occur with genefer or genefer80.
+                Fixed issue with validating helper programs.
+                Fixed an issue where debuglevel=1 wouldn't log socket messages.
+    prpserver:  Fixed a bug that causes the server to crash when it tries to
+                add second tests for a candidate.
+                Fixed a bug that causes the server to crash when configured for a
+                Generalized Fermat Search.
+
+Version 2.4.1:  October 2009 - Un-official Patch Release
+    prpclient:  Fix issues with identifying versions of genefer that the client
+                can run.
+    prpserver:  Add an extra carriage return so HTML is correctly generated in
+                browsers.
+    
+Version 2.4.0:  September 2009 - New Release
+    prpserver:  When a client has established a new connection, send a
+                message so that the client does not send any additional
+                data until it receives that confirmation.
+                Return immediately if the test is not found.  This addresses
+                an issue where the server would log tests without residues.
+                Send all responses for returned workunits in a single buffer
+                to the client.  This eliminates synchronization issues
+                between the client and server.
+                Send "Acknowledge" message for each returned workunit.
+                If the server loses its connection to the client in the
+                middle of processing, it will terminate the connection
+                immediately.  This should eliminate the appearance of the
+                server "hanging" when that happens.
+                Add additional debug information when expiring tests.
+                Added support to search for Generalized Fermat Numbers (GFNs).
+                Removed server_status.html.
+    prpclient:  The client will wait for the server to tell that it has
+                a connection before returning work.
+                Send all returned workunits in a single buffer to the server
+                and then wait for the server to return its messages.  This
+                eliminates synchronization issues between the client and server.
+                Look for "Acknowledge" message from server for each workunit
+                before deleting the workunit.
+                Tell server that the client has disconnected rather then using
+                the generic "QUIT" message.
+                This version no longer passes the -e argument to phrot.  It
+                presumes that users have upgraded to phrot 0.71.
+                Added support for GFN servers (and genefer software).
+
+Version 2.3.0:  August 2009 - New Release
+    prpserver:  Display count of primes by user on user_stats.html on pages
+                where it was missing.
+                Fixed an issue with Twin Prime servertype where it did not
+                support certain ABC file formats.
+    prpclient:  If PFGW fails with -a2, terminate the client.
+                Pass idle flag to PFGW.  If idle=0, then the client will pass
+                -N to PFGW, making run in normal priority.
+                Delete the temp output file from PFGW so that when re-run
+                with -a1 or -a2 that it doesn't find it and get caught in a loop.
+                Fixed an issue with Twim Prime searches as client would
+                always do -1 test even when +1 test was composite.
+                Removed frequency= option.  The client will now complete all
+                workunits before reporting to the server.
+
+Version 2.2.6:  August 2009 - Patch Release
+    prpclient:  Fixed an issue that causes the client to hang when the
+                server does not respond when the client is returning
+                work to the server.
+
+Version 2.2.5:  August 2009 - Patch Release
+    prpclient:  Fixed two issues where the client was accessing memory
+                not available to it.  These would be triggered when
+                the server rejects the test result or when the server
+                no longer no longer has a record of the test.
+
+Version 2.2.4:  August 2009 - Patch Release
+          all:  Set timeout setting for reading from the socket to 30 
+                seconds instead of 10 seconds.
+    prpserver:  Corrected server_status.html page to show "Min N" in the
+                appropriate column.
+                Reject tests from the client if a residue is not provided.
+                Added a required htmltitle= in the prpserver.ini file so that
+                the server can provide a title for the generated HTML.
+                Tell the browser to close the connection after the client
+                closes the connection.  This addresses the browser "stalling"
+                when someone requests one of the web pages.
+    prpclient:  If the server does not respond before the timeout when returning
+                workunits, the client will stop trying to send additional
+                workunits so that it can remain in sync with the server.
+
+Version 2.2.3:  June 2009 - Patch Release
+    prpserver:  Add client ID to log files.
+                Remove support for 1.x clients.
+    prpclient:  Pass correct flag to PFGW for Primorial/Factorial primality tests.
+                Set residue to PRIME when PFGW does primality test and number is prime.
+                Delete save file if there are no work units.
+                Use PFGW for non-base 2 numbers as v3.1 is faster than LLR and phrot.
+
+Versino 2.2.2:  June 2009 - Patch Release
+    prpclient:  Fixed issue with restarting client where it would not handle some
+                start options correctly.
+                Modified log messages on the client when the server refuses the
+                workunit.  In these cases the client will drop the workunit so that
+                it can continue doing other work for the server.
+
+Version 2.2.1:  June 2009 - Patch Release
+    prpserver:  More changes to prpserver.delay to remove first test checks.  The
+                server will no longer send the same test to two clients unless one
+                of the client's has missed the expiration deadline.
+    prpclient:  Fix a segfault if communication with the server is broken while
+                sending workunits back.
+                Fixed issue with counting of completed and current work units.
+                The client will drop tests that are not known on the server.
+
+Version 2.2.0:  June 2009 - New Release
+    prpserver:  Add ability to expire tests (see prpserver.delay for information).
+                Check for pending tests before removing candidates from the server.
+                Add support for Twin Prime searches.
+                Remove candidates after a successful test if there is no double-ckecking.
+    prpclient:  Check for existence of workunit on server before sending rest of message.
+                Add support for Twin Prime searches.
+                Modularized code for the handling of helper programs.
+                Do not return immediately when a prime/prp is found so that no tests
+                are abandoned.
+                Use -k feature added in PFGW 1.3.
+
+Version 2.1.5:  May 2009 - Patch Release
+    prpserver:  Do not give credit for abandoned tests.
+                Use prpnet.ico for favicon.ico instead of prpnet.gif as some browsers
+                do not support gifs.
+
+Version 2.1.4:  May 2009 - Patch Release
+    prpserver:  Return "End of Message" semaphore when the client has returns results
+                that do not correspond to any tests on the server.
+
+Version 2.1.3:  May 2009 - Patch Release
+    prpclient:  Add startoption and stopoption for use with automated clients.  Read
+                the prpclient.ini file for more information
+    prpserver:  Close the user_stats.ini file after saving.
+                Fixed issue with user_stats.ini where score was not calculated
+                correctly after a prime was found.
+                Add prpnet.gif in response to favicon.ico request from browser.
+                Various enhancements to user stats.
+
+Version 2.1.2:  May 2009 - Official Release
+    prpclient:  Fixed patch that addressed PFGW FFT rounding error as it completely
+                borked the 2.1.1 client. 
+                More changes for ^C handling to get Windows to work as I would expect
+                it to work (which should be more like Unix).
+
+Version 2.1.1:  May 2009 - Patch Release (beta)
+    prpclient:  Fixed patch that addressed PFGW FFT rounding error as it completely
+                borked the 2.1.0 client.
+                Modified to skip lines in lresults.txt that are not related to
+                the results of the test.
+
+Version 2.1.0:  May 2009 - New Release (alpha)
+    prpclient:  Modify handling of ^C with Visual Studio build used by Windows.
+                After returning work, continue to read from socket until getting
+                "End of Message" semaphore.
+                Delete all temp files after returning results to the server.
+                Capture FFT rounding errors from PFGW and re-issue test using -a option.
+                Write servertype to save file so that workunits can be correctly handled
+                upon restart of the client.
+                When restarting the client, ask user what to do with workunits that have 
+                been saved.
+    prpserver:  Add user element to completed_tests.log.
+                Look for correct return codes when sending e-mail using SMTP authentication.
+                Replace %T format when calling strftime as Windows doesn't support it
+                and will terminate application when it find it.
+                Changed user stats structure hoping to eliminate stats collection issue.
+                Send "End of Message" to client after receiving work done as a semaphore
+                to the client to stop reading from the socket.
+                Add Primes Found and GFN Divisors found to Fixed k/b/c server user stats HTML.
+
+Version 2.0.4:  April 2009 - Official Release
+    prpclient:  Change options for PFGW when finding GFNs to not do an unnecessary PRP test.
+    
+Version 2.0.3:  April 2009 - Patch Release (beta)
+    prpclient:  Fix an issue where the client does not parse LLR test results correctly
+
+Version 2.0.2:  April 2009 - Patch Release (beta)
+    prpserver:  Log GFNs returned by the client
+                Fix HTML generation as it would not respond in a timely fashion to the browser.
+                Fix double close when loading from an ABC file.
+
+Version 2.0.1:  April 2009 - Patch Release (beta)
+          all:  Address issues with uninitialized variables when using Visual Studio.
+
+Version 2.0.0:  April 2009 - New Release (alpha)
+          all:  Add userid support which can be different than emailid.
+                emailid is still required for uniqueness.
+    prpadmin:   This gives an administrator access to the server to add new candidates (via 
+                an ABC file) or remove candidates (via a factor log file) if factors have
+                been found.
+    prpserver:  Ingore SIGPIPE signal until I understand how to prevent that signal from being
+                throw when I don't want it to be thrown.
+                Verify that there are no duplicate candidate names after loading is complete,
+                not during the loading process as it takes a very long time to load the
+                server if there are a large number of candidates.
+                Added a new stats engine.  This allows a web browser to call the server directly
+                to get supported web pages.  More info can be found in readme.txt.
+                Support SMTP verification and authentication for any mail the server sends.
+                Added support for primorial and factorial server types.
+                Removed master/slave logic as it isn't useful.
+                Added support for prpadmin.
+    prpclient:  Added "affinity=" option so that the client can tell LLR which CPU to use.
+                When the client is terminated with a ^C, prompt the user as to what they want
+                to do with workunits.
+                Modified the client to use LLR for bases above 50 if it can choose between LLR
+                and phrot.
+                Fixed an issue where client performs tests again if not able to communicate with
+                server.
+                Added support for PFGW.  This means that the client can perform generic PRP and
+                primality tests (whatever PFGW and prpserver can support).
+                If PFGW is configured, that the client can do its own primality test if the
+                first test was only a PRP test.
+                If PFGW is configured, use it to test Proth primes for GFN divisibility.
+
+Version 1.0.5:  January 2009 - Patch Release
+          all:  Fixed an issue on Windows as Visual Studio does not initialize
+                instance variables if they are not explicity initialized.
+    prpclient:  Fixed an issue when loading from a save file where the number 
+                of completed work units was not correctly updated.
+
+Version 1.0.4:  January 2009 - Patch Release
+          all:  Increase size of buffer for candidate names as 20 characters
+                was not long enough.
+    prpclient:  If there is only one workunit and it is inprogress, then do
+                not communicate with the server.
+                Write LLR primes to llr.prime and PRPs to llr.prp.
+    prpserver:  Fixed a bug introduced with the Windows build that causes
+                the server to not calculate the decimal length correctly.
+
+Version 1.0.3:  January 2009 - Patch Release
+          all:  Create .sln and .vcproj files for Microsoft Visual Studio.
+                Modified Socket logic and defs.h to work with MS Visual Studio.
+    prpclient:  Explicitly intialize some variables so that the Visual Studio
+                build does not complain about them.
+                Reset number of completed work units after getting new work.
+                Put the erroneous client ID in the message that indicates that the
+                client ID is invalid (instead of the e-mail ID).
+    prpserver:  Send an INFO message instead of ERROR if the server does not find
+                the candidate by name.  This will cause the results of the test to
+                be lost, but will allow the client to continue processing other
+                work units.  This behavior might be changed in the future.
+
+Version 1.0.2:  January 2009 - Patch Release
+    prpclient:  Send abandoned tests to the server so that the server knows when
+                the client is not going to perform the test and can thus send a
+                test to someone else.
+                Fix an memory leak when maxworkunits is decreased to a value lower
+                than the number of saved tests in the work*.save file.
+                Allow setting of maxworkunits of 0 to complete any current incomplete
+                test, send it to the server, then terminate the client.
+                The next version of phrot can do a primality test for Proth numbers,
+                so ensure that it is captured correctly and reported to the server.
+    prpserver:  Fix an issue in Candidate.cpp where the number of successful tests
+                performed was not incremented.
+                When a successful test is returned, log the test in a file called
+                completed_tests.log.
+                The client can now indicated if a test has been abandoned.  If it
+                has, then don't update the timestamp, but delete the test so that
+                someone else can perform it.
+
+Version 1.0.1:  December 2008 - Patch Release
+    prpclient:  LLR output for base 2 tests differs from other bases, thus it has
+                to be parsed differently.
+                LLR for Proth numbers (k*2^n+1) performs a primality test, thus
+                check for primality and report the number as prime instead of
+                as a PRP.
+    prpserver:  Check for numbers marked as Prime by LLR.
+
+Version 1.0.0:  December 2008 - Initial Release
+

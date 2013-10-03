@@ -1,0 +1,2 @@
+Send a message to the client in this file such as an
+explanation of the project or remind them the current release.

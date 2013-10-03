@@ -1,0 +1,64 @@
+#include "HTMLGeneratorFactory.h"
+#include "WWWWHTMLGenerator.h"
+#include "CullenWoodallHTML.h"
+#include "SierpinskiRieselHTML.h"
+#include "FixedBKCHTML.h"
+#include "FixedBNCHTML.h"
+#include "GFNHTML.h"
+#include "PrimorialHTML.h"
+#include "FactorialHTML.h"
+#include "SophieGermainHTML.h"
+
+HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
+{
+   HTMLGenerator *htmlGenerator;
+
+   switch (globals->i_ServerType)
+   {
+      case ST_SIERPINSKIRIESEL:
+         htmlGenerator = new SierpinskiRieselHTML(globals);
+         break;
+
+      case ST_CULLENWOODALL:
+         htmlGenerator = new CullenWoodallHTML(globals);
+         break;
+
+      case ST_PRIMORIAL:
+         htmlGenerator = new PrimorialHTML(globals);
+         break;
+
+      case ST_FACTORIAL:
+         htmlGenerator = new FactorialHTML(globals);
+         break;
+
+      case ST_GFN:
+         htmlGenerator = new GFNHTML(globals);
+         break;
+
+      case ST_FIXEDBNC:
+      case ST_TWIN:
+         htmlGenerator = new FixedBNCHTML(globals);
+         break;
+
+      case ST_SOPHIEGERMAIN:
+         htmlGenerator = new SophieGermainHTML(globals);
+         break;
+
+      case ST_FIXEDBKC:
+         htmlGenerator = new FixedBKCHTML(globals);
+         break;
+
+      case ST_WIEFERICH:
+      case ST_WILSON:
+      case ST_WALLSUNSUN:
+      case ST_WOLSTENHOLME:
+         htmlGenerator = new WWWWHTMLGenerator(globals);
+         break;
+
+      default:
+         printf("Didn't handle servertype %d\n", globals->i_ServerType);
+         exit(0);
+   }
+
+   return htmlGenerator;
+}

@@ -1,0 +1,37 @@
+// This file serves two purposes.  First, it tells the PRPNet server how close or
+// far double-checks should be to the first tests.  Second, it tells the PRPNet
+// server how long to wait before automatically expiring tests.
+//
+// This file can contain a variable number of lines.  The format is as follows:
+//    delay=<decimal size>:<doublecheck time limit><m:h:d>:<expire time limit><m:h:d>
+//
+// <decimal size> is the decimal size for the candidate.  This value represents
+// the upper limit for the candidates that are affected by this test.
+//
+// <doublecheck time limit><m:h:d> is the amount of time (in minutes, hours, or days)
+// after the completion of the first test before a double-check can be sent to a client
+// This must always be configured even if the server is not doing double-checks.
+//
+// <expire time limit><m:h:d> is the amount of time (in minutes, hours, or days)
+// before the server will automatically expire tests which do not have results
+//
+// Note:  This file is presumed to be in decimal size order.  If this file
+//        is empty or has no entries, then a delay of 1 hour is presumed.
+//        If the largest number is longer than the last entry, then the
+//        values for the last entry will be used.
+//
+// Note:  The time delay set in this file should take into account maxworkunits
+//        from prpserver.ini as a client could process multiple workunits between
+//        calls to the server.  For example, if a workunit takes 10 minutes on a
+//        slow computer and that computer grabs 20 workunits, the setting should
+//        be at least 200 minutes for workunits of that size.
+//
+// Note:  For Wieferich/Wilson/Wolstenholme/Wall-Sun-Sun searches, the server
+//        will only use the first entry and it will also ignore the decimal size.
+
+delay=050000:30m:6h
+delay=100000:2h:1d
+delay=200000:8h:4d
+delay=300000:1d:8d
+delay=400000:2d:16d
+delay=500000:4d:32d

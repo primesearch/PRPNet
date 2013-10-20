@@ -172,6 +172,6 @@ void     WWWWWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
 
 void     WWWWWorkUnitTest::LogMessage(WorkUnitTest *masterWorkUnit)
 {
-   if (iwut_Result == TR_COMPLETED)
+   if (iwut_State == WUT_COMPLETED)
       ip_Log->LogMessage("%s: Range %"PRId64" to %"PRId64" completed", is_WorkSuffix.c_str(), il_LowerLimit, il_UpperLimit);
 }

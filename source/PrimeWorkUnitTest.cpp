@@ -317,7 +317,7 @@ void  PrimeWorkUnitTest::SendResults(Socket *theSocket)
          gfnPtr = ip_FirstGFN;
          while (gfnPtr)
          {
-            theSocket->Send("GFN: %s", gfnPtr->s_Divisor);
+            theSocket->Send("GFN: %s", gfnPtr->s_Divisor.c_str());
             gfnPtr = (gfn_t *) gfnPtr->m_NextGFN;
          }
       }
@@ -343,7 +343,7 @@ void     PrimeWorkUnitTest::Save(FILE *saveFile)
    gfnPtr = ip_FirstGFN;
    while (gfnPtr)
    {
-      fprintf(saveFile, "%s GFN: %s\n", GetResultPrefix().c_str(), gfnPtr->s_Divisor);
+      fprintf(saveFile, "%s GFN: %s\n", GetResultPrefix().c_str(), gfnPtr->s_Divisor.c_str());
       gfnPtr = (gfn_t *) gfnPtr->m_NextGFN;
    }
 
@@ -357,7 +357,7 @@ void     PrimeWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
    int      countScanned;
    int      hasGFNs, searchedForGFNDivisors;
    char     childName[50], residue[50], program[50], programVersion[50];
-   char     prover[50], proverVersion[50];
+   char     prover[50], proverVersion[50], tempDivisor[BUFFER_SIZE];
 
    strcpy(line, lineIn.c_str());
 
@@ -370,7 +370,7 @@ void     PrimeWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
 
    if (countScanned != 11)
    {
-      printf("Unable to parse line [%s] from save file.  Exiting\n", lineIn);
+      printf("Unable to parse line [%s] from save file.  Exiting\n", lineIn.c_str());
       exit(-1);
    }
 
@@ -411,8 +411,9 @@ void     PrimeWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
          exit(-1);
       }
     
-      sscanf(ptr+2, "%s", gfnNext->s_Divisor);
+      sscanf(ptr+2, "%s", tempDivisor);
 
+      gfnNext->s_Divisor = tempDivisor;
       gfnNext->m_NextGFN = NULL;
       gfnPrevious = gfnNext;
    }

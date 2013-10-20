@@ -262,7 +262,7 @@ void     Mail::encodeBase64(string inString, string &outString)
    char    *tempPtr;
 
    strcpy(tempIn, inString.c_str());
-   memcpy(tempOut, 0x00, sizeof(tempOut));
+   memset(tempOut, 0x00, sizeof(tempOut));
    tempPtr = tempIn;
 
    i = j = index = 0;

@@ -263,8 +263,8 @@ void  SendABCFile(const char *abcFileName)
 {
    char        readBuf[BUFFER_SIZE], *theMessage;
    FILE       *fPtr;
-   int32_t     endLoop = false, countSent;
-   bool        successful;
+   int32_t     countSent;
+   bool        successful = false;
 
    if (!VerifyCommand("ADMIN_ABC"))
       return;
@@ -323,7 +323,7 @@ bool  ConfirmBatch(int countSent, bool allDone)
 {
    char  *theMessage;
    char   expectedMessage[100];
-   bool   successful;
+   bool   successful = false;
 
    sprintf(expectedMessage, "processed %d records", countSent);
 
@@ -338,7 +338,7 @@ bool  ConfirmBatch(int countSent, bool allDone)
    g_Socket->StartBuffering();
 
    theMessage = g_Socket->Receive(120);
-   while (theMessage)
+   while (theMessage != 0x00)
    {
       if (!strcmp(theMessage, expectedMessage) || !memcmp(theMessage, "processed", 9))
       {

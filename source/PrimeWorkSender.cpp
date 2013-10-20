@@ -540,7 +540,7 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
    else
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %u %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
 
-   sprintf(goodMessage, "Received: %s", candidateName);
+   sprintf(goodMessage, "Received: %s", candidateName.c_str());
    if (is_ClientVersion < "5.0.2") readBuf = ip_Socket->Receive(10);
 
    // Assume that the client got the workunit.  If the client didn't get the work, then

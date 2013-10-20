@@ -176,11 +176,11 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
          switch (testResult)
          {
             case R_PRP:
-               AppendLine(2, "Congratulations!!!  %s and %s might be twin primes!!!", candidateName, testedNumber);
+               AppendLine(2, "Congratulations!!!  %s and %s might be twin primes!!!", candidateName.c_str(), testedNumber);
                AppendLine(0, "A primality test must be run on %s to prove its primality.", testedNumber);
                break;
             case R_PRIME:
-               AppendLine(2, "Congratulations!!!  %s and %s are twin primes!!!", candidateName, testedNumber);
+               AppendLine(2, "Congratulations!!!  %s and %s are twin primes!!!", candidateName.c_str(), testedNumber);
                break;
             default:
                AppendLine(2, "Your client also tested %s to determine if it is a prime twin.", testedNumber);
@@ -193,11 +193,11 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
          switch (testResult)
          {
             case R_PRP:
-               AppendLine(2, "Congratulations!!!  %s and %s might be Sophie Germain primes!!!", candidateName, testedNumber);
+               AppendLine(2, "Congratulations!!!  %s and %s might be Sophie Germain primes!!!", candidateName.c_str(), testedNumber);
                AppendLine(0, "A primality test must be run on %s to prove its primality.", testedNumber);
                break;
             case R_PRIME:
-               AppendLine(2, "Congratulations!!!  %s and %s are Sophie Germain primes!!!", candidateName, testedNumber);
+               AppendLine(2, "Congratulations!!!  %s and %s are Sophie Germain primes!!!", candidateName.c_str(), testedNumber);
                break;
             default:
                AppendLine(2, "Your client also tested %s to determine if it is Sophie Germain prime.", testedNumber);

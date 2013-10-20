@@ -144,7 +144,7 @@ void     WWWWWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
 
       if (memcmp(line, "WWWW: ", 6))
       {
-         printf("Expected prefix [%s] on line [%s] was not found.  Exiting\n", prefix, line);
+         printf("Expected prefix [%s] on line [%s] was not found.  Exiting\n", prefix.c_str(), line);
          exit(-1);
       }
 

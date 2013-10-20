@@ -101,7 +101,7 @@ void     PrimeHTMLGenerator::Send(string thePage)
    else
    {
       HeaderPlusLinks("");
-      ip_Socket->Send("<br><br><br><p align=center><b><font size=4 color=#FF0000>Page %s does not exist on this server.</font></b></p>", thePage);
+      ip_Socket->Send("<br><br><br><p align=center><b><font size=4 color=#FF0000>Page %s does not exist on this server.</font></b></p>", thePage.c_str());
       ip_Socket->Send("<p align=center><b><font size=4 color=#FF0000>Better luck next time!</font></b></p>");
    }
 
@@ -284,7 +284,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
             TD_CHAR(machineID);
             TD_CHAR(instanceID);
             TD_CHAR(teamID);
-            TD_CHAR(TimeToString(dateReported));
+            TD_CHAR(TimeToString(dateReported).c_str());
             TD_32BIT((uint32_t) decimalLength);
 
             ip_Socket->Send("</tr>");
@@ -396,7 +396,7 @@ void     PrimeHTMLGenerator::PrimesByTeam(void)
             TD_CHAR(userID);
             TD_CHAR(machineID);
             TD_CHAR(instanceID);
-            TD_CHAR(TimeToString(dateReported));
+            TD_CHAR(TimeToString(dateReported).c_str());
             TD_FLOAT(decimalLength);
 
             ip_Socket->Send("</tr>");
@@ -482,7 +482,7 @@ void     PrimeHTMLGenerator::GFNDivisorsByUser(void)
          gfnDivisorCount++;
 
          ip_Socket->Send("<tr><td align=center>%s<td>%s<td>%s</tr>",
-                         testedNumber, dividesGFN, TimeToString(dateReported));
+                         testedNumber, dividesGFN, TimeToString(dateReported).c_str());
       } while (sqlStatement->FetchRow(false));
 
        ip_Socket->Send("<tr><td align=center colspan=4>User %s has found %d GFN divisor%s</tr>",

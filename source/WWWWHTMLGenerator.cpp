@@ -91,7 +91,7 @@ void     WWWWHTMLGenerator::Send(string thePage)
    else
    {
       HeaderPlusLinks("");
-      ip_Socket->Send("<br><br><br><p align=center><b><font size=4 color=#FF0000>Page %s does not exist on this server.</font></b></p>", thePage);
+      ip_Socket->Send("<br><br><br><p align=center><b><font size=4 color=#FF0000>Page %s does not exist on this server.</font></b></p>", thePage.c_str());
       ip_Socket->Send("<p align=center><b><font size=4 color=#FF0000>Better luck next time!</font></b></p>");
    }
 

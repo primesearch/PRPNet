@@ -89,7 +89,7 @@ int32_t  WWWWWorkReceiver::ReceiveWorkUnit(string theMessage)
    if (sscanf(tempMessage, "WorkUnit: %"PRId64" %"PRId64" %"PRId64"",
                            &lowerLimit, &upperLimit, &testID) != 3)
    {
-      ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage);
+      ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
       return false;
    }
 

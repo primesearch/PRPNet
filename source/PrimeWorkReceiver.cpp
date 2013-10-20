@@ -87,7 +87,7 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
    strcpy(tempMessage, theMessage.c_str());
    if (sscanf(tempMessage, "WorkUnit: %s %"PRId64"", candidateName, &testID) != 2)
    {
-      ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage);
+      ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
       return false;
    }
 

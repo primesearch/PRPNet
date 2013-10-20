@@ -233,7 +233,7 @@ bool  HelperThread::VerifyAdminPassword(string password)
    else
    {
       ip_Socket->Send("ERR: The entered password is not valid.  No access will be granted.");
-      ip_Log->LogMessage("%s at %s attempted to connect as admin, but was rejected", is_EmailID.c_str(), ip_Socket->GetFromAddress());
+      ip_Log->LogMessage("%s at %s attempted to connect as admin, but was rejected", is_EmailID.c_str(), ip_Socket->GetFromAddress().c_str());
       return false;
    }
 }

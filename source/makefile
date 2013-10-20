@@ -23,7 +23,7 @@ STATSOBJECTS=StatsUpdaterFactory.o StatsUpdater.o FactorialStatsUpdater.o \
 	GFNStatsUpdater.o SierpinskiRieselStatsUpdater.o CullenWoodallStatsUpdater.o \
 	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o
 MAILOBJECTS=MailFactory.o Mail.o PrimeMail.o WWWWMail.o
-HELPEROBJECTS=ServerHelperFactory.o ServerHelper.o PrimeServerHelper.o WWWWServerHelper.o
+HELPEROBJECTS=ServerHelperFactory.o PrimeServerHelper.o WWWWServerHelper.o
 SOCKETOBJECTS=Socket.o ServerSocket.o MailSocket.o HelperSocket.o
 DBOBJECTS=DBInterface.o SQLStatement.o
 THREADOBJECTS=SharedMemoryItem.o ServerThread.o HelperThread.o WorkSender.o WorkReceiver.o \

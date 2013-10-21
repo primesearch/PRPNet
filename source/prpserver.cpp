@@ -671,7 +671,7 @@ bool     ValidateConfiguration(string smtpServer)
          if (strlen(tempServer) > 0)
          {
             mailFactory = new MailFactory();
-            gp_Mail = mailFactory->GetInstance(gp_Globals, smtpServer, atol(ptr));
+            gp_Mail = mailFactory->GetInstance(gp_Globals, tempServer, atol(ptr));
             delete mailFactory;
          }
       }

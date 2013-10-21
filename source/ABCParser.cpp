@@ -404,7 +404,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
    theB = ii_theB;
    theN = ii_theN;
    theC = ii_theC;
-   theName = theMessage;
+   theName = tempName;
 
    return true;
 }

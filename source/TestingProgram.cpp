@@ -13,7 +13,7 @@ TestingProgram::TestingProgram(Log *theLog, string programName)
 
    is_ProgramVersion = "unknown";
    ib_IsPRP = ib_IsPrime = ib_TestFailure = false;
-   is_Residue[0] = 0;
+   is_Residue.clear();
    ip_FirstGFN = 0;
    ii_Affinity = -1;
    ii_NormalPriority = 0;
@@ -30,7 +30,7 @@ void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUn
    is_WorkUnitName = workUnitName;
 
    ib_IsPRP = ib_IsPrime = ib_TestFailure = false;
-   is_Residue[0] = 0;
+   is_Residue.clear();
    ip_FirstGFN = 0;
 
    il_k = theK;

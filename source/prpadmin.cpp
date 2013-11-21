@@ -264,7 +264,7 @@ void  SendABCFile(const char *abcFileName)
    char        readBuf[BUFFER_SIZE], *theMessage;
    FILE       *fPtr;
    int32_t     countSent;
-   bool        successful = false;
+   bool        successful = true;
 
    if (!VerifyCommand("ADMIN_ABC"))
       return;

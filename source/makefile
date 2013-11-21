@@ -1,7 +1,7 @@
 # specify the compiler
 CPP=gcc
 
-CPPFLAGS=-c -g -Wall
+CPPFLAGS=-c -g -m64 -Wall
 
 # prpclient/prpadmin link flags
 LFLAGS_CLIENT=-lpthread -lstdc++ -o

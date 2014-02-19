@@ -30,6 +30,8 @@ private:
    bool        CheckDoubleCheck(string candidateName, string residue);
 
    bool        AbandonTest(string candidateName, int64_t testID);
+
+   bool        BadProgramVersion(string version);
 };
 
 #endif // #ifndef _PrimeWorkReceiver_

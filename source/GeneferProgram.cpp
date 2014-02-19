@@ -286,6 +286,14 @@ uint32_t GeneferProgram::ValidateExe(void)
       }
 
       is_StandardizedName[index] = command;
+
+      // Here we can reject known buggy versions from the client-side
+      DetermineVersion();
+      if (is_ProgramVersion.find("3.2.0beta-0") != string::npos)
+      {
+         printf("Genefer Version '%s' is not supported\n", is_ProgramVersion.c_str());
+         return false;
+      }
    }
 
    return true;
@@ -293,10 +301,11 @@ uint32_t GeneferProgram::ValidateExe(void)
 
 void  GeneferProgram::DetermineVersion(void)
 {
-   char  command[200], line[200], *ptr;
+   char command[200], line[200];
+   char version[20];
    FILE *fp;
 
-   sprintf(command, "%s -q 66^128+1 > a.out", is_ExeName.c_str());
+   sprintf(command, "%s -v > a.out", is_ExeName.c_str());
 
    system(command);
 
@@ -320,21 +329,13 @@ void  GeneferProgram::DetermineVersion(void)
    unlink("a.out");
 
    // The first line should look like this:
-   // GeneFer 2.2.0 (x86 - 32-bit - generic)  Copyright (C) 2001-2003, Yves Gallot
-   if (memcmp(line, "GeneFer", 7))
+   // "<appname> <version> <arch>" e.g.
+   // "genefer 3.1.2-0 (Apple x86 32-bit Default)"
+
+   if (sscanf(line,"%*s %20s", version) != 1)
    {
       printf("Could not determine version of Genefer being used.  Missing version data\n");
       exit(0);
    }
-
-   ptr = strstr(line+8, " ");
-   if (!ptr)
-   {
-      printf("Could not determine version of Genefer being used.  Missing version data\n");
-      exit(0);
-   }
-
-   *ptr = 0;
-
-   is_ProgramVersion = line+8;
+   is_ProgramVersion = version;
 }

@@ -71,7 +71,17 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
       return;
    }
 
-	if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW)
+   if (ii_ServerType == ST_GFN)
+   {
+      // Require a client of at least 5.3.0 so the genefer version is reported correctly
+      if (memcmp(clientVersion, "5.3", 3) < 0)
+      ip_Socket->Send("ERROR:  The client must be version 5.3.0 or greater to use this server.");
+      ip_Socket->Send("End of Message");
+      return;
+
+   } 
+
+   if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW)
    {
 		if (ii_ServerType != ST_GFN)
 		{

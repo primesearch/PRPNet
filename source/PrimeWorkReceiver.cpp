@@ -155,6 +155,12 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
                             is_EmailID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str(), candidateName);
          return false;
 
+      case CT_OBSOLETE:
+         ip_Socket->Send("INFO:  Test for %s was ignored.  Your application is obsolete and MUST be upgraded", candidateName);
+         ip_Log->LogMessage("%s (%s %s): Ignored test on %s due to obsolete application version",
+                            is_EmailID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str(), candidateName);
+         return true;
+
       case CT_ABANDONED:
          ip_Socket->Send("INFO: Test for %s was abandoned", candidateName);
          ip_Log->LogMessage("Test for %s was abandoned by %s, machine %s, instance %s",
@@ -199,7 +205,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    char     *theMessage, theName[50];
    int64_t   endTestID;
    int32_t   gfnDivisorCount = 0;
-   bool      abandoned = false, hasChild = false, doubleChecked, wasParsed, success;
+   bool      abandoned = false, obsolete = false, hasChild = false, doubleChecked, wasParsed, success;
    int32_t   gotTerminator, completedTests;
    result_t  mainTestResult;
    int32_t   ii;
@@ -222,6 +228,8 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
                                "   and TestID = ?";
 
    gotTerminator = false;
+
+   ip_Log->LogMessage("Processing a Prime work unit\n");
    theMessage = ip_Socket->Receive(1);
    while (theMessage)
    {
@@ -264,7 +272,14 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
          }
 
          if (hasChild)
+         {
             wasParsed = ip_TestResult[ii_TestResults-1]->ProcessChildMessage(theMessage);
+            if (BadProgramVersion(ip_TestResult[ii_TestResults-1]->GetProgramVersion()))
+            {
+               ip_Log->LogMessage("%d: Obsolete version (%s) of program (%s) used: [%s]", ip_Socket->GetSocketID(), ip_TestResult[ii_TestResults-1]->GetProgramVersion().c_str(), ip_TestResult[ii_TestResults-1]->GetProgram().c_str(), theMessage);
+               obsolete = true;
+            }
+         }
          else
             wasParsed = ip_TestResult[ii_TestResults-1]->ProcessMessage(theMessage);
 
@@ -282,11 +297,12 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    if (!gotTerminator)
       return CT_MISSING_TERMINATOR;
 
-   // Delete the test if abandoned of if the client has round-off errors
-   if (abandoned || ip_TestResult[0]->HadRoundOffError())
+   // Delete the test if abandoned or if the client has round-off errors
+   // Or if the task was done by an application version we don't trust
+   if (abandoned || ip_TestResult[0]->HadRoundOffError() || obsolete)
    {
       if (AbandonTest(candidateName, testID))
-         return CT_ABANDONED;
+         return abandoned ? CT_ABANDONED : CT_OBSOLETE;
       else
          return CT_SQL_ERROR;
    }
@@ -417,4 +433,16 @@ bool     PrimeWorkReceiver::AbandonTest(string candidateName, int64_t testID)
    }
 
    return success;
+}
+
+bool     PrimeWorkReceiver::BadProgramVersion(string version)
+{
+   // Genefer 3.2.0beta-0 was buggy, so block it.  Anything else is fine.
+   if (ii_ServerType == ST_GFN)
+   {
+      if (version.find("3.2.0beta-0") != string::npos)
+         return true;
+   }
+
+   return false;
 }

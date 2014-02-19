@@ -27,6 +27,8 @@ public:
    bool        HadRoundOffError(void)   { return ib_HadRoundOffError; };
    string      GetResidue(void)         { return is_Residue;          };
    int32_t     GetGFNDivisorCount(void) { return ii_GFNDivisorCount;  };
+   string      GetProgramVersion(void)  { return is_ProgramVersion;   };
+   string      GetProgram(void)         { return is_Program;   };
 
    void        LogResults(int32_t socketID, int32_t completedTests, bool needsDoubleCheck,
                           bool showOnWebPage, double decimalLength);

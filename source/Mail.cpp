@@ -245,7 +245,7 @@ bool     Mail::PrepareMessage(string toEmailID)
          if (!SendHeader("RCPT To:", is_DestID[i].c_str(), 250))
             return false;
 
-   if (!SendHeader("DATA", 0, 354))
+   if (!SendHeader("DATA", "", 354))
       return false;
 
    return true;

@@ -103,7 +103,7 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
       sendWorkUnits = ii_MaxWorkUnits;
       ip_Socket->Send("INFO: Server has a limit of %u work units.", ii_MaxWorkUnits);
    }
-
+   
    if (is_ClientVersion >= "5.0")
       ip_Socket->Send("ServerConfig: %d", (ib_UseLLROverPFGW ? 1 : 0));
    else
@@ -154,6 +154,7 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits, bool oneKPerIn
                            "   and DecimalLength > 0 " \
                            "order by %s limit 100";
 
+   // If not double-checking, then don't return candidates that have a completed test
    if (!ib_NeedsDoubleCheck)
       dcWhere = " and CompletedTests = 0";
 
@@ -386,17 +387,18 @@ bool     PrimeWorkSender::CheckGenefer(string candidateName)
       return true;
 }
 
+// This is only called if double-checking is turned on and at least one time has been done.
 bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalLength, int64_t lastUpdateTime)
 {
    int64_t  diffTime;
    int32_t  jj, count;
-   bool     canDoubleCheck;
+   bool     canDoubleCheck = false;
    SQLStatement *sqlStatement;
-   char     emailID[ID_LENGTH+1], machineID[ID_LENGTH+1];
+   char     emailIDCondition[200], machineIDCondition[200];
    const char *selectSQL = "select count(*) from CandidateTest " \
-                           " where CandidateName = ? " \
-                           "   and EmailID = ? " \
-                           "   and MachineID = ?";
+                           " where CandidateName = ? "
+                           "   % "
+                           "   % ";
 
    diffTime = (int64_t) time(NULL);
    diffTime -= lastUpdateTime;
@@ -405,45 +407,27 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
    while (jj < ii_DelayCount && ip_Delay[jj].maxLength < decimalLength)
       jj++;
 
-   canDoubleCheck = false;
    if (diffTime > ip_Delay[jj].doubleCheckDelay)
    {
-      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
+      strcpy(emailIDCondition, "");
+      strcpy(machineIDCondition, "");
+
+      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
+         sprintf(emailIDCondition, "and EmailID = %s", is_EmailID.c_str());
+      
+      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
+         sprintf(machineIDCondition, "and MachineID = %s", is_MachineID.c_str());
+      
+      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, 
+                                      emailIDCondition, machineIDCondition);
+
       sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
-      sqlStatement->BindInputParameter(emailID, ID_LENGTH, false);
-      sqlStatement->BindInputParameter(machineID, ID_LENGTH, false);
       sqlStatement->BindSelectedColumn(&count);
-
-      switch (ii_DoubleChecker)
-      {
-         case DC_DIFFBOTH:
-            strcpy(emailID, is_EmailID.c_str());
-            strcpy(machineID, is_MachineID.c_str());
-            break;
-
-         case DC_DIFFEMAIL:
-            strcpy(emailID, is_EmailID.c_str());
-            strcpy(machineID, " ");
-
-            break;
-         case DC_DIFFMACHINE:
-            strcpy(emailID, " ");
-            strcpy(machineID, is_MachineID.c_str());
-            break;
-
-         default:
-            canDoubleCheck = true;
-     }
-
+      
       sqlStatement->SetInputParameterValue(candidateName, true);
-      sqlStatement->SetInputParameterValue(emailID);
-      sqlStatement->SetInputParameterValue(machineID);
 
-      if (!canDoubleCheck)
-      {
-         if (sqlStatement->FetchRow(true) && count == 0)
-            canDoubleCheck = true;
-      }
+      if (sqlStatement->FetchRow(true) && count == 0)
+         canDoubleCheck = true;
 
       delete sqlStatement;
    }

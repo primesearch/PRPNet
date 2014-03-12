@@ -11,6 +11,7 @@ Version 5.3.0:  September 19, 2013 - New Release
                 specifically the moving of logic from prpserver.cpp to helper
                 classes specific to the server type.
                 Reject results from genefer programs with version "3.2.0beta-0".
+                Fixed issue with determining if a machine or user could double-check.
     prpclient:  Added version reporting for genefer apps.
                 Reject genefer programs with version "3.2.0beta-0".
                 

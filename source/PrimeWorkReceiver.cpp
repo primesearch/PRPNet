@@ -156,8 +156,8 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
          return false;
 
       case CT_OBSOLETE:
-         ip_Socket->Send("INFO:  Test for %s was ignored.  Your application is obsolete and MUST be upgraded", candidateName);
-         ip_Log->LogMessage("%s (%s %s): Ignored test on %s due to obsolete application version",
+         ip_Socket->Send("INFO:  Test for %s was ignored.  Your application and/or prpclient is obsolete and MUST be upgraded", candidateName);
+         ip_Log->LogMessage("%s (%s %s): Ignored test on %s due to obsolete or unknown application version",
                             is_EmailID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str(), candidateName);
          return true;
 
@@ -437,10 +437,12 @@ bool     PrimeWorkReceiver::AbandonTest(string candidateName, int64_t testID)
 
 bool     PrimeWorkReceiver::BadProgramVersion(string version)
 {
-   // Genefer 3.2.0beta-0 was buggy, so block it.  Anything else is fine.
+   // Genefer 3.2.0beta-0 was buggy, so block it.  Any other known version is fine.
    if (ii_ServerType == ST_GFN)
    {
       if (version.find("3.2.0beta-0") != string::npos)
+         return true;
+      if (version.find("unknown") != string::npos)
          return true;
    }
 

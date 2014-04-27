@@ -69,15 +69,16 @@ void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType, 
          exit(-1);
       }
 
+      *ptr = 0;
+      strcpy(prefix, line);
+      *ptr = ':';
+
       workUnitTest = NULL;
       if (serverType == ST_WIEFERICH || serverType == ST_WILSON ||
           serverType == ST_WALLSUNSUN || serverType == ST_WOLSTENHOLME)
           workUnitTest = new WWWWWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, specialThreshhold, ip_TestingProgramFactory);
       else
       {
-         *ptr = 0;
-         strcpy(prefix, line);
-         *ptr = ':';
          if (!strcmp(prefix, MAIN_PREFIX))
             workUnitTest = new MainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory);
 

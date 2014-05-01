@@ -97,12 +97,12 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
       case ST_CULLENWOODALL:
          doubleB = (double) intB;
          doubleN = (double) intN;
-         return log10(doubleB) * doubleN + log10(doubleN) + 1.0;
+         return floor(log10(doubleB) * doubleN + log10(doubleN) + 1.0);
 
       case ST_GFN:
          doubleB = (double) intB;
          doubleN = (double) intN;
-         return log10(doubleB) * doubleN + 1.0;
+         return floor(log10(doubleB) * doubleN + 1.0);
 
       case ST_SIERPINSKIRIESEL:
       case ST_FIXEDBKC:
@@ -112,7 +112,7 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
          doubleK = (double) intK;
          doubleB = (double) intB;
          doubleN = (double) intN;
-         return log10(doubleB) * doubleN + log10(doubleK) + 1.0;
+         return floor(log10(doubleB) * doubleN + log10(doubleK) + 1.0);
    }
 
    return 0.0;

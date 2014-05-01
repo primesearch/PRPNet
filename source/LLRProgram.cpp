@@ -189,8 +189,8 @@ testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
    endOfResidue--;
    if (*endOfResidue == '.') 
    {
-      endOfResidue--;
       *endOfResidue = 0;
+      endOfResidue--;
    }
 
    is_Residue = ptr;

@@ -1,5 +1,13 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.3.1:  May 2, 2014 - Patch Release
+    prpclient:  Fix crash when processing wwww work units.
+                Fix issue where last character of LLR residue was truncated
+                before it was reported.
+                Fix uninitialized variable in the client.
+    prpserver:  Fix an issue with length calculation of candidates.
+    
+
 Version 5.3.0:  September 19, 2013 - New Release
           all:  Cleaned up compiler warnings with sockets.
                 Use PRId64/PRIu64 where needed.

@@ -35,8 +35,6 @@ protected:
    void     LogMessage(WorkUnitTest *parentWorkUnit);
    string   GetResultPrefix(void) { return ""; };
 
-   Log     *ip_Log;
-
    // This represents the number being tested
    int64_t  il_LowerLimit;
    int64_t  il_UpperLimit;

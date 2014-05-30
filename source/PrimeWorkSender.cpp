@@ -395,8 +395,8 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
    char     emailIDCondition[200], machineIDCondition[200];
    const char *selectSQL = "select count(*) from CandidateTest " \
                            " where CandidateName = ? "
-                           "   % "
-                           "   % ";
+                           "   %s "
+                           "   %s ";
 
    diffTime = (int64_t) time(NULL);
    diffTime -= lastUpdateTime;

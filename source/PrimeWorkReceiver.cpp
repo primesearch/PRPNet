@@ -302,7 +302,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    if (abandoned || ip_TestResult[0]->HadRoundOffError() || obsolete)
    {
       if (AbandonTest(candidateName, testID))
-         return abandoned ? CT_ABANDONED : CT_OBSOLETE;
+         return ( abandoned || ip_TestResult[0]->HadRoundOffError() ) ? CT_ABANDONED : CT_OBSOLETE;
       else
          return CT_SQL_ERROR;
    }

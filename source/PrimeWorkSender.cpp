@@ -385,7 +385,7 @@ bool     PrimeWorkSender::CheckGenefer(string candidateName)
       return true;
 }
 
-// This is only called if double-checking is turned on and at least one time has been done.
+// This is only called if double-checking is turned on and at least one test has been done.
 bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalLength, int64_t lastUpdateTime)
 {
    int64_t  diffTime;
@@ -407,6 +407,9 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
 
    if (diffTime > ip_Delay[jj].doubleCheckDelay)
    {
+      if (ii_DoubleChecker == DC_ANY)
+         return true;
+
       strcpy(emailIDCondition, "");
       strcpy(machineIDCondition, "");
 

@@ -843,7 +843,7 @@ void  AllocateWorkClasses(string configFile)
       delete gp_ServerHandler[gi_ServerHandlerCount];
 
       if (gi_ServerHandlerCount == 0)
-         gp_Globals->p_Log->LogMessage("Due to changes int the prpclient.ini file, work classes have been reloaded");
+         gp_Globals->p_Log->LogMessage("Due to changes in the prpclient.ini file, work classes have been reloaded");
    }
 
    gi_ServerHandlerCount = serverIdx;

@@ -1,5 +1,10 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Verison 5.3.2:  July 10, 2014 - Patch Release
+          all:  Add support for x^y+y^x and x^y-y^x searches.
+    prpserver:  Fix an issue with double-checks.
+    
+
 Version 5.3.1:  May 2, 2014 - Patch Release
     prpclient:  Fix crash when processing wwww work units.
                 Fix issue where last character of LLR residue was truncated

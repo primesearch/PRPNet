@@ -26,6 +26,10 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
         sprintf(tempName, "%d^%d%+d", ii_b, ii_n, ii_c);
         break;
 
+      case ST_XYYX:
+         sprintf(tempName, "%d^%d%c%d^%d", ii_b, ii_n, ((ii_c == 1) ? '+' : '-'), ii_n, ii_b);
+         break;
+
       default:
         sprintf(tempName, "%"PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
         break;

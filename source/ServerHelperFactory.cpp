@@ -13,6 +13,7 @@ ServerHelper  *ServerHelperFactory::GetServerHelper(globals_t *globals, DBInterf
       case ST_PRIMORIAL:
       case ST_FACTORIAL:
       case ST_GFN:
+      case ST_XYYX:
       case ST_FIXEDBNC:
       case ST_TWIN:
       case ST_SOPHIEGERMAIN:

@@ -77,7 +77,7 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
       ip_Socket->Send("ERROR:  The client must be version 5.3.0 or greater to use this server.");
       ip_Socket->Send("End of Message");
       return;
-   } 
+   }
 
    if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW)
    {
@@ -530,6 +530,8 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
 
    if (ii_ServerType == ST_GFN)
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %u", candidateName.c_str(), lastUpdateTime, theB, theN);
+   else if (ii_ServerType == ST_XYYX)
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %d %d", candidateName.c_str(), lastUpdateTime, theB, theN, theC);
    else if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %d", candidateName.c_str(), lastUpdateTime, theN, theC);
    else

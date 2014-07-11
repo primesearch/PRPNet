@@ -103,6 +103,11 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
          doubleB = (double) intB;
          doubleN = (double) intN;
          return floor(log10(doubleB) * doubleN + 1.0);
+ 
+      case ST_XYYX:
+         doubleB = (double) intB;
+         doubleN = (double) intN;
+         return floor(log10(doubleB) * doubleN + 1.0);
 
       case ST_SIERPINSKIRIESEL:
       case ST_FIXEDBKC:

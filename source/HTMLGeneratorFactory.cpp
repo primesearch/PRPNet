@@ -5,6 +5,7 @@
 #include "FixedBKCHTML.h"
 #include "FixedBNCHTML.h"
 #include "GFNHTML.h"
+#include "XYYXHTML.h"
 #include "PrimorialHTML.h"
 #include "FactorialHTML.h"
 #include "SophieGermainHTML.h"
@@ -46,6 +47,10 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 
       case ST_FIXEDBKC:
          htmlGenerator = new FixedBKCHTML(globals);
+         break;
+
+      case ST_XYYX:
+         htmlGenerator = new XYYXHTML(globals);
          break;
 
       case ST_WIEFERICH:

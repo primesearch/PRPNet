@@ -944,6 +944,12 @@ void     PrimeHTMLGenerator::ServerStatsHeader(sss_t summarizedBy)
       TH_CLMN_HDR("Max B");
    }
 
+   if (summarizedBy == BY_Y)
+   {
+      TH_CLMN_HDR("Min Y");
+      TH_CLMN_HDR("Max Y");
+   }
+
    if (summarizedBy == BY_N)
    {
       TH_CLMN_HDR("Min N");

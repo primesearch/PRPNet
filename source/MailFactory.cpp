@@ -10,6 +10,7 @@ Mail   *MailFactory::GetInstance(globals_t *globals, string smtpServer, int32_t 
    {
       case ST_CULLENWOODALL:
       case ST_GFN:
+      case ST_XYYX:
       case ST_FACTORIAL:
       case ST_PRIMORIAL:
       case ST_SIERPINSKIRIESEL:

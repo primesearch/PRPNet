@@ -178,6 +178,10 @@ testresult_t   PrimeWorkUnitTest::DoPrimalityTest(void)
          return TR_COMPLETED;
 
       case R_PRP:
+         // For XYYX, pfgw cannot prove primality
+         if (ii_ServerType == ST_XYYX)
+            return TR_COMPLETED;
+
          // For GFN, factorials and primorials, don't do primality tests for larger n because
          // they can take days and PFGW does not checkpoint during the primality test.  If PFGW
          // is modified to checkpoint during primality tests, then this could be removed.

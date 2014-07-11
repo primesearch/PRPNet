@@ -43,6 +43,8 @@ static const char *primastring = "$a#+$b";
 
 static const char *gfnstring = "$a^$b+1";
 
+static const char *xyyxstring = "$a^$b$c$b^$a";
+
 #define ABC_UNKNOWN      0
 #define ABC_CW_FBP      11
 #define ABC_CW_FBM      12
@@ -63,6 +65,7 @@ static const char *gfnstring = "$a^$b+1";
 #define ABC_VM          62
 #define ABC_VA          63
 #define ABC_GFN         70
+#define ABC_XYYX        80
 
 #define ABC_PRIMP      101
 #define ABC_PRIMM      102
@@ -151,6 +154,10 @@ int32_t  ABCParser::IsValidFormat(void)
 
    if (ii_ServerType == ST_GFN)
       if (ii_ABCFormat == ABC_GFN)
+         return true;
+   
+   if (ii_ServerType == ST_XYYX)
+      if (ii_ABCFormat == ABC_XYYX)
          return true;
 
    return false;
@@ -309,6 +316,8 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (!strncmp(tempHeader, gfnstring, strlen(gfnstring))) return ABC_GFN;
 
+   if (!strncmp(tempHeader, xyyxstring, strlen(xyyxstring))) return ABC_XYYX;
+
    if (ip_Socket)
       ip_Socket->Send("ERR: ABC file format not supported [%s].\n", tempHeader);
    else
@@ -397,6 +406,10 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
 
       case ST_GFN:
          sprintf(tempName, "%d^%d%+d", ii_theB, ii_theN, ii_theC);
+         break;
+
+      case ST_XYYX:
+         sprintf(tempName, "%d^%d%c%d^%d", ii_theB, ii_theN, ((ii_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
          break;
    }
 
@@ -515,6 +528,11 @@ int32_t  ABCParser::ParseCandidateLine(string abcLine)
       case ABC_GFN:
          if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
          il_theK = ii_theC = 1;
+         return true;
+
+      case ABC_XYYX:
+         if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theN, &ii_theC) != 3) return false;
+         il_theK = 1;
          return true;
    }
    return false;

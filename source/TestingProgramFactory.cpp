@@ -124,7 +124,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
    if (serverType == ST_GFN && ip_GeneferProgram)
       return ip_GeneferProgram;
 
-   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL)
+   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_XYYX)
       return ip_PFGWProgram;
 
    tempB = 2;

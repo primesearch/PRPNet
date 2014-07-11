@@ -2,6 +2,7 @@
 #include "PrimorialStatsUpdater.h"
 #include "FactorialStatsUpdater.h"
 #include "GFNStatsUpdater.h"
+#include "XYYXStatsUpdater.h"
 #include "CullenWoodallStatsUpdater.h"
 #include "FixedBKCStatsUpdater.h"
 #include "FixedBNCStatsUpdater.h"
@@ -21,6 +22,10 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
 
       case ST_GFN:
          theUpdater = new GFNStatsUpdater();
+         break;
+
+      case ST_XYYX:
+         theUpdater = new XYYXStatsUpdater();
          break;
 
       case ST_FACTORIAL:

@@ -26,21 +26,25 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -326,6 +330,8 @@
     <ClCompile Include="WWWWStatsUpdater.cpp" />
     <ClCompile Include="WWWWWorkReceiver.cpp" />
     <ClCompile Include="WWWWWorkSender.cpp" />
+    <ClCompile Include="XYYXHTML.cpp" />
+    <ClCompile Include="XYYXStatsUpdater.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ABCParser.h" />
@@ -385,6 +391,8 @@
     <ClInclude Include="WWWWStatsUpdater.h" />
     <ClInclude Include="WWWWWorkReceiver.h" />
     <ClInclude Include="WWWWWorkSender.h" />
+    <ClInclude Include="XYYXHTML.h" />
+    <ClInclude Include="XYYXStatsUpdater.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -229,7 +229,6 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
 
    gotTerminator = false;
 
-   ip_Log->LogMessage("Processing a Prime work unit\n");
    theMessage = ip_Socket->Receive(1);
    while (theMessage)
    {

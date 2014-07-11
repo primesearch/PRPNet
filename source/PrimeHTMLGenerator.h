@@ -5,7 +5,7 @@
 #include <string>
 #include "HTMLGenerator.h"
 
-typedef enum { BY_K, BY_B, BY_N } sss_t;
+typedef enum { BY_K, BY_B, BY_N, BY_Y } sss_t;
 
 class PrimeHTMLGenerator : public HTMLGenerator
 {

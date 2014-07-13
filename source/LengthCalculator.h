@@ -1,4 +1,4 @@
-#ifndef _LengthCalculator__
+#ifndef _LengthCalculator_
 
 #define _LengthCalculator_
 

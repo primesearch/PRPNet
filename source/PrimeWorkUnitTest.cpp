@@ -250,7 +250,7 @@ testresult_t   PrimeWorkUnitTest::CheckForGFNDivisibility(void)
    TestingProgram   *testingProgram;
    testresult_t      testResult;
 
-   if (ii_b != 2 || ii_c != 1)
+   if (ii_b != 2 || ii_c != 1 || ii_ServerType == ST_XYYX)
    {
       ip_Log->Debug(DEBUG_WORK, "%s is not a Proth number (form k*2^n+1).  GFN divisibility check skipped", is_ChildName.c_str());
       return TR_COMPLETED;

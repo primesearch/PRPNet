@@ -149,7 +149,7 @@ bool  XYYXStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t the
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      sprintf(completedSQL, "(select max(n) from Candidate where b = %d)", theN);
+      sprintf(completedSQL, "(select max(n) from Candidate where b = %d)", theB);
    else
       sprintf(completedSQL, "$null_func$((select max(n) from Candidate where b = %d and c = %d and n < %d), %d)",
               theB, theC, nextToTest, nextToTest);

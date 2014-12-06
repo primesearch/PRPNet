@@ -243,7 +243,7 @@ void  PrimeMail::AppendGFNDivisibilityData(int32_t theB, int32_t theC,
                                            int32_t checkedGFNDivisibility,
                                            string candidateName, string testedNumber)
 {
-   SQLStatement *gfnStatement;
+   SQLStatement *gfnStatement = null;
    bool     foundGFNDivisor;
    char     gfn[50];
    const char *gfnDivisorSelect = "select GFN from CandidateGFNDivisor " \

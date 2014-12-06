@@ -129,7 +129,7 @@ void      WWWWHelperThread::AdminAddRange(void)
       }
 
       // Send keepalive every 256 inserts
-      if (!(ii && 0xff))
+      if (!(ii & 0xff))
          ip_Socket->Send("keepalive");
 
       lowerLimit += rangeSize;

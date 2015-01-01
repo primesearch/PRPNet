@@ -101,6 +101,9 @@ void      PrimeHelperThread::AdminABCFile(void)
          continue;
       }
 
+      if (!memcmp(candidateName.c_str(), "ABC ", 4))
+         continue;
+
       totalEntries++;
 
       if (theC != 1 && theC != -1 && (ii_ServerType == ST_SOPHIEGERMAIN || ii_ServerType == ST_TWIN))

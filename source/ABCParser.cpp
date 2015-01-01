@@ -369,6 +369,15 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          return true;
       }
 
+      if (!memcmp(theMessage, "ABC ", 4))
+      {
+         if (DetermineABCFormat(theMessage) != ii_ABCFormat)
+            return false;
+
+         theName = theMessage;
+         return true;
+      }
+
       if (ii_ABCFormat == ABC_UNKNOWN)
       {
          theC = 0;

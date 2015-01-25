@@ -15,28 +15,28 @@ WorkUnitTestFactory::~WorkUnitTestFactory()
 {
 }
 
-WorkUnitTest *WorkUnitTestFactory::BuildWorkUnitTestList(int32_t serverType, bool useLLROverPFGW, workunit_t *wu)
+WorkUnitTest *WorkUnitTestFactory::BuildWorkUnitTestList(int32_t serverType, workunit_t *wu)
 {
    WorkUnitTest *wuFirst, *wuPrevious, *wuNext;
 
-   wuFirst = new MainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory);
+   wuFirst = new MainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory);
 
    wuPrevious = wuFirst;
 
    if (serverType == ST_TWIN)
    {
-      wuNext = new TwinWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory);
+      wuNext = new TwinWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory);
       wuPrevious->SetNextWorkUnitTest(wuNext);
       wuPrevious = wuNext;
    }
 
    if (serverType == ST_SOPHIEGERMAIN)
    {
-      wuNext = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory, SG_NM1);
+      wuNext = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory, SG_NM1);
       wuPrevious->SetNextWorkUnitTest(wuNext);
       wuPrevious = wuNext;
 
-      wuNext = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory, SG_NP1);
+      wuNext = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory, SG_NP1);
       wuPrevious->SetNextWorkUnitTest(wuNext);
       wuPrevious = wuNext;
    }
@@ -44,7 +44,7 @@ WorkUnitTest *WorkUnitTestFactory::BuildWorkUnitTestList(int32_t serverType, boo
    return wuFirst;
 }
 
-void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType, bool useLLROverPFGW,
+void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType,
                                             workunit_t *wu, int32_t specialThreshhold)
 {
    char          *line, *ptr;
@@ -80,16 +80,16 @@ void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType, 
       else
       {
          if (!strcmp(prefix, MAIN_PREFIX))
-            workUnitTest = new MainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory);
+            workUnitTest = new MainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory);
 
          if (!strcmp(prefix, TWIN_PREFIX))
-            workUnitTest = new TwinWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory);
+            workUnitTest = new TwinWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory);
 
          if (!strcmp(prefix, SGNM1_PREFIX))
-            workUnitTest = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory, SG_NM1);
+            workUnitTest = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory, SG_NM1);
 
          if (!strcmp(prefix, SGNP1_PREFIX))
-            workUnitTest = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, useLLROverPFGW, ip_TestingProgramFactory, SG_NP1);
+            workUnitTest = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory, SG_NP1);
       }
 
       if (!workUnitTest)

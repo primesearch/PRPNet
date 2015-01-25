@@ -14,10 +14,12 @@ ServerHelper  *ServerHelperFactory::GetServerHelper(globals_t *globals, DBInterf
       case ST_FACTORIAL:
       case ST_GFN:
       case ST_XYYX:
+      case ST_GENERIC:
       case ST_FIXEDBNC:
       case ST_TWIN:
       case ST_SOPHIEGERMAIN:
       case ST_FIXEDBKC:
+      case ST_CYCLOTOMIC:
          serverHelper = new PrimeServerHelper(dbInterface, globals->p_Log);
          break;
 

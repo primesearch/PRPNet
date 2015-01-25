@@ -107,13 +107,6 @@ bool     WWWWWorker::GetWork(void)
             wu->m_FirstWorkUnitTest = new WWWWWorkUnitTest(ip_Log, ii_ServerType, is_WorkSuffix, wu,
                                                            ii_SpecialThreshhold, ip_TestingProgramFactory);
             AddWorkUnitToList(wu);
-
-            // As of 5.0.2, the server no longer requires acknowledgement, thus assuming
-            // that the client has the workunit.  If the client doesn't, then the workunit
-            // will expire.  That's better than the alternative, where the client does the
-            // work, but is unable to return it to the server.
-            if (is_ServerVersion >= "4.3" && is_ServerVersion < "5.0.2")
-               ip_Socket->Send("Received: %"PRId64" %"PRId64"", wu->l_LowerLimit, wu->l_UpperLimit); 
          }
          else
          {
@@ -334,7 +327,7 @@ void  WWWWWorker::Load(string saveFileName)
          }
 
          sprintf(wu->s_Name, "%"PRId64"", wu->l_LowerLimit);
-         ip_WorkUnitTestFactory->LoadWorkUnitTest(fPtr, ii_ServerType, false, wu, ii_SpecialThreshhold);
+         ip_WorkUnitTestFactory->LoadWorkUnitTest(fPtr, ii_ServerType, wu, ii_SpecialThreshhold);
          AddWorkUnitToList(wu);
       }
       else if (!memcmp(line, "SpecialThreshhold=", 18))

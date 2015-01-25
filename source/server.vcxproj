@@ -68,16 +68,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\server\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\server\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\server\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\server\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
@@ -92,6 +92,18 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>prpserver32</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>prpserver64</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>prpserver64d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>prpserver32d</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -119,7 +131,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>wsock32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\server\prpserver.exe</OutputFile>
+      <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\Release/prpserver.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -160,7 +172,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>wsock32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\server\prpserver.exe</OutputFile>
+      <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ProgramDatabaseFile>.\Release/prpserver.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -199,7 +211,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>wsock32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\server\prpserver.exe</OutputFile>
+      <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/prpserver.pdb</ProgramDatabaseFile>
@@ -240,7 +252,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>wsock32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\server\prpserver.exe</OutputFile>
+      <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/prpserver.pdb</ProgramDatabaseFile>
@@ -260,6 +272,8 @@
     <ClCompile Include="CandidateTestResult.cpp" />
     <ClCompile Include="CullenWoodallHTML.cpp" />
     <ClCompile Include="CullenWoodallStatsUpdater.cpp" />
+    <ClCompile Include="CyclotomicHTML.cpp" />
+    <ClCompile Include="CyclotomicStatsUpdater.cpp" />
     <ClCompile Include="DBInterface.cpp" />
     <ClCompile Include="FactorialHTML.cpp" />
     <ClCompile Include="FactorialStatsUpdater.cpp" />
@@ -267,6 +281,8 @@
     <ClCompile Include="FixedBKCStatsUpdater.cpp" />
     <ClCompile Include="FixedBNCHTML.cpp" />
     <ClCompile Include="FixedBNCStatsUpdater.cpp" />
+    <ClCompile Include="GenericHTML.cpp" />
+    <ClCompile Include="GenericStatsUpdater.cpp" />
     <ClCompile Include="GFNHTML.cpp" />
     <ClCompile Include="GFNStatsUpdater.cpp" />
     <ClCompile Include="HelperSocket.cpp" />
@@ -338,6 +354,8 @@
     <ClInclude Include="CandidateTestResult.h" />
     <ClInclude Include="CullenWoodallHTML.h" />
     <ClInclude Include="CullenWoodallStatsUpdater.h" />
+    <ClInclude Include="CyclotomicHTML.h" />
+    <ClInclude Include="CyclotomicStatsUpdater.h" />
     <ClInclude Include="DBInterface.h" />
     <ClInclude Include="defs.h" />
     <ClInclude Include="FactorialHTML.h" />
@@ -346,6 +364,8 @@
     <ClInclude Include="FixedBKCStatsUpdater.h" />
     <ClInclude Include="FixedBNCHTML.h" />
     <ClInclude Include="FixedBNCStatsUpdater.h" />
+    <ClInclude Include="GenericHTML.h" />
+    <ClInclude Include="GenericStatsUpdater.h" />
     <ClInclude Include="GFNHTML.h" />
     <ClInclude Include="GFNStatsUpdater.h" />
     <ClInclude Include="HelperSocket.h" />

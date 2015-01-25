@@ -33,7 +33,6 @@ protected:
 private:
    int32_t  ii_ServerType;
    string   is_ServerVersion;
-   bool     ib_UseLLROverPFGW;
 };
 
 #endif // #ifndef _PrimeWorker_

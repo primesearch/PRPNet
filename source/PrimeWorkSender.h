@@ -26,6 +26,8 @@ private:
    bool     ib_HasLLR;
    bool     ib_HasPhrot;
    bool     ib_HasPFGW;
+   bool     ib_HasCyclo;
+   bool     ib_HasAnyGenefer;
    bool     ib_HasGeneferGPU;
    bool     ib_HasGenefx64;
    bool     ib_HasGenefer;

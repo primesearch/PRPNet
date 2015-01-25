@@ -41,7 +41,7 @@ private:
 
    int32_t  DetermineABCFormat(string abcHeader);
 
-   int32_t  ParseCandidateLine(string abcLine);
+   bool     ParseCandidateLine(string abcLine);
 };
 
 #endif // #ifndef _ABCParser_

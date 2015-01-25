@@ -267,6 +267,8 @@ Worker  *ServerHandler::AllocateWorker(int32_t serverType)
       case ST_GFN:
       case ST_XYYX:
       case ST_SOPHIEGERMAIN:
+      case ST_GENERIC:
+      case ST_CYCLOTOMIC:
          return new PrimeWorker(ip_Log, ip_TestingProgramFactory, ip_Socket, ii_MaxWorkUnits, is_WorkSuffix);
 
       default:

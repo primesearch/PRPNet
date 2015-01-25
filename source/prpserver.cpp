@@ -430,6 +430,10 @@ void  ProcessINIFile(string configFile, string &smtpServer)
 
    if (gp_Globals->i_ServerType == ST_SIERPINSKIRIESEL && gp_Globals->b_OneKPerInstance)
       gp_Globals->s_SortSequence = "k,n,b,c";
+
+   if (gp_Globals->i_ServerType == ST_GENERIC)
+      gp_Globals->s_SortSequence = "a";
+
 }
 
 void     ReprocessINIFile(string configFile)
@@ -572,6 +576,8 @@ bool     ValidateConfiguration(string smtpServer)
        gp_Globals->i_ServerType != ST_GFN           &&
        gp_Globals->i_ServerType != ST_XYYX          &&
        gp_Globals->i_ServerType != ST_SOPHIEGERMAIN &&
+       gp_Globals->i_ServerType != ST_CYCLOTOMIC    &&
+       gp_Globals->i_ServerType != ST_GENERIC       &&
        gp_Globals->i_ServerType != ST_WIEFERICH     &&
        gp_Globals->i_ServerType != ST_WILSON        &&
        gp_Globals->i_ServerType != ST_WALLSUNSUN    &&
@@ -626,7 +632,7 @@ bool     ValidateConfiguration(string smtpServer)
                gp_Globals->s_SortSequence += "LastUpdateTime";
                break;
             case 'B':
-               gp_Globals->s_SortSequence += "b";
+               gp_Globals->s_SortSequence += "abs(b)";
                break;
             case 'K':
                gp_Globals->s_SortSequence += "k";
@@ -635,7 +641,7 @@ bool     ValidateConfiguration(string smtpServer)
                gp_Globals->s_SortSequence += "n";
                break;
             case 'C':
-               gp_Globals->s_SortSequence += "c";
+               gp_Globals->s_SortSequence += "abs(c)";
                break;
             default:
                printf("sortoption %c is invalid. It will be ignored.\n", *ptr);

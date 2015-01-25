@@ -17,8 +17,8 @@ PrimeWorkSender::PrimeWorkSender(DBInterface *dbInterface, Socket *theSocket, gl
    ii_DelayCount = globals->i_DelayCount;
    ip_Delay = globals->p_Delay;
 
-   ib_HasLLR = ib_HasPhrot = ib_HasPFGW = false;
-   ib_HasGeneferGPU = false; ib_HasGenefx64 = ib_HasGenefer = ib_HasGenefer80bit = false;
+   ib_HasLLR = ib_HasPhrot = ib_HasPFGW = ib_HasCyclo = false;
+   ib_HasAnyGenefer = ib_HasGeneferGPU = false; ib_HasGenefx64 = ib_HasGenefer = ib_HasGenefer80bit = false;
    while (true)
    {
       readBuf = ip_Socket->Receive();
@@ -32,14 +32,16 @@ PrimeWorkSender::PrimeWorkSender(DBInterface *dbInterface, Socket *theSocket, gl
          ib_HasPhrot = true;
       if (!memcmp(readBuf, "pfgw", 4))
          ib_HasPFGW = true;
+      if (!memcmp(readBuf, "cyclo", 5))
+         ib_HasCyclo = true;
       if (!strcmp(readBuf, GENEFER_cuda) || !strcmp(readBuf, GENEFER_OpenCL))
-         ib_HasGeneferGPU = true;
+         ib_HasAnyGenefer = ib_HasGeneferGPU = true;
       if (!strcmp(readBuf, GENEFER_x64))
-         ib_HasGenefx64 = true;
+         ib_HasAnyGenefer = ib_HasGenefx64 = true;
       if (!strcmp(readBuf, GENEFER))
-         ib_HasGenefer = true;
+         ib_HasAnyGenefer = ib_HasGenefer = true;
       if (!strcmp(readBuf, GENEFER_80bit))
-         ib_HasGenefer80bit = true;
+         ib_HasAnyGenefer = ib_HasGenefer80bit = true;
 
       if (!memcmp(readBuf, "End of Message", 14))
          break;
@@ -79,22 +81,33 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
       return;
    }
 
-   if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW)
+   if (ii_ServerType == ST_CYCLOTOMIC)
    {
-		if (ii_ServerType != ST_GFN)
-		{
+      if (!ib_HasCyclo && !ib_HasPFGW)
+      {
+         ip_Socket->Send("ERROR:  The client must run cyclo or pfgw to use this server.");
+         ip_Socket->Send("End of Message");
+         return;
+      }
+   }
+   else if (ii_ServerType == ST_GFN)
+   {
+      if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW && !ib_HasAnyGenefer)
+      {
+         ip_Socket->Send("ERROR:  The client must run Genefer, LLR, PFGW, or Phrot to use this server.");
+         ip_Socket->Send("End of Message");
+         return;
+      }
+   }
+   else
+   {
+      if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW)
+      {
 			ip_Socket->Send("ERROR:  The client must run LLR, PFGW, or Phrot to use this server.");
 			ip_Socket->Send("End of Message");
 			return;
-		}
-		
-		if (!ib_HasGeneferGPU && !ib_HasGenefx64 && !ib_HasGenefer && !ib_HasGenefer80bit)
-	   {
-			ip_Socket->Send("ERROR:  The client must run Genefer, LLR, PFGW, or Phrot to use this server.");
-			ip_Socket->Send("End of Message");
-			return;
-		}
-	}
+	   }
+   }
 
    if (sendWorkUnits > ii_MaxWorkUnits)
    {
@@ -102,10 +115,7 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
       ip_Socket->Send("INFO: Server has a limit of %u work units.", ii_MaxWorkUnits);
    }
    
-   if (is_ClientVersion >= "5.0")
-      ip_Socket->Send("ServerConfig: %d", (ib_UseLLROverPFGW ? 1 : 0));
-   else
-      ip_Socket->Send("ServerInfo: %d %s %d", ii_ServerType, PRPNET_VERSION, (ib_UseLLROverPFGW ? 1 : 0));
+   ip_Socket->Send("ServerConfig: %d", (ib_UseLLROverPFGW ? 1 : 0));
 
    sentWorkUnits = ib_NoNewWork ? 0 : SelectCandidates(sendWorkUnits, ib_OneKPerInstance);
 
@@ -499,7 +509,6 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
 {
    int64_t  lastUpdateTime;
    bool     sent;
-   char     goodMessage[100], *readBuf;
    SQLStatement *sqlStatement;
    SharedMemoryItem *threadWaiter;
    const char *insertSQL = "insert into CandidateTest " \
@@ -529,24 +538,17 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
    threadWaiter->Lock();
 
    if (ii_ServerType == ST_GFN)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %u", candidateName.c_str(), lastUpdateTime, theB, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theB, theN);
    else if (ii_ServerType == ST_XYYX)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %d %d", candidateName.c_str(), lastUpdateTime, theB, theN, theC);
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %d %u %d", candidateName.c_str(), lastUpdateTime, theB, theN, theC);
+   else if (ii_ServerType == ST_GENERIC)
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64"", candidateName.c_str(), lastUpdateTime);
    else if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %d", candidateName.c_str(), lastUpdateTime, theN, theC);
+   else if (ii_ServerType == ST_CYCLOTOMIC)
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
    else
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %u %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
-
-   sprintf(goodMessage, "Received: %s", candidateName.c_str());
-   if (is_ClientVersion < "5.0.2") readBuf = ip_Socket->Receive(10);
-
-   // Assume that the client got the workunit.  If the client didn't get the work, then
-   // we are better off expiring it.  The alternative is that the client get the work,
-   // and the server doesn't get the acknowledgement. This means that the client will
-   // do the work, but not be able to return it.
-
-   //if (!readBuf || strcmp(readBuf, goodMessage))
-   //   sent = false;
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
 
    threadWaiter->Release();
 

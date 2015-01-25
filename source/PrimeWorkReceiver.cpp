@@ -77,7 +77,7 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
    char     candidateName[NAME_LENGTH+1];
    char     tempMessage[BUFFER_SIZE];
    int64_t  testID;
-   int32_t  isCompleted, returnCode;
+   int32_t  isCompleted, returnCode, genericDecimalLength = -1;
    bool     success;
    SQLStatement  *sqlStatement;
    const char    *selectSQL = "select IsCompleted from CandidateTest " \
@@ -85,10 +85,21 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
                               "   and TestID = ?";
    
    strcpy(tempMessage, theMessage.c_str());
-   if (sscanf(tempMessage, "WorkUnit: %s %"PRId64"", candidateName, &testID) != 2)
+   if (ii_ServerType == ST_GENERIC)
    {
-      ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
-      return false;
+      if (sscanf(tempMessage, "WorkUnit: %s %"PRId64" %d", candidateName, &testID, &genericDecimalLength) != 3)
+      {
+         ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
+         return false;
+      }
+   }
+   else
+   {
+      if (sscanf(tempMessage, "WorkUnit: %s %"PRId64"", candidateName, &testID) != 2)
+      {
+         ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
+         return false;
+      }
    }
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
@@ -96,6 +107,10 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
    sqlStatement->BindInputParameter(testID);
    sqlStatement->BindSelectedColumn(&isCompleted);
    success = sqlStatement->FetchRow(true);
+
+   if (sqlStatement->GetRowsAffected() == 0)
+      success = false;
+
    delete sqlStatement;
 
    // Verify whether or not the test exists.  It might have expired or the client
@@ -121,7 +136,7 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
       return false;
    }
 
-   returnCode = ReceiveWorkUnit(candidateName, testID, is_ClientVersion);
+   returnCode = ReceiveWorkUnit(candidateName, testID, genericDecimalLength, is_ClientVersion);
 
    switch (returnCode)
    {
@@ -181,13 +196,13 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
    return false;
 }
 
-int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string candidateName, int64_t testID, string clientVersion)
+int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string candidateName, int64_t testID, int32_t genericDecimalLength, string clientVersion)
 {
    int32_t  ii, returnCode;
 
    ii_TestResults = 0;
 
-   returnCode = ProcessWorkUnit(candidateName, testID, clientVersion);
+   returnCode = ProcessWorkUnit(candidateName, testID, genericDecimalLength, clientVersion);
 
    for (ii=0; ii<ii_TestResults; ii++)
       delete ip_TestResult[ii];
@@ -200,7 +215,7 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string candidateName, int64_t testID
    return returnCode;
 }
 
-int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID, string clientVersion)
+int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID, int32_t genericDecimalLength, string clientVersion)
 {
    char     *theMessage, theName[50];
    int64_t   endTestID;
@@ -219,6 +234,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
                            "       CompletedTests = CompletedTests + 1, " \
                            "       MainTestResult = ?, " \
                            "       DoubleChecked = ?, " \
+                           "       DecimalLength = ?, " \
                            "       LastUpdateTime = ? " \
                            " where CandidateName = ?";
    const char *updateTestSQL = "update CandidateTest " \
@@ -328,6 +344,11 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL);
    sqlStatement->BindInputParameter(mainTestResult);
    sqlStatement->BindInputParameter(doubleChecked);
+   if (ii_ServerType == ST_GENERIC)
+      sqlStatement->BindInputParameter((double) genericDecimalLength);
+   else
+      sqlStatement->BindInputParameter(decimalLength);
+
    sqlStatement->BindInputParameter((int64_t) time(NULL));
    sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
 

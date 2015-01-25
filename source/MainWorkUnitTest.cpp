@@ -1,9 +1,8 @@
 #include "MainWorkUnitTest.h"
 
 MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workSuffix,
-                                   workunit_t *wu, bool useLLROverPFGW,
-                                   TestingProgramFactory *testingProgramFactory)
-            : PrimeWorkUnitTest(theLog, serverType, workSuffix, wu, useLLROverPFGW, testingProgramFactory)
+                                   workunit_t *wu, TestingProgramFactory *testingProgramFactory)
+            : PrimeWorkUnitTest(theLog, serverType, workSuffix, wu, testingProgramFactory)
 {
    char  tempName[200];
 
@@ -28,6 +27,11 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
 
       case ST_XYYX:
          sprintf(tempName, "%d^%d%c%d^%d", ii_b, ii_n, ((ii_c == 1) ? '+' : '-'), ii_n, ii_b);
+         break;
+
+      case ST_GENERIC:
+      case ST_CYCLOTOMIC:
+         sprintf(tempName, wu->s_Name);
          break;
 
       default:

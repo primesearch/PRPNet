@@ -577,6 +577,7 @@ int main(int argc, char *argv[])
       RemoveTempFiles("*.pfr");
       RemoveTempFiles("phrot.ckpt");
       RemoveTempFiles("genefer.ckpt");
+      RemoveTempFiles("cyclo.ckpt");
       RemoveTempFiles("work_*");
       RemoveTempFiles("llr.ini");
       RemoveTempFiles("phrot.ini");

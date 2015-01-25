@@ -114,7 +114,10 @@ void      PrimeHelperThread::AdminABCFile(void)
 
          if (selectStatement->FetchRow(true) && countFound == 0)
          {
-            decimalLength = lengthCalculator->CalculateDecimalLength(theK, theB, theN);
+            if (ii_ServerType == ST_GENERIC)
+               decimalLength = 0.0;
+            else
+               decimalLength = lengthCalculator->CalculateDecimalLength(theK, theB, theN);
 
             if (!su->InsertCandidate(candidateName, theK, theB, theN, theC, decimalLength))
                failedInserts++;
@@ -149,7 +152,9 @@ void      PrimeHelperThread::AdminABCFile(void)
       fflush(stdout);
    }
 
-   lengthCalculator->CalculateDecimalLengths(ip_Socket);
+   if (ii_ServerType == ST_GENERIC)
+      lengthCalculator->CalculateDecimalLengths(ip_Socket);
+
    delete lengthCalculator;
 
    ip_Socket->Send("Total candidates received = %6d", totalEntries);

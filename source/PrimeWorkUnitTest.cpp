@@ -1,13 +1,11 @@
 #include "PrimeWorkUnitTest.h"
 
 PrimeWorkUnitTest::PrimeWorkUnitTest(Log *theLog, int32_t serverType, string workSuffix,
-                                     workunit_t *wu, bool useLLROverPFGW,
-                                     TestingProgramFactory *testingProgramFactory)
+                                     workunit_t *wu, TestingProgramFactory *testingProgramFactory)
                                      : WorkUnitTest(theLog, serverType, workSuffix, wu)
 {
    ip_Log = theLog;
    ip_TestingProgramFactory = testingProgramFactory;
-   ib_UseLLROverPFGW = useLLROverPFGW;
    is_ParentName = wu->s_Name;
    is_ChildName = wu->s_Name;
    is_Residue = "notdone";
@@ -23,6 +21,7 @@ PrimeWorkUnitTest::PrimeWorkUnitTest(Log *theLog, int32_t serverType, string wor
    ib_SearchedForGFNDivisors = false;
    ib_HadTestFailure = false;
    id_Seconds = 0.0;
+   ii_DecimalLength = 0;
 }
 
 PrimeWorkUnitTest::~PrimeWorkUnitTest()
@@ -93,11 +92,7 @@ testresult_t   PrimeWorkUnitTest::DoPRPTest(void)
       return TR_COMPLETED;
    }
 
-   if (ib_UseLLROverPFGW)
-      testingProgram = ip_TestingProgramFactory->GetLLRProgram();
-  
-   if (!testingProgram)
-      testingProgram = ip_TestingProgramFactory->GetPRPTestingProgram(ii_ServerType, ii_b);
+   testingProgram = ip_TestingProgramFactory->GetPRPTestingProgram(ii_ServerType, il_k, ii_b, ii_n);
 
    if (!testingProgram)
    {
@@ -137,6 +132,8 @@ testresult_t   PrimeWorkUnitTest::DoPRPTest(void)
    is_Program = testingProgram->GetInternalProgramName();
    is_ProgramVersion = testingProgram->GetProgramVersion();
    is_Residue = testingProgram->GetResidue();
+
+   ii_DecimalLength = testingProgram->GetDecimalLength();
 
    if (testingProgram->IsPRP())
    {
@@ -180,6 +177,10 @@ testresult_t   PrimeWorkUnitTest::DoPrimalityTest(void)
       case R_PRP:
          // For XYYX, pfgw cannot prove primality
          if (ii_ServerType == ST_XYYX)
+            return TR_COMPLETED;
+         
+         // Don't know if pfgw can prove primality, so don't try
+         if (ii_ServerType == ST_GENERIC)
             return TR_COMPLETED;
 
          // For GFN, factorials and primorials, don't do primality tests for larger n because

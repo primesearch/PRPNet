@@ -1,10 +1,9 @@
 #include "SophieGermainWorkUnitTest.h"
 
 SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t serverType, string workSuffix,
-                                   workunit_t *wu, bool useLLROverPFGW,
-                                   TestingProgramFactory *testingProgramFactory, 
+                                   workunit_t *wu, TestingProgramFactory *testingProgramFactory, 
                                    sgtype_t sgType)
-         : PrimeWorkUnitTest(theLog, serverType, workSuffix, wu, useLLROverPFGW, testingProgramFactory)
+         : PrimeWorkUnitTest(theLog, serverType, workSuffix, wu, testingProgramFactory)
 {
    char  tempName[200];
    il_k = wu->l_k;
@@ -18,7 +17,7 @@ SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t server
    ii_c = wu->i_c;
    isg_Type = sgType;
 
-   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_XYYX)
+   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_XYYX || serverType == ST_GENERIC)
    {
       printf("Cannot create Sophie-Germain workunit for servertype %d.  Exiting\n", serverType);
       exit(0);

@@ -19,8 +19,7 @@ class PrimeWorkUnitTest : public WorkUnitTest
 {
 public:
    PrimeWorkUnitTest(Log *theLog, int32_t serverType, string workSuffix,
-                     workunit_t *wu, bool useLLROverPFGW,
-                     TestingProgramFactory *testingProgramFactory);
+                     workunit_t *wu, TestingProgramFactory *testingProgramFactory);
 
    ~PrimeWorkUnitTest();
 
@@ -54,7 +53,6 @@ protected:
    int32_t  ii_c;
 
    bool     ib_HadTestFailure;
-   bool     ib_UseLLROverPFGW;
    bool     ib_SearchedForGFNDivisors;
    gfn_t   *ip_FirstGFN;
 

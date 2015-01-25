@@ -8,6 +8,8 @@
 #include "FixedBNCStatsUpdater.h"
 #include "SierpinskiRieselStatsUpdater.h"
 #include "SophieGermainStatsUpdater.h"
+#include "GenericStatsUpdater.h"
+#include "CyclotomicStatsUpdater.h"
 #include "WWWWStatsUpdater.h"
 
 StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *theLog, int32_t serverType, bool needsDoubleCheck)
@@ -26,6 +28,10 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
 
       case ST_XYYX:
          theUpdater = new XYYXStatsUpdater();
+         break;
+         
+      case ST_GENERIC:
+         theUpdater = new GenericStatsUpdater();
          break;
 
       case ST_FACTORIAL:
@@ -51,6 +57,10 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
 
       case ST_FIXEDBKC:
          theUpdater = new FixedBKCStatsUpdater();
+         break;
+         
+      case ST_CYCLOTOMIC:
+         theUpdater = new CyclotomicStatsUpdater();
          break;
 
       case ST_WIEFERICH:

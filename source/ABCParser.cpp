@@ -43,6 +43,9 @@ static const char *primastring = "$a#+$b";
 
 static const char *gfnstring = "$a^$b+1";
 
+static const char *phiabstring  = "Phi($a,$b)";
+static const char *phiabcstring = "Phi($a,$b^$c)";
+
 static const char *xyyxstring = "$a^$b$c$b^$a";
 
 #define ABC_UNKNOWN      0
@@ -66,6 +69,8 @@ static const char *xyyxstring = "$a^$b$c$b^$a";
 #define ABC_VA          63
 #define ABC_GFN         70
 #define ABC_XYYX        80
+#define ABC_PHI_AB      91
+#define ABC_PHI_ABC     92
 
 #define ABC_PRIMP      101
 #define ABC_PRIMM      102
@@ -73,6 +78,9 @@ static const char *xyyxstring = "$a^$b$c$b^$a";
 #define ABC_FACTP      111
 #define ABC_FACTM      112
 #define ABC_FACTA      113
+
+#define ABC_GENERIC    998
+#define NOT_ABC        999
 
 ABCParser::ABCParser(string fileName)
 {
@@ -159,6 +167,14 @@ int32_t  ABCParser::IsValidFormat(void)
    if (ii_ServerType == ST_XYYX)
       if (ii_ABCFormat == ABC_XYYX)
          return true;
+   
+   if (ii_ServerType == ST_CYCLOTOMIC)
+      if (ii_ABCFormat == ABC_PHI_AB || ii_ABCFormat == ABC_PHI_ABC)
+         return true;
+   
+   if (ii_ServerType == ST_GENERIC)
+      if (ii_ABCFormat == ABC_GENERIC || ii_ABCFormat == NOT_ABC)
+         return true;
 
    return false;
 }
@@ -193,6 +209,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (memcmp(tempHeader, "ABC ", 4))
    {
+      if (ii_ServerType == ST_GENERIC)
+         return NOT_ABC;
+
       if (ip_Socket)
          ip_Socket->Send("ABC header [%s] does not appear to be of the correct format", tempHeader);
       else
@@ -318,6 +337,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (!strncmp(tempHeader, xyyxstring, strlen(xyyxstring))) return ABC_XYYX;
 
+   if (!strncmp(tempHeader, phiabstring, strlen(phiabstring))) return ABC_PHI_AB;
+   if (!strncmp(tempHeader, phiabcstring, strlen(phiabcstring))) return ABC_PHI_ABC;
+
    if (ip_Socket)
       ip_Socket->Send("ERR: ABC file format not supported [%s].\n", tempHeader);
    else
@@ -328,7 +350,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
 int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC)
 {
-   char     abcLine[100], *theMessage;
+   char     abcLine[200], *theMessage;
    char     tempName[BUFFER_SIZE];
 
    if (!ip_ABCFile && !ip_Socket)
@@ -390,6 +412,15 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          theC = 0;
          return true;
       }
+      
+      if (ii_ABCFormat == NOT_ABC)
+      {
+         sprintf(abcLine, theMessage);
+         il_theK = 0;
+         ii_theB = 0;
+         ii_theN = 0;
+         ii_theC = 0;
+      }
    }
 
    switch (ii_ServerType)
@@ -420,6 +451,17 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       case ST_XYYX:
          sprintf(tempName, "%d^%d%c%d^%d", ii_theB, ii_theN, ((ii_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
          break;
+         
+      case ST_CYCLOTOMIC:
+         if (ii_theN == 1)
+            sprintf(tempName, "Phi(%"PRId64",%d)", il_theK, ii_theB);
+         else
+            sprintf(tempName, "Phi(%"PRId64",%d^%d)", il_theK, ii_theB, ii_theN);
+         break;
+
+       case NOT_ABC:
+          if (ii_ABCFormat == NOT_ABC)
+             sprintf(tempName, abcLine);
    }
 
    theK = il_theK;
@@ -431,11 +473,14 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
    return true;
 }
 
-int32_t  ABCParser::ParseCandidateLine(string abcLine)
+bool  ABCParser::ParseCandidateLine(string abcLine)
 {
    char tempLine[200];
 
    strcpy(tempLine, abcLine.c_str());
+
+   if (ii_ABCFormat == NOT_ABC)
+      return true;
 
    switch (ii_ABCFormat)
    {
@@ -542,6 +587,16 @@ int32_t  ABCParser::ParseCandidateLine(string abcLine)
       case ABC_XYYX:
          if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theN, &ii_theC) != 3) return false;
          il_theK = 1;
+         return true;
+
+      case ABC_PHI_AB:
+         if (sscanf(tempLine, "%"PRId64" %d", &il_theK, &ii_theB) != 2) return false;
+         ii_theC = ii_theN = 1;
+         return true;
+
+      case ABC_PHI_ABC:
+         if (sscanf(tempLine, "%"PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
+         ii_theC = 1;
          return true;
    }
    return false;

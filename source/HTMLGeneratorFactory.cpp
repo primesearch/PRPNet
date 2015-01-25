@@ -9,6 +9,8 @@
 #include "PrimorialHTML.h"
 #include "FactorialHTML.h"
 #include "SophieGermainHTML.h"
+#include "CyclotomicHTML.h"
+#include "GenericHTML.h"
 
 HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 {
@@ -51,6 +53,14 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 
       case ST_XYYX:
          htmlGenerator = new XYYXHTML(globals);
+         break;
+         
+      case ST_CYCLOTOMIC:
+         htmlGenerator = new CyclotomicHTML(globals);
+         break;
+
+      case ST_GENERIC:
+         htmlGenerator = new GenericHTML(globals);
          break;
 
       case ST_WIEFERICH:

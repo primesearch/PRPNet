@@ -8,8 +8,7 @@ class MainWorkUnitTest : public PrimeWorkUnitTest
 {
 public:
    MainWorkUnitTest(Log *theLog, int32_t serverType, string workSuffix,
-                    workunit_t *wu, bool useLLROverPFGW,
-                    TestingProgramFactory *testingProgramFactory);
+                    workunit_t *wu, TestingProgramFactory *testingProgramFactory);
 
    ~MainWorkUnitTest();
 

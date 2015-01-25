@@ -23,9 +23,9 @@ private:
    int32_t     ii_TestResults;
    CandidateTestResult *ip_TestResult[10];
 
-   int32_t     ReceiveWorkUnit(string candidateName, int64_t testID, string clientVersion);
+   int32_t     ReceiveWorkUnit(string candidateName, int64_t testID, int32_t genericDecimalLength, string clientVersion);
 
-   int32_t     ProcessWorkUnit(string candidateName, int64_t testID, string clientVersion);
+   int32_t     ProcessWorkUnit(string candidateName, int64_t testID, int32_t genericDecimalLength, string clientVersion);
 
    bool        CheckDoubleCheck(string candidateName, string residue);
 

@@ -269,7 +269,6 @@ bool     WWWWWorkSender::SendWork(int64_t lowerLimit, int64_t upperLimit)
 {
    int64_t  lastUpdateTime;
    bool     sent;
-   char     goodMessage[100], *readBuf;
    SQLStatement *sqlStatement;
    SharedMemoryItem *threadWaiter;
    const char *insertSQL = "insert into WWWWRangeTest " \
@@ -301,18 +300,6 @@ bool     WWWWWorkSender::SendWork(int64_t lowerLimit, int64_t upperLimit)
 
    sent = ip_Socket->Send("WorkUnit: %"PRId64" %"PRId64" %"PRId64"",
                           lowerLimit, upperLimit, lastUpdateTime);
-
-   sprintf(goodMessage, "Received: %"PRId64" %"PRId64"", lowerLimit, upperLimit); 
-
-   if (is_ClientVersion < "5.0.2") readBuf = ip_Socket->Receive(10);
-
-   // Assume that the client got the workunit.  If the client didn't get the work, then
-   // we are better off expiring it.  The alternative is that the client get the work,
-   // and the server doesn't get the acknowledgement. This means that the client will
-   // do the work, but not be able to return it.
-
-   //if (!readBuf || strcmp(readBuf, goodMessage)) 
-   //   sent = false; 
 
    threadWaiter->Release();
 

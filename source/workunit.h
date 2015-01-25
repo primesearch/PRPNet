@@ -13,6 +13,7 @@ typedef struct
    int32_t     i_c;
    int64_t     l_LowerLimit;
    int64_t     l_UpperLimit;
+   int32_t     i_DecimalLength;
    bool        b_SRSkipped;
    void       *m_FirstWorkUnitTest;
    void       *m_NextWorkUnit;

@@ -14,9 +14,9 @@ public:
 
    ~WorkUnitTestFactory();
 
-   WorkUnitTest *BuildWorkUnitTestList(int32_t serverType, bool useLLROverPFGW, workunit_t *wu);
+   WorkUnitTest *BuildWorkUnitTestList(int32_t serverType, workunit_t *wu);
 
-   void     LoadWorkUnitTest(FILE *saveFile, int32_t serverType, bool useLLROverPFGW,
+   void     LoadWorkUnitTest(FILE *saveFile, int32_t serverType,
                              workunit_t *wu, int32_t specialThreshhold = 0);
 
 private:

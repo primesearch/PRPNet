@@ -10,7 +10,6 @@ PrimeWorker::PrimeWorker(Log *theLog, TestingProgramFactory *testingProgramFacto
 {
    ii_ServerType = 0;
    is_ServerVersion = "";
-   ib_UseLLROverPFGW = false;
 }
 
 bool  PrimeWorker::ProcessWorkUnit(int32_t &specialsFound, bool inProgressOnly, double &seconds)
@@ -49,6 +48,8 @@ bool  PrimeWorker::ProcessWorkUnit(int32_t &specialsFound, bool inProgressOnly, 
 
    prpTestResult = wuTest->GetWorkUnitTestResult();
 
+   wu->i_DecimalLength = wuTest->GetDecimalLength();
+
    seconds = wuTest->GetSeconds();
 
    if (PRP_OR_PRIME(prpTestResult))
@@ -86,21 +87,15 @@ bool  PrimeWorker::ProcessWorkUnit(int32_t &specialsFound, bool inProgressOnly, 
 bool     PrimeWorker::GetWork(void)
 {
    char       *readBuf;
-   int32_t     endLoop, useLLROverPFGW;
+   int32_t     endLoop;
    int32_t     toScan, wasScanned;
    workunit_t *wu;
-   char        serverVersion[50];
 
    if (ii_CurrentWorkUnits)
       return false;
 
-   // For 5.x and above, get the server version and type from the socket as it
-   // was sent as an acknowledgement when the client connected to the server.
-   if (ip_Socket->GetServerVersion() >= "5.0")
-   {
-      is_ServerVersion = ip_Socket->GetServerVersion();
-      ii_ServerType = ip_Socket->GetServerType();
-   }
+   is_ServerVersion = ip_Socket->GetServerVersion();
+   ii_ServerType = ip_Socket->GetServerType();
 
    ip_Log->LogMessage("%s: Getting work from server %s at port %d",
                       is_WorkSuffix.c_str(), ip_Socket->GetServerName().c_str(), ip_Socket->GetPortID());
@@ -110,7 +105,6 @@ bool     PrimeWorker::GetWork(void)
    ip_Socket->Send("End of Message");
 
    ii_CompletedWorkUnits = ii_CurrentWorkUnits = 0;
-   ib_UseLLROverPFGW = false;
    endLoop = false;
 
    readBuf = ip_Socket->Receive(60);
@@ -122,16 +116,8 @@ bool     PrimeWorker::GetWork(void)
          ;
       else if (!memcmp(readBuf, "ServerConfig: ", 13))
       {
-         // This message is only sent by servers at or above 5.0
-         sscanf(readBuf, "ServerConfig: %d", &useLLROverPFGW);
-         ib_UseLLROverPFGW = (useLLROverPFGW > 0 ? true : false);
-      }
-      else if (!memcmp(readBuf, "ServerInfo: ", 11))
-      {
-         // This message is only sent by servers prior to 5.0
-         sscanf(readBuf, "ServerInfo: %d %s %d", &ii_ServerType, serverVersion, &useLLROverPFGW);
-         is_ServerVersion = serverVersion;
-         ib_UseLLROverPFGW = (useLLROverPFGW == 1 ? true : false);
+         // This message is not used from the client as of 5.4, but we'll 
+         // retain support for it as it might be needed in the future.
       }
       else if (!memcmp(readBuf, "WorkUnit: ", 10))
       {
@@ -161,6 +147,17 @@ bool     PrimeWorker::GetWork(void)
                                 &wu->i_b,
                                 &wu->i_n);
          }
+         else if (ii_ServerType == ST_CYCLOTOMIC)
+         {
+            toScan = 5;
+            wu->i_c = 1;
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %"PRIu64" %"PRIu64" %d %u",
+                                 wu->s_Name,
+                                &wu->l_TestID,
+                                &wu->l_k,
+                                &wu->i_b,
+                                &wu->i_n);
+         }
          else if (ii_ServerType == ST_XYYX)
          {
             toScan = 5;
@@ -171,6 +168,17 @@ bool     PrimeWorker::GetWork(void)
                                 &wu->i_b,
                                 &wu->i_n,
                                 &wu->i_c);
+         }
+         else if (ii_ServerType == ST_GENERIC)
+         {
+            toScan = 2;
+            wu->l_k = 1;
+            wu->i_b = 1;
+            wu->i_n = 1;
+            wu->i_c = 1;
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %"PRIu64"",
+                                 wu->s_Name,
+                                &wu->l_TestID);
          }
          else
          {
@@ -185,15 +193,8 @@ bool     PrimeWorker::GetWork(void)
          }
          if (toScan == wasScanned)
          {
-            wu->m_FirstWorkUnitTest = ip_WorkUnitTestFactory->BuildWorkUnitTestList(ii_ServerType, ib_UseLLROverPFGW, wu);
+            wu->m_FirstWorkUnitTest = ip_WorkUnitTestFactory->BuildWorkUnitTestList(ii_ServerType, wu);
             AddWorkUnitToList(wu);
-
-            // As of 5.0.2, the server no longer requires acknowledgement, thus assuming
-            // that the client has the workunit.  If the client doesn't, then the workunit
-            // will expire.  That's better than the alternative, where the client does the
-            // work, but is unable to return it to the server.
-            if (is_ServerVersion >= "4.3" && is_ServerVersion < "5.0.2")
-               ip_Socket->Send("Received: %s", wu->s_Name); 
          }
          else
          {
@@ -304,8 +305,11 @@ bool  PrimeWorker::ReturnWorkUnit(workunit_t *wu, bool completed)
 
    wuTest = (PrimeWorkUnitTest *) wu->m_FirstWorkUnitTest;
    ip_Socket->StartBuffering();
-
-   ip_Socket->Send("WorkUnit: %s %"PRIu64"", wu->s_Name, wu->l_TestID);
+   
+   if (ii_ServerType == ST_GENERIC)
+      ip_Socket->Send("WorkUnit: %s %"PRIu64" %d", wu->s_Name, wu->l_TestID, wu->i_DecimalLength);
+   else
+      ip_Socket->Send("WorkUnit: %s %"PRIu64"", wu->s_Name, wu->l_TestID);
 
    if (!completed || wu->b_SRSkipped)
       ip_Socket->Send("Test Abandoned");
@@ -345,9 +349,6 @@ void  PrimeWorker::Save(FILE *fPtr)
 
    fprintf(fPtr, "ServerVersion=%s\n", is_ServerVersion.c_str());
    fprintf(fPtr, "ServerType=%d\n", ii_ServerType);
-
-   if (ib_UseLLROverPFGW)
-      fprintf(fPtr, "UseLLROverPFGW=1\n");
 
    ii_CurrentWorkUnits = ii_CompletedWorkUnits = 0;
    wu = ip_FirstWorkUnit;
@@ -391,7 +392,6 @@ void  PrimeWorker::Load(string saveFileName)
    }
 
    ii_ServerType = 0;
-   ib_UseLLROverPFGW = false;
 
    while (fgets(line, BUFFER_SIZE, fPtr) != NULL)
    {
@@ -415,15 +415,13 @@ void  PrimeWorker::Load(string saveFileName)
             exit(-1);
          }
 
-         ip_WorkUnitTestFactory->LoadWorkUnitTest(fPtr, ii_ServerType, ib_UseLLROverPFGW, wu);
+         ip_WorkUnitTestFactory->LoadWorkUnitTest(fPtr, ii_ServerType, wu);
          AddWorkUnitToList(wu);
       }
       else if (!memcmp(line, "ServerType=", 11))
          ii_ServerType = atol(line+11);
       else if (!memcmp(line, "ServerVersion=", 14))
          is_ServerVersion = line+14;
-      else if (!memcmp(line, "UseLLROverPFGW=", 15))
-         ib_UseLLROverPFGW = (atol(line+15) == 0 ? false : true);
    }
 
    fclose(fPtr);

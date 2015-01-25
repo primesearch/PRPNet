@@ -17,11 +17,12 @@ if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
 HTMLOBJECTS=HTMLGeneratorFactory.o PrimeHTMLGenerator.o CullenWoodallHTML.o \
 	SierpinskiRieselHTML.o FixedBKCHTML.o FixedBNCHTML.o GFNHTML.o XYYXHTML.o \
 	PrimorialHTML.o FactorialHTML.o SophieGermainHTML.o WWWWHTMLGenerator.o \
-   HTMLGenerator.o
+   CycloHTMLGenerator.o GenericHTMLGenerator.o HTMLGenerator.o
 STATSOBJECTS=StatsUpdaterFactory.o StatsUpdater.o FactorialStatsUpdater.o \
 	PrimorialStatsUpdater.o FixedBKCStatsUpdater.o FixedBNCStatsUpdater.o \
 	GFNStatsUpdater.o SierpinskiRieselStatsUpdater.o CullenWoodallStatsUpdater.o \
-	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o XYYXStatsUpdater.o
+	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o XYYXStatsUpdater.o \
+	CycloStatsUpdater.o GenericStatsUpdater.o
 MAILOBJECTS=MailFactory.o Mail.o PrimeMail.o WWWWMail.o
 HELPEROBJECTS=ServerHelperFactory.o PrimeServerHelper.o WWWWServerHelper.o
 SOCKETOBJECTS=Socket.o ServerSocket.o MailSocket.o HelperSocket.o
@@ -30,7 +31,7 @@ THREADOBJECTS=SharedMemoryItem.o ServerThread.o HelperThread.o WorkSender.o Work
 	PrimeWorkSender.o WWWWWorkSender.o PrimeWorkReceiver.o WWWWWorkReceiver.o \
 	PrimeHelperThread.o WWWWHelperThread.o CandidateTestResult.o KeepAliveThread.o
 PROGRAMOBJECTS=TestingProgram.o TestingProgramFactory.o PFGWProgram.o LLRProgram.o \
-	PhrotProgram.o GeneferProgram.o WWWWProgram.o
+	PhrotProgram.o GeneferProgram.o WWWWProgram.o CycloProgram.o
 WORKEROBJECTS=ServerHandler.o Worker.o PrimeWorker.o WWWWWorker.o
 WORKUNITOBJECTS=WorkUnitTestFactory.o WorkUnitTest.o MainWorkUnitTest.o \
 	TwinWorkUnitTest.o SophieGermainWorkUnitTest.o WWWWWorkUnitTest.o PrimeWorkUnitTest.o

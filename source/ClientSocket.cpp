@@ -61,13 +61,13 @@ bool     ClientSocket::Open(string emailID, string userID, string machineID, str
       return false;
    }
 
-   // The server version was added to the response in 5.0
-   is_ServerVersion = "4.x";
-   ii_ServerType = 0;
-
-   if (strlen(readBuf) > 20)
-      if (sscanf(readBuf, "Connected to server %s %d", serverVersion, &ii_ServerType) == 2)
-         is_ServerVersion = serverVersion;
+   if (sscanf(readBuf, "Connected to server %s %d", serverVersion, &ii_ServerType) != 2)
+   {
+      ip_Log->LogMessage("Could not determine server type for %s.  Will try again later.", is_ServerName.c_str());
+      return false;
+   }
+   
+   is_ServerVersion = serverVersion;
 
    return true;
 }

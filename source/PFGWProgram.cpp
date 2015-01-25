@@ -41,7 +41,10 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    fclose(fp);
 
    aValue = (testType == TT_GFN ? 2 : 0);
-   sign = ((ii_c > 0) ? 'm' : 'p');
+   if (ii_ServerType == ST_CYCLOTOMIC)
+      sign = 'm';
+   else
+      sign = ((ii_c > 0) ? 'm' : 'p');
    normalPriority = (char *) (ii_NormalPriority ? "-N" : "");
 
    do
@@ -57,6 +60,9 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
 
       unlink(is_OutFileName.c_str());
 
+      if (ii_ServerType == ST_GENERIC)
+         DetermineDecimalLength();
+
       switch (testType)
       {
          case TT_PRP:
@@ -68,8 +74,12 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
             // Use -e to increase likelihood that PFGW will get to 33% factorization, which
             // is necessary for a primality proof.  This is an issue with GFNs which tend to
             // have large bases.
-            sprintf(command, "%s -k -f0 %s -a%d -e%d -t%c -l%s %s",
-                    is_ExeName.c_str(), normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
+            if (ii_ServerType == ST_CYCLOTOMIC)
+               sprintf(command, "%s -k -f0 %s -a%d -t%c -l%s %s",
+                       is_ExeName.c_str(), normalPriority, aValue, sign, is_OutFileName.c_str(), is_InFileName.c_str());
+            else
+               sprintf(command, "%s -k -f0 %s -a%d -e%d -t%c -l%s %s",
+                       is_ExeName.c_str(), normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          case TT_GFN:
@@ -332,4 +342,59 @@ void  PFGWProgram::DetermineVersion(void)
    *ptr2 = 0;
 
    is_ProgramVersion = ptr1+8;
+}
+
+void  PFGWProgram::DetermineDecimalLength(void)
+{
+   char        command[200];
+   char        line[10000], fileName[30], *ptr;
+   FILE       *fp;
+   int         tryCount = 0;
+
+   sprintf(command, "%s -od -f0 -l%s %s",
+         is_ExeName.c_str(), is_OutFileName.c_str(), is_InFileName.c_str());
+   
+   system(command);
+
+   id_Seconds = 0;
+
+   strcpy(fileName, is_OutFileName.c_str());
+
+   Sleep(100);
+   tryCount = 1;
+   while ((fp = fopen(fileName, "r")) == NULL)
+   {
+      // Try up to five times to open the file before bailing
+      if (tryCount < 5)
+      {
+         Sleep(500);
+         tryCount++;
+      }
+      else
+      {
+         ip_Log->LogMessage("%s: Could not open file [%s] for reading.  Assuming user stopped with ^C",
+                            is_Suffix.c_str(), fileName);
+#ifdef WIN32
+         SetQuitting(1);
+#else
+         raise(SIGINT);
+#endif
+         return;
+      }
+   }
+
+   ptr = fgets(line, sizeof(line), fp);
+   while (ptr)
+   {
+      ii_DecimalLength += strlen(ptr);
+
+      ptr = fgets(line, sizeof(line), fp);
+   }
+   
+   fclose(fp);
+
+   // Exclude the candidate name + the ": " after it in the output
+   if (ii_DecimalLength > 0)
+      ii_DecimalLength -= (is_WorkUnitName.length() + 2);
+
 }

@@ -50,6 +50,8 @@ public:
 
    double      GetSeconds(void) { return id_Seconds; };
 
+   int32_t     GetDecimalLength(void) { return ii_DecimalLength; };
+
    gfn_t      *GetGFNList(void) { return ip_FirstGFN; };
 
    bool        ValidateExe(void);
@@ -82,6 +84,9 @@ protected:
    int32_t     ii_b;
    int32_t     ii_n;
    int32_t     ii_c;
+
+   // Only computed for generic servers
+   int32_t     ii_DecimalLength;
 
    int32_t     ii_NormalPriority;
 

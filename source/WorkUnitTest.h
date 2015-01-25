@@ -29,6 +29,7 @@ public:
    string   GetProgram(void)           { return is_Program;         };
    string   GetProgramVersion(void)    { return is_ProgramVersion;  };
    double   GetSeconds(void)           { return id_Seconds;         };
+   int32_t  GetDecimalLength(void)     { return ii_DecimalLength;   };
 
    virtual bool     TestWorkUnit(WorkUnitTest *masterWorkUnit) { return false; };
    virtual void     SendResults(Socket *theSocket) {};
@@ -51,6 +52,9 @@ protected:
    string   is_ProgramVersion;
    string   is_Program;
    double   id_Seconds;
+
+   // Computed only for generic servers
+   int32_t  ii_DecimalLength;
 
    wutstate_t  iwut_State;
    result_t    iwut_Result;

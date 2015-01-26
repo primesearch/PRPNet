@@ -17,12 +17,12 @@ if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
 HTMLOBJECTS=HTMLGeneratorFactory.o PrimeHTMLGenerator.o CullenWoodallHTML.o \
 	SierpinskiRieselHTML.o FixedBKCHTML.o FixedBNCHTML.o GFNHTML.o XYYXHTML.o \
 	PrimorialHTML.o FactorialHTML.o SophieGermainHTML.o WWWWHTMLGenerator.o \
-   CycloHTMLGenerator.o GenericHTMLGenerator.o HTMLGenerator.o
+   CyclotomicHTML.o GenericHTML.o HTMLGenerator.o
 STATSOBJECTS=StatsUpdaterFactory.o StatsUpdater.o FactorialStatsUpdater.o \
 	PrimorialStatsUpdater.o FixedBKCStatsUpdater.o FixedBNCStatsUpdater.o \
 	GFNStatsUpdater.o SierpinskiRieselStatsUpdater.o CullenWoodallStatsUpdater.o \
 	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o XYYXStatsUpdater.o \
-	CycloStatsUpdater.o GenericStatsUpdater.o
+	CyclotomicStatsUpdater.o GenericStatsUpdater.o
 MAILOBJECTS=MailFactory.o Mail.o PrimeMail.o WWWWMail.o
 HELPEROBJECTS=ServerHelperFactory.o PrimeServerHelper.o WWWWServerHelper.o
 SOCKETOBJECTS=Socket.o ServerSocket.o MailSocket.o HelperSocket.o

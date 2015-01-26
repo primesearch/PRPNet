@@ -94,6 +94,7 @@ bool     WWWWWorker::GetWork(void)
       else if (!memcmp(readBuf, "WorkUnit: ", 10))
       {
          wu = new workunit_t;
+         wu->m_FirstWorkUnitTest = 0;
 
          toScan = 3;
          wasScanned = sscanf(readBuf, "WorkUnit: %"PRId64" %"PRId64" %"PRId64"",
@@ -317,6 +318,7 @@ void  WWWWWorker::Load(string saveFileName)
       else if (!memcmp(line, "Start WorkUnit", 14))
       {
          wu = new workunit_t;
+         wu->m_FirstWorkUnitTest = 0;
          countScanned = sscanf(line, "Start WorkUnit %"PRId64" %"PRId64" %"PRId64"",
                                &wu->l_LowerLimit, &wu->l_UpperLimit, &wu->l_TestID);
 

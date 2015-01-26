@@ -122,6 +122,7 @@ bool     PrimeWorker::GetWork(void)
       else if (!memcmp(readBuf, "WorkUnit: ", 10))
       {
          wu = new workunit_t;
+         wu->m_FirstWorkUnitTest = 0;
          wu->l_k = 0;
          wu->i_b = 0;
          wu->i_c = 0;
@@ -406,6 +407,7 @@ void  PrimeWorker::Load(string saveFileName)
          }
 
          wu = new workunit_t;
+         wu->m_FirstWorkUnitTest = 0;
          countScanned = sscanf(line, "Start WorkUnit %"PRIu64" %s %"PRId64" %d %d %d %d",
                                &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, (int *) &wu->b_SRSkipped);
 

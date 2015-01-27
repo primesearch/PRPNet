@@ -31,7 +31,7 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
 
       case ST_GENERIC:
       case ST_CYCLOTOMIC:
-         sprintf(tempName, wu->s_Name);
+         sprintf(tempName, "%s", wu->s_Name);
          break;
 
       default:

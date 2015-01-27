@@ -31,7 +31,7 @@ bool  PrimeWorker::ProcessWorkUnit(int32_t &specialsFound, bool inProgressOnly, 
    {
       wuTestNext = wuTest->GetNextWorkUnitTest();
 
-      wasCompleted = wuTest->TestWorkUnit((WorkUnitTest *) wu->m_FirstWorkUnitTest);
+      wasCompleted = wuTest->TestWorkUnit(wu->m_FirstWorkUnitTest);
 
       if (!wasCompleted)
       {
@@ -256,7 +256,7 @@ void  PrimeWorker::ReturnWork(uint32_t returnOption)
    accepted = true;
    while (wu)
    {
-      wuNext = (workunit_t *) wu->m_NextWorkUnit;
+      wuNext = wu->m_NextWorkUnit;
       wu->m_NextWorkUnit = 0;
 
       completed = IsWorkUnitCompleted(wu);

@@ -95,10 +95,10 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32
                              "                           where k = CandidateGroupStats.k " \
                              "                             and n = CandidateGroupStats.n " \
                              "                             and HasPendingTest > 0), " \
-                             "       MinInGroup = (select min(b) from Candidate " \
+                             "       MinInGroup = (select min(abs(b)) from Candidate " \
                              "                      where k = CandidateGroupStats.k " \
                              "                        and n = CandidateGroupStats.n), " \
-                             "       MaxInGroup = (select max(b) from Candidate " \
+                             "       MaxInGroup = (select max(abs(b)) from Candidate " \
                              "                      where k = CandidateGroupStats.k " \
                              "                        and n = CandidateGroupStats.n), " \
                              "       CompletedThru = %s, " \
@@ -108,9 +108,9 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32
                              "                               and n = CandidateGroupStats.n " \
                              "                               and MainTestResult > 0) " \
                              " where k = ? and n = ?";
-   const char   *selectNTT = "select $null_func$(min(b), 0) from Candidate " \
+   const char   *selectNTT = "select $null_func$(min(abs(b)), 0) from Candidate " \
                              " where k = ? and n = ? and %s";
-   const char   *selectLE  = "select $null_func$(max(b), 0) from Candidate " \
+   const char   *selectLE  = "select $null_func$(max(abs(b)), 0) from Candidate " \
                              " where k = ? and n = ? " \
                              "   and (CompletedTests > 0 or HasPendingTest = 1)";
 
@@ -151,9 +151,9 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      sprintf(completedSQL, "(select max(b) from Candidate where k = %"PRId64" and n = %d)", theK, theN);
+      sprintf(completedSQL, "(select max(abs(b)) from Candidate where k = %"PRId64" and n = %d)", theK, theN);
    else
-      sprintf(completedSQL, "$null_func$((select max(b) from Candidate where k = %"PRId64" and n = %d and b < %d), %d)",
+      sprintf(completedSQL, "$null_func$((select max(abs(b)) from Candidate where k = %"PRId64" and n = %d and abs(b) < %d), %d)",
               theK, theN, nextToTest, nextToTest);
 
    // Finally, update the group stats

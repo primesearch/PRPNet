@@ -47,7 +47,7 @@ void CyclotomicHTML::ServerStats(void)
       return;
    }
 
-   ServerStatsHeader(BY_N);
+   ServerStatsHeader(BY_B);
 
    do
    {

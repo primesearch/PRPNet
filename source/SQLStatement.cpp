@@ -191,7 +191,8 @@ const char  *SQLStatement::ExpandStatement(void)
       switch (ip_SQLParam[parameterIndex].sqlType)
       {
          case SQL_C_CHAR:
-            substitutedValue = ip_SQLParam[parameterIndex].charValue;
+            sprintf(temp, "\'%s\'", ip_SQLParam[parameterIndex].charValue);
+            substitutedValue = temp;
             break;
          case SQL_C_LONG:
             sprintf(temp, "%d", ip_SQLParam[parameterIndex].int32Value);

@@ -191,5 +191,9 @@ void  CycloProgram::DetermineVersion(void)
       printf("Could not determine version of cyclo being used.  Missing version data\n");
       exit(0);
    }
+   
+   ptr = strchr(veresion, ')');
+   if (ptr) *ptr = 0;
+
    is_ProgramVersion = version;
 }

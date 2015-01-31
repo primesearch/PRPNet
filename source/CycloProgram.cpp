@@ -157,7 +157,7 @@ testresult_t   CycloProgram::ParseTestResults(testtype_t testType)
 void  CycloProgram::DetermineVersion(void)
 {
    char command[200], line[200];
-   char version[20];
+   char version[20], *ptr;
    FILE *fp;
 
    sprintf(command, "%s -v > a.out", is_ExeName.c_str());
@@ -192,7 +192,7 @@ void  CycloProgram::DetermineVersion(void)
       exit(0);
    }
    
-   ptr = strchr(veresion, ')');
+   ptr = strchr(version, ')');
    if (ptr) *ptr = 0;
 
    is_ProgramVersion = version;

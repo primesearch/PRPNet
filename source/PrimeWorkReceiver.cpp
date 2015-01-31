@@ -107,10 +107,6 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
    sqlStatement->BindInputParameter(testID);
    sqlStatement->BindSelectedColumn(&isCompleted);
    success = sqlStatement->FetchRow(true);
-
-   if (sqlStatement->GetRowsAffected() == 0)
-      success = false;
-
    delete sqlStatement;
 
    // Verify whether or not the test exists.  It might have expired or the client

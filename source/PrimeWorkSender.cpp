@@ -435,14 +435,20 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
       sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
 
       if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
-         sqlStatement->BindInputParameter(is_EmailID, NAME_LENGTH);
+         sqlStatement->BindInputParameter(is_EmailID, false);
 
       if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
-         sqlStatement->BindInputParameter(is_MachineID, NAME_LENGTH);
+         sqlStatement->BindInputParameter(is_MachineID, false);
 
       sqlStatement->BindSelectedColumn(&count);
       
       sqlStatement->SetInputParameterValue(candidateName, true);
+
+      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
+         sqlStatement->SetInputParameterValue(is_EmailID, NAME_LENGTH);
+
+      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
+         sqlStatement->SetInputParameterValue(is_MachineID, NAME_LENGTH);
 
       if (sqlStatement->FetchRow(true) && count == 0)
          canDoubleCheck = true;

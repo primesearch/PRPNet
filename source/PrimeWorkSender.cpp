@@ -424,15 +424,22 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
       strcpy(machineIDCondition, "");
 
       if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
-         sprintf(emailIDCondition, "and EmailID = %s", is_EmailID.c_str());
+         sprintf(emailIDCondition, "and EmailID = ?");
       
       if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
-         sprintf(machineIDCondition, "and MachineID = %s", is_MachineID.c_str());
+         sprintf(machineIDCondition, "and MachineID = ?");
       
       sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, 
                                       emailIDCondition, machineIDCondition);
 
       sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
+
+      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
+         sqlStatement->BindInputParameter(is_EmailID, NAME_LENGTH);
+
+      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
+         sqlStatement->BindInputParameter(is_MachineID, NAME_LENGTH);
+
       sqlStatement->BindSelectedColumn(&count);
       
       sqlStatement->SetInputParameterValue(candidateName, true);

@@ -200,7 +200,7 @@ testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
 
 void  LLRProgram::DetermineVersion(void)
 {
-   char  command[200], line[200], *ptr;
+   char  command[200], line[200], *ptr, *ptr2;
    FILE *fp;
 
    sprintf(command, "%s -v > a.out", is_ExeName.c_str());
@@ -234,6 +234,9 @@ void  LLRProgram::DetermineVersion(void)
       printf("Could not determine version of LLR being used.  Missing version data\n");
       exit(0);
    }
+
+   ptr2 = strchr(ptr+8, ',');
+   if (ptr2) *ptr2 = 0;
 
    StripCRLF(ptr + 8);
    is_ProgramVersion = ptr + 8;

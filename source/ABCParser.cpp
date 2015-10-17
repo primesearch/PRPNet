@@ -459,7 +459,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
             sprintf(tempName, "Phi(%"PRId64",%d^%d)", il_theK, ii_theB, ii_theN);
          break;
 
-       case NOT_ABC:
+       case ST_GENERIC:
           if (ii_ABCFormat == NOT_ABC)
              sprintf(tempName, abcLine);
    }

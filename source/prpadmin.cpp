@@ -278,6 +278,9 @@ void  SendABCFile(const char *abcFileName)
       return;
    }
 
+   if (memcmp(readBuf, "ABC ", 4))
+      g_Socket->Send("generic");
+
    StripCRLF(readBuf);
    g_Socket->Send(readBuf);
 

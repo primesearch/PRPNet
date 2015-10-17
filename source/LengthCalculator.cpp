@@ -146,6 +146,9 @@ void     LengthCalculator::CalculateDecimalLengths(Socket *theSocket)
    const char *updateSQL = "update Candidate " \
                            "   set DecimalLength = ?" \
                            " where CandidateName = ?";
+   
+   if (ii_ServerType == ST_GENERIC)
+      return;
 
    selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);

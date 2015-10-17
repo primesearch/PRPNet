@@ -33,7 +33,6 @@ bool  GenericStatsUpdater::RollupGroupStats(bool deleteInsert)
    else
       ip_DBInterface->Commit();
 
-   delete sqlStatement;
    return true;
 }
 

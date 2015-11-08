@@ -62,13 +62,10 @@ void     GenericHTML::ServerStatsHeader(sss_t summarizedBy)
    ip_Socket->Send("<table frame=box align=center border=1 class=sortable><tr class=headercolor>");
 
    TH_CLMN_HDR("Total Candidates");
-
    TH_CLMN_HDR("Count Tested");
    TH_CH_IF_DC("Count DC\'d");
    TH_CLMN_HDR("Count Untested");
    TH_CLMN_HDR("In Progress");
-   TH_CLMN_HDR("Completed Thru");
-   TH_CLMN_HDR("Leading Edge");
    TH_CLMN_HDR("PRPs/Primes");
 
    ip_Socket->Send("</tr>");

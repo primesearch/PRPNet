@@ -347,7 +347,7 @@ void  PFGWProgram::DetermineVersion(void)
 void  PFGWProgram::DetermineDecimalLength(void)
 {
    char        command[200];
-   char        line[10000], fileName[30], *ptr;
+   char        line[10000], fileName[30];
    FILE       *fp;
    int         tryCount = 0, bytes;
 
@@ -383,6 +383,7 @@ void  PFGWProgram::DetermineDecimalLength(void)
       }
    }
 
+   ii_DecimalLength = 0;
    while ((bytes = fread(line, 1, sizeof(line), fp)) > 0)
       ii_DecimalLength += bytes;
    

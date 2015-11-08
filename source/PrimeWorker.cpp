@@ -356,8 +356,8 @@ void  PrimeWorker::Save(FILE *fPtr)
    ip_FirstWorkUnit = 0;
    while (wu)
    {
-      fprintf(fPtr, "Start WorkUnit %"PRIu64" %s %"PRId64" %d %d %d %d\n",
-              wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->i_c, wu->b_SRSkipped);
+      fprintf(fPtr, "Start WorkUnit %"PRIu64" %s %"PRId64" %d %d %d %d %d\n",
+         wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->i_c, wu->b_SRSkipped, wu->i_DecimalLength);
 
       wuNext = (workunit_t *) wu->m_NextWorkUnit;
       wu->m_NextWorkUnit = 0;
@@ -408,10 +408,19 @@ void  PrimeWorker::Load(string saveFileName)
 
          wu = new workunit_t;
          wu->m_FirstWorkUnitTest = 0;
-         countScanned = sscanf(line, "Start WorkUnit %"PRIu64" %s %"PRId64" %d %d %d %d",
-                               &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, (int *) &wu->b_SRSkipped);
+         countScanned = sscanf(line, "Start WorkUnit %"PRIu64" %s %"PRId64" %d %d %d %d %d",
+            &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, (int *) &wu->b_SRSkipped, &wu->i_DecimalLength);
 
-         if (countScanned != 7)
+         if (countScanned == 7)
+         {
+            countScanned = 8;
+            if (ii_ServerType == ST_GENERIC)
+               wu->i_DecimalLength = strlen(wu->s_Name);
+            else
+               wu->i_DecimalLength = 0;
+         }
+
+         if (countScanned != 8)
          {
             printf("'Start WorkUnit' was not in the correct format.  Exiting\n");
             exit(-1);

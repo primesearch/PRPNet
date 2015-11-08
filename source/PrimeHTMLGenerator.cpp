@@ -808,7 +808,8 @@ void     PrimeHTMLGenerator::HeaderPlusLinks(string pageTitle)
 {
    ip_Socket->StartBuffering();
 
-   ip_Socket->Send("<html><head><title>PRPNet %s %s - %s</title>", PRPNET_VERSION, pageTitle.c_str(), is_HTMLTitle.c_str());
+   ip_Socket->Send("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
+   ip_Socket->Send("<title>PRPNet %s %s - %s</title>", PRPNET_VERSION, pageTitle.c_str(), is_HTMLTitle.c_str());
 
    if (is_SortLink.length() > 0)
 		ip_Socket->Send("<script src=\"%s\"></script>", is_SortLink.c_str());

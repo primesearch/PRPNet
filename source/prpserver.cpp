@@ -625,6 +625,9 @@ bool     ValidateConfiguration(string smtpServer)
 
          switch (toupper(*ptr))
          {
+            case 'M':
+               gp_Globals->s_SortSequence += "CandidateName";
+               break;
             case 'L':
                gp_Globals->s_SortSequence += "DecimalLength";
                break;

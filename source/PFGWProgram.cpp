@@ -349,9 +349,9 @@ void  PFGWProgram::DetermineDecimalLength(void)
    char        command[200];
    char        line[10000], fileName[30], *ptr;
    FILE       *fp;
-   int         tryCount = 0;
+   int         tryCount = 0, bytes;
 
-   sprintf(command, "%s -od -f0 -l%s %s",
+   sprintf(command, "%s -k -od -f0 -l%s %s",
          is_ExeName.c_str(), is_OutFileName.c_str(), is_InFileName.c_str());
    
    system(command);
@@ -383,13 +383,8 @@ void  PFGWProgram::DetermineDecimalLength(void)
       }
    }
 
-   ptr = fgets(line, sizeof(line), fp);
-   while (ptr)
-   {
-      ii_DecimalLength += strlen(ptr);
-
-      ptr = fgets(line, sizeof(line), fp);
-   }
+   while ((bytes = fread(line, 1, sizeof(line), fp)) > 0)
+      ii_DecimalLength += bytes;
    
    fclose(fp);
 

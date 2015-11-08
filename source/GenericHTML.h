@@ -11,6 +11,7 @@ public:
 
 private:
    void     ServerStats(void);
+   void     ServerStatsHeader(sss_t summarizedBy);
 };
 
 #endif // #ifndef _GenericHTML_

@@ -429,11 +429,10 @@ void  ProcessINIFile(string configFile, string &smtpServer)
    fclose(fp);
 
    if (gp_Globals->i_ServerType == ST_SIERPINSKIRIESEL && gp_Globals->b_OneKPerInstance)
-      gp_Globals->s_SortSequence = "k,n,b,c";
+      gp_Globals->s_SortSequence = "n,k,b,c";
 
    if (gp_Globals->i_ServerType == ST_GENERIC)
-      gp_Globals->s_SortSequence = "a";
-
+      gp_Globals->s_SortSequence = "a,m";
 }
 
 void     ReprocessINIFile(string configFile)

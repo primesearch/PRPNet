@@ -432,7 +432,7 @@ void  ProcessINIFile(string configFile, string &smtpServer)
       gp_Globals->s_SortSequence = "n,k,b,c";
 
    if (gp_Globals->i_ServerType == ST_GENERIC)
-      gp_Globals->s_SortSequence = "a,m";
+      gp_Globals->s_SortSequence = "a,l,m";
 }
 
 void     ReprocessINIFile(string configFile)

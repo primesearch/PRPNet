@@ -51,6 +51,7 @@ enum sgtype_t { SG_NM1 = 1, SG_NP1 } ;
 #define ST_WOLSTENHOLME     24
 
 #define ST_CYCLOTOMIC       31
+#define ST_CAROLKYNEA       32
 
 #define ST_GENERIC          99
 

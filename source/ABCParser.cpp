@@ -48,6 +48,8 @@ static const char *phiabcstring = "Phi($a,$b^$c)";
 
 static const char *xyyxstring = "$a^$b$c$b^$a";
 
+static const char *ckstring = "(2^$a$b)^2-2";
+
 #define ABC_UNKNOWN      0
 #define ABC_CW_FBP      11
 #define ABC_CW_FBM      12
@@ -67,8 +69,8 @@ static const char *xyyxstring = "$a^$b$c$b^$a";
 #define ABC_VP          61
 #define ABC_VM          62
 #define ABC_VA          63
-#define ABC_GFN         70
-#define ABC_XYYX        80
+#define ABC_GFN         71
+#define ABC_XYYX        81
 #define ABC_PHI_AB      91
 #define ABC_PHI_ABC     92
 
@@ -78,6 +80,8 @@ static const char *xyyxstring = "$a^$b$c$b^$a";
 #define ABC_FACTP      111
 #define ABC_FACTM      112
 #define ABC_FACTA      113
+
+#define ABC_CK         121
 
 #define ABC_GENERIC    998
 #define NOT_ABC        999
@@ -172,6 +176,10 @@ int32_t  ABCParser::IsValidFormat(void)
       if (ii_ABCFormat == ABC_PHI_AB || ii_ABCFormat == ABC_PHI_ABC)
          return true;
    
+   if (ii_ServerType == ST_CAROLKYNEA) 
+       if (ii_ABCFormat == ABC_CK)
+          return true;
+
    if (ii_ServerType == ST_GENERIC)
       if (ii_ABCFormat == ABC_GENERIC || ii_ABCFormat == NOT_ABC)
          return true;
@@ -339,6 +347,8 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (!strncmp(tempHeader, phiabstring, strlen(phiabstring))) return ABC_PHI_AB;
    if (!strncmp(tempHeader, phiabcstring, strlen(phiabcstring))) return ABC_PHI_ABC;
+   
+   if (!strncmp(tempHeader, ckstring, strlen(ckstring))) return ABC_CK;
 
    if (ip_Socket)
       ip_Socket->Send("ERR: ABC file format not supported [%s].\n", tempHeader);
@@ -457,6 +467,10 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
             sprintf(tempName, "Phi(%"PRId64",%d)", il_theK, ii_theB);
          else
             sprintf(tempName, "Phi(%"PRId64",%d^%d)", il_theK, ii_theB, ii_theN);
+         break;
+
+      case ST_CAROLKYNEA:
+         sprintf(tempName, "(2^%d%+d)^2-2", ii_theN, ii_theC);
          break;
 
        case ST_GENERIC:
@@ -597,6 +611,12 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
       case ABC_PHI_ABC:
          if (sscanf(tempLine, "%"PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
          ii_theC = 1;
+         return true;
+
+      case ABC_CK:
+         if (sscanf(tempLine, "%d %d", &ii_theN, ii_theC) != 2) return false;
+         ii_theB = 2;
+         il_theK = 1;
          return true;
    }
    return false;

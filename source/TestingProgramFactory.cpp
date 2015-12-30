@@ -135,7 +135,8 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
    if (serverType == ST_GFN && ip_GeneferProgram)
       return ip_GeneferProgram;
 
-   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_XYYX || serverType == ST_GENERIC)
+   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_XYYX || 
+      serverType == ST_GENERIC || serverType == ST_CAROLKYNEA)
       return ip_PFGWProgram;
    
    if (serverType == ST_CYCLOTOMIC)

@@ -270,6 +270,8 @@
   <ItemGroup>
     <ClCompile Include="ABCParser.cpp" />
     <ClCompile Include="CandidateTestResult.cpp" />
+    <ClCompile Include="CarolKyneaHTML.cpp" />
+    <ClCompile Include="CarolKyneaStatsUpdater.cpp" />
     <ClCompile Include="CullenWoodallHTML.cpp" />
     <ClCompile Include="CullenWoodallStatsUpdater.cpp" />
     <ClCompile Include="CyclotomicHTML.cpp" />
@@ -352,6 +354,8 @@
   <ItemGroup>
     <ClInclude Include="ABCParser.h" />
     <ClInclude Include="CandidateTestResult.h" />
+    <ClInclude Include="CarolKyneaHTML.h" />
+    <ClInclude Include="CarolKyneaStatsUpdater.h" />
     <ClInclude Include="CullenWoodallHTML.h" />
     <ClInclude Include="CullenWoodallStatsUpdater.h" />
     <ClInclude Include="CyclotomicHTML.h" />

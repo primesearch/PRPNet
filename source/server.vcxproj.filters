@@ -195,6 +195,12 @@
     <ClCompile Include="CyclotomicStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CarolKyneaStatsUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CarolKyneaHTML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ABCParser.h">
@@ -384,6 +390,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CyclotomicStatsUpdater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CarolKyneaStatsUpdater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CarolKyneaHTML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

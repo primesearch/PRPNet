@@ -10,6 +10,7 @@
 #include "FactorialHTML.h"
 #include "SophieGermainHTML.h"
 #include "CyclotomicHTML.h"
+#include "CarolKyneaHTML.h"
 #include "GenericHTML.h"
 
 HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
@@ -57,6 +58,10 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
          
       case ST_CYCLOTOMIC:
          htmlGenerator = new CyclotomicHTML(globals);
+         break;
+         
+      case ST_CAROLKYNEA:
+         htmlGenerator = new CarolKyneaHTML(globals);
          break;
 
       case ST_GENERIC:

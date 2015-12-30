@@ -66,7 +66,7 @@ void CarolKyneaHTML::ServerStats(void)
       if (!ip_Socket->Send("<tr bgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
          break;
 
-      ip_Socket->Send("<td align=right>(%^d^n%+d)^2-2", b, c);
+      ip_Socket->Send("<td align=right>(%d^n%+d)^2-2", b, c);
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);

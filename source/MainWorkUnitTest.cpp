@@ -34,6 +34,10 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
          sprintf(tempName, "%s", wu->s_Name);
          break;
 
+      case ST_CAROLKYNEA:
+        sprintf(tempName, "(%d^%d%+d)^2-2", ii_b, ii_n, ii_c);
+        break;
+
       default:
         sprintf(tempName, "%"PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
         break;

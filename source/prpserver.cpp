@@ -576,6 +576,7 @@ bool     ValidateConfiguration(string smtpServer)
        gp_Globals->i_ServerType != ST_XYYX          &&
        gp_Globals->i_ServerType != ST_SOPHIEGERMAIN &&
        gp_Globals->i_ServerType != ST_CYCLOTOMIC    &&
+       gp_Globals->i_ServerType != ST_CAROLKYNEA    &&
        gp_Globals->i_ServerType != ST_GENERIC       &&
        gp_Globals->i_ServerType != ST_WIEFERICH     &&
        gp_Globals->i_ServerType != ST_WILSON        &&

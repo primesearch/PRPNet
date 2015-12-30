@@ -425,7 +425,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       
       if (ii_ABCFormat == NOT_ABC)
       {
-         sprintf(abcLine, theMessage);
+         sprintf(abcLine, "%s", theMessage);
          il_theK = 0;
          ii_theB = 0;
          ii_theN = 0;
@@ -475,7 +475,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
 
        case ST_GENERIC:
           if (ii_ABCFormat == NOT_ABC)
-             sprintf(tempName, abcLine);
+             sprintf(tempName, "%s", abcLine);
    }
 
    theK = il_theK;
@@ -614,7 +614,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_CK:
-         if (sscanf(tempLine, "%d %d", &ii_theN, ii_theC) != 2) return false;
+         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
          ii_theB = 2;
          il_theK = 1;
          return true;

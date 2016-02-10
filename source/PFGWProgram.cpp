@@ -43,6 +43,8 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    aValue = (testType == TT_GFN ? 2 : 0);
    if (ii_ServerType == ST_CYCLOTOMIC)
       sign = 'm';
+   else if (ii_ServerType == ST_CAROLKYNEA)
+      sign = 'p';
    else
       sign = ((ii_c > 0) ? 'm' : 'p');
    normalPriority = (char *) (ii_NormalPriority ? "-N" : "");

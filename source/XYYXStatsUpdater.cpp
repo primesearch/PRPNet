@@ -187,8 +187,19 @@ bool   XYYXStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int
 
    ip_CandidateLoader->SetInputParameterValue(candidateName, true);
    ip_CandidateLoader->SetInputParameterValue(decimalLength);
-   ip_CandidateLoader->SetInputParameterValue(theB);
-   ip_CandidateLoader->SetInputParameterValue(theN);
+
+   // If c = 1 then x^y+y^x.  If c = -1 then y^x-x^y
+   if (theC == 1)
+   {
+      ip_CandidateLoader->SetInputParameterValue(theB);
+      ip_CandidateLoader->SetInputParameterValue(theN);
+   }
+   else
+   {
+      ip_CandidateLoader->SetInputParameterValue(theN);
+      ip_CandidateLoader->SetInputParameterValue(theB);
+   }
+
    ip_CandidateLoader->SetInputParameterValue(theC);
    ip_CandidateLoader->SetInputParameterValue((int64_t) time(NULL));
 

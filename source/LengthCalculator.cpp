@@ -233,7 +233,7 @@ void     LengthCalculator::CalculateDecimalLengths(Socket *theSocket)
 
          count++;
 
-         updateStatement->SetInputParameterValue(floor(decimalLength), true);
+         updateStatement->SetInputParameterValue(floor(decimalLength) + 1, true);
          updateStatement->SetInputParameterValue(candidateName);
 
          if (updateStatement->Execute())

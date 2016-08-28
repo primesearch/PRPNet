@@ -48,7 +48,7 @@ static const char *phiabcstring = "Phi($a,$b^$c)";
 
 static const char *xyyxstring = "$a^$b$c$b^$a";
 
-static const char *ckstring = "(2^$a$b)^2-2";
+static const char *ckstring = "(%d^$a$b)^2-2";
 
 #define ABC_UNKNOWN      0
 #define ABC_CW_FBP      11
@@ -319,6 +319,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
      if (ii_theC < 0)
        return ABC_VM;
    }
+
    if (!strncmp(tempHeader, abcastring, strlen(abcastring))) return ABC_VA;
 
    // Any form of n!+/-c
@@ -329,6 +330,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
      if (ii_theC < 0)
        return ABC_PRIMM;
    }
+
    if (!strncmp(tempHeader, primastring, strlen(primastring))) return ABC_PRIMA;
 
    // Any form of n#+/-c
@@ -339,6 +341,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
      if (ii_theC < 0)
        return ABC_FACTM;
    }
+   
+   if (sscanf(tempHeader, ckstring, &ii_theB) == 1) return ABC_CK;
+
    if (!strncmp(tempHeader, factastring, strlen(factastring))) return ABC_FACTA;
 
    if (!strncmp(tempHeader, gfnstring, strlen(gfnstring))) return ABC_GFN;
@@ -346,9 +351,8 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    if (!strncmp(tempHeader, xyyxstring, strlen(xyyxstring))) return ABC_XYYX;
 
    if (!strncmp(tempHeader, phiabstring, strlen(phiabstring))) return ABC_PHI_AB;
+
    if (!strncmp(tempHeader, phiabcstring, strlen(phiabcstring))) return ABC_PHI_ABC;
-   
-   if (!strncmp(tempHeader, ckstring, strlen(ckstring))) return ABC_CK;
 
    if (ip_Socket)
       ip_Socket->Send("ERR: ABC file format not supported [%s].\n", tempHeader);
@@ -470,7 +474,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          break;
 
       case ST_CAROLKYNEA:
-         sprintf(tempName, "(2^%d%+d)^2-2", ii_theN, ii_theC);
+         sprintf(tempName, "(%d^%d%+d)^2-2", ii_theB, ii_theN, ii_theC);
          break;
 
        case ST_GENERIC:
@@ -615,7 +619,6 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
 
       case ABC_CK:
          if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
-         ii_theB = 2;
          il_theK = 1;
          return true;
    }

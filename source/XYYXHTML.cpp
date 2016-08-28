@@ -63,8 +63,12 @@ void XYYXHTML::ServerStats(void)
       // If the socket was closed, then stop sending data
       if (!ip_Socket->Send("<tr bgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
          break;
+      
+      if (c == 1)
+         ip_Socket->Send("<td align=center>%d^y+y^%d", b, b);
+      else
+         ip_Socket->Send("<td align=center>y^%d-%d^y", b, b);
 
-      ip_Socket->Send("<td align=center>%d^y%cy^%d", b, ((c == 1) ? '+' : '-'), b);
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);

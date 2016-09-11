@@ -11,7 +11,8 @@ TwinWorkUnitTest::TwinWorkUnitTest(Log *theLog, int32_t serverType, string workS
    ii_n = wu->i_n;
    ii_c = -wu->i_c;
 
-   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_XYYX || serverType == ST_GENERIC)
+   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || 
+      serverType == ST_MULTIFACTORIAL || serverType == ST_XYYX || serverType == ST_GENERIC)
    {
       printf("Cannot create Twin workunit for servertype %d.  Exiting\n", serverType);
       exit(0);

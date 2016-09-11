@@ -307,6 +307,8 @@
     </ClCompile>
     <ClCompile Include="MailFactory.cpp" />
     <ClCompile Include="MailSocket.cpp" />
+    <ClCompile Include="MultiFactorialHTML.cpp" />
+    <ClCompile Include="MultiFactorialStatsUpdater.cpp" />
     <ClCompile Include="PrimeHelperThread.cpp" />
     <ClCompile Include="PrimeHTMLGenerator.cpp" />
     <ClCompile Include="PrimeMail.cpp" />
@@ -382,6 +384,8 @@
     <ClInclude Include="Mail.h" />
     <ClInclude Include="MailFactory.h" />
     <ClInclude Include="MailSocket.h" />
+    <ClInclude Include="MultiFactorialHTML.h" />
+    <ClInclude Include="MultiFactorialStatsUpdater.h" />
     <ClInclude Include="PrimeHelperThread.h" />
     <ClInclude Include="PrimeHTMLGenerator.h" />
     <ClInclude Include="PrimeMail.h" />

@@ -66,7 +66,7 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
 
    is_ClientVersion = clientVersion;
 
-   if ((ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL) && !ib_HasPFGW)
+   if ((ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL || ii_ServerType == ST_MULTIFACTORIAL) && !ib_HasPFGW)
    {
       ip_Socket->Send("ERROR:  The client must run PFGW to use this server.");
       ip_Socket->Send("End of Message");
@@ -559,6 +559,8 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64"", candidateName.c_str(), lastUpdateTime);
    else if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %d", candidateName.c_str(), lastUpdateTime, theN, theC);
+   else if (ii_ServerType == ST_MULTIFACTORIAL)
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %u %d", candidateName.c_str(), lastUpdateTime, theN, theB, theC);
    else if (ii_ServerType == ST_CYCLOTOMIC)
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
    else

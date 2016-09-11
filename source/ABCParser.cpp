@@ -36,6 +36,7 @@ static const char *abcastring = "$a*$b^$c$d";
 // Any form of n!+/-c (factorials)
 static const char *fact_string = "$a!%d";
 static const char *factastring = "$a!+$b";
+static const char *mf_string = "$a!%d$b";
 
 // Any form of n#+/-c (primorials)
 static const char *prim_string = "$a#%d";
@@ -80,6 +81,7 @@ static const char *ckstring = "(%d^$a$b)^2-2";
 #define ABC_FACTP      111
 #define ABC_FACTM      112
 #define ABC_FACTA      113
+#define ABC_MF         114
 
 #define ABC_CK         121
 
@@ -162,6 +164,10 @@ int32_t  ABCParser::IsValidFormat(void)
 
    if (ii_ServerType == ST_FACTORIAL) 
        if (ii_ABCFormat == ABC_FACTP || ii_ABCFormat == ABC_FACTM || ii_ABCFormat == ABC_FACTA)
+          return true;
+   
+   if (ii_ServerType == ST_MULTIFACTORIAL) 
+       if (ii_ABCFormat == ABC_MF)
           return true;
 
    if (ii_ServerType == ST_GFN)
@@ -322,7 +328,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (!strncmp(tempHeader, abcastring, strlen(abcastring))) return ABC_VA;
 
-   // Any form of n!+/-c
+   // Any form of n#+/-c
    if (sscanf(tempHeader, prim_string, &ii_theC) == 1)
    {
      if (ii_theC > 0)
@@ -333,13 +339,20 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (!strncmp(tempHeader, primastring, strlen(primastring))) return ABC_PRIMA;
 
-   // Any form of n#+/-c
-   if (sscanf(tempHeader, fact_string, &ii_theC) == 1)
+   // Any form of n!+/-c
+   if (!strstr(tempHeader, "$b") && sscanf(tempHeader, fact_string, &ii_theC) == 1)
    {
      if (ii_theC > 0)
        return ABC_FACTP;
      if (ii_theC < 0)
        return ABC_FACTM;
+   }
+
+   // Any form of $a!%d$b
+   if (strstr(tempHeader, "$b") && sscanf(tempHeader, mf_string, &ii_theB) == 1)
+   {
+     if (ii_theB > 0)
+       return ABC_MF;
    }
    
    if (sscanf(tempHeader, ckstring, &ii_theB) == 1) return ABC_CK;
@@ -456,6 +469,10 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
 
       case ST_FACTORIAL:
          sprintf(tempName, "%d!%+d", ii_theN, ii_theC);
+         break;
+         
+      case ST_MULTIFACTORIAL:
+         sprintf(tempName, "%d!%d%+d", ii_theN, ii_theB, ii_theC);
          break;
 
       case ST_GFN:
@@ -597,6 +614,11 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          il_theK = ii_theB = ii_theN;
          return true;
  
+      case ABC_MF:
+         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
+         il_theK = ii_theN;
+         return true;
+
       case ABC_GFN:
          if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
          il_theK = ii_theC = 1;

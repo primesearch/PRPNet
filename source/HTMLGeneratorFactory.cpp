@@ -8,6 +8,7 @@
 #include "XYYXHTML.h"
 #include "PrimorialHTML.h"
 #include "FactorialHTML.h"
+#include "MultiFactorialHTML.h"
 #include "SophieGermainHTML.h"
 #include "CyclotomicHTML.h"
 #include "CarolKyneaHTML.h"
@@ -33,6 +34,10 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 
       case ST_FACTORIAL:
          htmlGenerator = new FactorialHTML(globals);
+         break;
+
+      case ST_MULTIFACTORIAL:
+         htmlGenerator = new MultiFactorialHTML(globals);
          break;
 
       case ST_GFN:

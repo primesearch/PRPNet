@@ -21,6 +21,10 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
         sprintf(tempName, "%d!%+d", ii_b, ii_c);
         break;
 
+      case ST_MULTIFACTORIAL:
+        sprintf(tempName, "%d!%d%+d", ii_b, ii_n, ii_c);
+        break;
+
       case ST_GFN:
         sprintf(tempName, "%d^%d%+d", ii_b, ii_n, ii_c);
         break;

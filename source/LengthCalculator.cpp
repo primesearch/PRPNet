@@ -170,7 +170,7 @@ void     LengthCalculator::CalculateDecimalLengths(Socket *theSocket)
          previousDecimalLength = 0;
          previousValue = 1.0;
       }
-
+      
       if (ii_ServerType == ST_PRIMORIAL)
       {
          InitializePrimeSieve();
@@ -210,6 +210,22 @@ void     LengthCalculator::CalculateDecimalLengths(Socket *theSocket)
                }
 
                decimalLength = previousDecimalLength;
+               break;
+
+            case ST_MULTIFACTORIAL:
+               decimalLength = 0;
+               previousValue = 1.0;
+               while (intN > 0)
+               {
+                  previousValue *= (double) intN;
+                  while (previousValue > 10.0)
+                  {
+                     previousValue *= tenth;
+                     decimalLength++;
+                  }
+
+                  intN -= intB;
+               }
                break;
 
             case ST_PRIMORIAL:

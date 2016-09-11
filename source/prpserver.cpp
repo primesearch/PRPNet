@@ -566,21 +566,22 @@ bool     ValidateConfiguration(string smtpServer)
    }
 
    if (gp_Globals->i_ServerType != ST_SIERPINSKIRIESEL &&
-       gp_Globals->i_ServerType != ST_CULLENWOODALL &&
-       gp_Globals->i_ServerType != ST_FIXEDBKC      &&
-       gp_Globals->i_ServerType != ST_FIXEDBNC      &&
-       gp_Globals->i_ServerType != ST_PRIMORIAL     &&
-       gp_Globals->i_ServerType != ST_FACTORIAL     &&
-       gp_Globals->i_ServerType != ST_TWIN          &&
-       gp_Globals->i_ServerType != ST_GFN           &&
-       gp_Globals->i_ServerType != ST_XYYX          &&
-       gp_Globals->i_ServerType != ST_SOPHIEGERMAIN &&
-       gp_Globals->i_ServerType != ST_CYCLOTOMIC    &&
-       gp_Globals->i_ServerType != ST_CAROLKYNEA    &&
-       gp_Globals->i_ServerType != ST_GENERIC       &&
-       gp_Globals->i_ServerType != ST_WIEFERICH     &&
-       gp_Globals->i_ServerType != ST_WILSON        &&
-       gp_Globals->i_ServerType != ST_WALLSUNSUN    &&
+       gp_Globals->i_ServerType != ST_CULLENWOODALL    &&
+       gp_Globals->i_ServerType != ST_FIXEDBKC         &&
+       gp_Globals->i_ServerType != ST_FIXEDBNC         &&
+       gp_Globals->i_ServerType != ST_PRIMORIAL        &&
+       gp_Globals->i_ServerType != ST_FACTORIAL        &&
+       gp_Globals->i_ServerType != ST_MULTIFACTORIAL   &&
+       gp_Globals->i_ServerType != ST_TWIN             &&
+       gp_Globals->i_ServerType != ST_GFN              &&
+       gp_Globals->i_ServerType != ST_XYYX             && 
+       gp_Globals->i_ServerType != ST_SOPHIEGERMAIN    &&
+       gp_Globals->i_ServerType != ST_CYCLOTOMIC       &&
+       gp_Globals->i_ServerType != ST_CAROLKYNEA       &&
+       gp_Globals->i_ServerType != ST_GENERIC          &&
+       gp_Globals->i_ServerType != ST_WIEFERICH        &&
+       gp_Globals->i_ServerType != ST_WILSON           &&
+       gp_Globals->i_ServerType != ST_WALLSUNSUN       &&
        gp_Globals->i_ServerType != ST_WOLSTENHOLME)
    {
       printf("servertype is invalid.\n");

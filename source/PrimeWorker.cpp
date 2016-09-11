@@ -138,6 +138,16 @@ bool     PrimeWorker::GetWork(void)
                                 &wu->i_b,
                                 &wu->i_c);
          }
+         if (ii_ServerType == ST_MULTIFACTORIAL)
+         {
+            toScan = 5;
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %"PRIu64" %u %u %d",
+                                 wu->s_Name,
+                                &wu->l_TestID,
+                                &wu->i_b,
+                                &wu->i_n,
+                                &wu->i_c);
+         }
          else if (ii_ServerType == ST_GFN)
          {
             toScan = 4;

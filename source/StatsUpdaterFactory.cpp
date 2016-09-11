@@ -1,6 +1,7 @@
 #include "StatsUpdaterFactory.h"
 #include "PrimorialStatsUpdater.h"
 #include "FactorialStatsUpdater.h"
+#include "MultiFactorialStatsUpdater.h"
 #include "GFNStatsUpdater.h"
 #include "XYYXStatsUpdater.h"
 #include "CullenWoodallStatsUpdater.h"
@@ -37,6 +38,10 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
 
       case ST_FACTORIAL:
          theUpdater = new FactorialStatsUpdater();
+         break;
+
+      case ST_MULTIFACTORIAL:
+         theUpdater = new MultiFactorialStatsUpdater();
          break;
 
       case ST_PRIMORIAL:

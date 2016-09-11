@@ -152,7 +152,8 @@ void      PrimeHelperThread::AdminABCFile(void)
       fflush(stdout);
    }
 
-   if (ii_ServerType == ST_GENERIC || ii_ServerType == ST_FACTORIAL || ii_ServerType == ST_PRIMORIAL)
+   if (ii_ServerType == ST_GENERIC || ii_ServerType == ST_FACTORIAL ||
+      ii_ServerType == ST_MULTIFACTORIAL || ii_ServerType == ST_PRIMORIAL)
       lengthCalculator->CalculateDecimalLengths(ip_Socket);
 
    delete lengthCalculator;

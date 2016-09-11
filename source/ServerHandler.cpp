@@ -263,6 +263,7 @@ Worker  *ServerHandler::AllocateWorker(int32_t serverType)
       case ST_FIXEDBNC:
       case ST_PRIMORIAL:
       case ST_FACTORIAL:
+      case ST_MULTIFACTORIAL:
       case ST_TWIN:
       case ST_GFN:
       case ST_XYYX:

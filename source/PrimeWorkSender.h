@@ -19,7 +19,7 @@ public:
 private:
    bool     ib_UseLLROverPFGW;
    bool     ib_OneKPerInstance;
-   string   is_SortSequence;
+   string   is_OrderBy;
    int32_t  ii_DelayCount;
    delay_t *ip_Delay;
 
@@ -32,11 +32,14 @@ private:
    bool     ib_HasGenefx64;
    bool     ib_HasGenefer;
    bool     ib_HasGenefer80bit;
-
-   int32_t     SelectCandidates(int32_t sendWorkUnits, bool oneKPerInstance);
+   
+   int32_t     SendWorkToClient(int32_t sendWorkUnits, bool doubleCheckOnly, bool oneKPerInstance);
+   int32_t     SelectDoubleCheckCandidates(int32_t sendWorkUnits, double minLength, double maxLength, int64_t olderThanTime);
+   int32_t     SelectOneKPerClientCandidates(int32_t sendWorkUnits);
+   int32_t     SelectGFNCandidates(int32_t sendWorkUnits);
+   int32_t     SelectCandidates(int32_t sendWorkUnits);
    bool        CheckGenefer(string candidateName);
    bool        CheckDoubleCheck(string candidateName, double decimalLength, int64_t lastUpdateTime);
-   bool        CheckOneKPerInstance(int64_t theK, int32_t theB, int32_t theC);
    bool        ReserveCandidate(string candidateName);
    bool        SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC);
 };

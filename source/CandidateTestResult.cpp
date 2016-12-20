@@ -224,7 +224,7 @@ void     CandidateTestResult::LogResults(int32_t socketID, int32_t completedTest
       return;
 
    if (needsDoubleCheck)
-      sprintf(doubleCheck, "DoubleCheck? %s", ((completedTests) ? "Yes" : "No"));
+      sprintf(doubleCheck, "DoubleCheck? %s", ((completedTests > 1) ? "Yes" : "No"));
    else
       *doubleCheck = 0;
 

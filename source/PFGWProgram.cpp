@@ -386,13 +386,13 @@ void  PFGWProgram::DetermineDecimalLength(void)
    }
 
    ii_DecimalLength = 0;
-   while ((bytes = fread(line, 1, sizeof(line), fp)) > 0)
+   while ((bytes = fread(line, 1, (int32_t)  sizeof(line), fp)) > 0)
       ii_DecimalLength += bytes;
    
    fclose(fp);
 
    // Exclude the candidate name + the ": " after it in the output
    if (ii_DecimalLength > 0)
-      ii_DecimalLength -= (is_WorkUnitName.length() + 2);
+      ii_DecimalLength -= (int32_t) (is_WorkUnitName.length() + 2);
 
 }

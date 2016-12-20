@@ -22,6 +22,7 @@
 
 typedef struct
 {
+   double    minLength;
    double    maxLength;
    int64_t   doubleCheckDelay;
    int64_t   expireDelay;

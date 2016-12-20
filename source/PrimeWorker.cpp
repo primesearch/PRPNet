@@ -425,7 +425,7 @@ void  PrimeWorker::Load(string saveFileName)
          {
             countScanned = 8;
             if (ii_ServerType == ST_GENERIC)
-               wu->i_DecimalLength = strlen(wu->s_Name);
+               wu->i_DecimalLength = (int32_t) strlen(wu->s_Name);
             else
                wu->i_DecimalLength = 0;
          }

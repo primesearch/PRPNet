@@ -428,11 +428,14 @@ void  ProcessINIFile(string configFile, string &smtpServer)
 
    fclose(fp);
 
-   if (gp_Globals->i_ServerType == ST_SIERPINSKIRIESEL && gp_Globals->b_OneKPerInstance)
-      gp_Globals->s_SortSequence = "n,k,b,c";
+   if (gp_Globals->b_OneKPerInstance)
+      gp_Globals->s_SortSequence = "k,b,c,n";
 
    if (gp_Globals->i_ServerType == ST_GENERIC)
       gp_Globals->s_SortSequence = "a,l,m";
+
+   if (gp_Globals->i_ServerType == ST_GFN)
+      gp_Globals->s_SortSequence = "b,n";
 }
 
 void     ReprocessINIFile(string configFile)
@@ -518,6 +521,11 @@ void  ProcessDelayFile(string delayFile)
                    gp_Globals->i_ServerType == ST_WALLSUNSUN ||
                    gp_Globals->i_ServerType == ST_WOLSTENHOLME) break;
             }
+
+            if (ii == 0)
+               gp_Globals->p_Delay[ii].minLength = 0;
+            else
+               gp_Globals->p_Delay[ii].minLength = gp_Globals->p_Delay[ii-1].maxLength;
          }
          else
             printf("Unable to parse line %s in file %s\n", line, delayFile.c_str());
@@ -598,6 +606,12 @@ bool     ValidateConfiguration(string smtpServer)
    {
       printf("doublecheck is invalid.  Will set it to 0.\n");
       gp_Globals->b_NeedsDoubleCheck = 0;
+   }
+
+   if ( gp_Globals->i_ServerType != ST_SIERPINSKIRIESEL && gp_Globals->b_OneKPerInstance)
+   {
+      printf("onekperinstance can only be 1 for Sierpinski/Riesel servers.\n");
+      return false;
    }
 
    length = (int32_t) gp_Globals->s_SortSequence.length();

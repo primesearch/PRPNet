@@ -191,7 +191,7 @@ void     LengthCalculator::CalculateDecimalLengths(Socket *theSocket)
          {
             case ST_GENERIC:
                // Default the length.  The client will compute a more accurate length.
-               decimalLength = strlen(candidateName);
+               decimalLength = (double) strlen(candidateName);
                break;
 
             case ST_FACTORIAL:

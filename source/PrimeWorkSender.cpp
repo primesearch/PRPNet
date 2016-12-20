@@ -13,7 +13,7 @@ PrimeWorkSender::PrimeWorkSender(DBInterface *dbInterface, Socket *theSocket, gl
 
    ib_UseLLROverPFGW = globals->b_UseLLROverPFGW;
    ib_OneKPerInstance = globals->b_OneKPerInstance;
-   is_SortSequence = globals->s_SortSequence;
+   is_OrderBy = globals->s_SortSequence;
    ii_DelayCount = globals->i_DelayCount;
    ip_Delay = globals->p_Delay;
 
@@ -116,17 +116,22 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
    }
    
    ip_Socket->Send("ServerConfig: %d", (ib_UseLLROverPFGW ? 1 : 0));
-
-   sentWorkUnits = ib_NoNewWork ? 0 : SelectCandidates(sendWorkUnits, ib_OneKPerInstance);
-
-   if (!sentWorkUnits && ib_OneKPerInstance && !ib_NoNewWork)
-      sentWorkUnits = SelectCandidates(sendWorkUnits, false);
-
-   if (!sentWorkUnits)
+   
+   if (ib_NoNewWork)
+      ip_Socket->Send("INACTIVE: New work generation is disabled on this server.");
+   else 
    {
-      if (ib_NoNewWork)
-         ip_Socket->Send("INACTIVE: New work generation is disabled on this server.");
-      else
+      // First look for double-check work.
+      sentWorkUnits = SendWorkToClient(sendWorkUnits, true, false);
+
+      // If we don't find that, look for first check work
+      if (!sentWorkUnits)
+         sentWorkUnits = SendWorkToClient(sendWorkUnits, false, ib_OneKPerInstance);
+      
+      if (!sentWorkUnits && ib_OneKPerInstance)
+         sentWorkUnits = SendWorkToClient(sendWorkUnits, false, false);
+
+      if (!sentWorkUnits)
          ip_Socket->Send("INACTIVE: No available candidates are left on this server.");
    }
 
@@ -136,153 +141,41 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
       SendGreeting("Greeting.txt");
 }
 
-int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits, bool oneKPerInstance)
+int32_t  PrimeWorkSender::SendWorkToClient(int32_t sendWorkUnits, bool doubleCheckOnly, bool oneKPerInstance)
 {
-   KeepAliveThread *keepAliveThread;
+   KeepAliveThread  *keepAliveThread;
    SharedMemoryItem *threadWaiter;
-   SQLStatement *selectStatement;
-   char     candidateName[NAME_LENGTH+1];
-   const char    *dcWhere = "", *candidateWhere = "";
-   int64_t  theK, prevK = 0, lastUpdateTime;
-   int32_t  theB, prevB = 0, theC, prevC = -2, theN;
-   bool     encounteredError, endLoop;
-   bool     kForOtherInstance = false;
-   int32_t  sentWorkUnits, completedTests;
-   double   decimalLength;
-   const char *selectSQL = "select CandidateName, CompletedTests, " \
-                           "       DecimalLength, LastUpdateTime, " \
-                           "       k, b, c, n " \
-                           "  from Candidate " \
-                           " where HasPendingTest = 0 " \
-                           "   and $null_func$(MainTestResult, 0) = 0 " \
-                           "   and DoubleChecked = 0 " \
-                           "   and HasSierpinskiRieselPrime = 0 " \
-                           "   %s " \
-                           "   %s " \
-                           "   and DecimalLength > 0 " \
-                           "order by %s limit 100";
-
-   // If not double-checking, then don't return candidates that have a completed test
-   if (!ib_NeedsDoubleCheck)
-      dcWhere = " and CompletedTests = 0";
-
-   if (ii_ServerType == ST_SIERPINSKIRIESEL && oneKPerInstance)
-      candidateWhere = "and k >= ?";
-   else
-      candidateWhere = "and CandidateName > ?";
+   boolean           endLoop;
+   int32_t           idx, sentWorkUnits = 0;
+   int64_t           currentTime;
 
    threadWaiter = ip_Socket->GetThreadWaiter();
    threadWaiter->SetValueNoLock(KAT_WAITING);
    keepAliveThread = new KeepAliveThread();
    keepAliveThread->StartThread(ip_Socket);
-
-   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL,
-                                      dcWhere, candidateWhere, is_SortSequence.c_str());
-   if (ii_ServerType == ST_SIERPINSKIRIESEL && oneKPerInstance)
-      selectStatement->BindInputParameter(prevK);
-   else
-      selectStatement->BindInputParameter(candidateName, NAME_LENGTH, false);
-
-   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
-   selectStatement->BindSelectedColumn(&completedTests);
-   selectStatement->BindSelectedColumn(&decimalLength);
-   selectStatement->BindSelectedColumn(&lastUpdateTime);
-   selectStatement->BindSelectedColumn(&theK);
-   selectStatement->BindSelectedColumn(&theB);
-   selectStatement->BindSelectedColumn(&theC);
-   selectStatement->BindSelectedColumn(&theN);
-
-   sentWorkUnits = 0;
-   encounteredError = false;
-   strcpy(candidateName, " ");
-
-   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+   
+   if (doubleCheckOnly)
    {
-      if (ii_ServerType == ST_SIERPINSKIRIESEL && oneKPerInstance)
+      ip_Log->Debug(DEBUG_WORK, "%d: Looking for double-check work", ip_Socket->GetSocketID());
+      currentTime = (int64_t) time(NULL);
+
+      for (idx=0; idx<ii_DelayCount-1; idx++)
       {
-         if (kForOtherInstance) prevK++;
-         selectStatement->SetInputParameterValue(prevK, true);
+         sentWorkUnits = SelectDoubleCheckCandidates(sendWorkUnits, ip_Delay[idx].minLength,
+            ip_Delay[idx].maxLength, currentTime - ip_Delay[idx].doubleCheckDelay);
+
+         if (sentWorkUnits >= sendWorkUnits)
+            break;
       }
-      else
-         selectStatement->SetInputParameterValue(candidateName, true);
-
-      kForOtherInstance = false;
-      while (sentWorkUnits < sendWorkUnits && !encounteredError)
-      {
-         if (!selectStatement->FetchRow(false)) break;
-
-         ip_Log->Debug(DEBUG_WORK, "%d: Checking candidate %s", ip_Socket->GetSocketID(), candidateName);
-
-         if (completedTests > 0 && !CheckDoubleCheck(candidateName, decimalLength, lastUpdateTime))
-         {
-            ip_Log->Debug(DEBUG_WORK, "%d: Cannot double-check %s", ip_Socket->GetSocketID(), candidateName);
-            continue;
-         }
-
-         if (ii_ServerType == ST_GFN && !CheckGenefer(candidateName))
-         {
-            ip_Log->Debug(DEBUG_WORK, "%d: Has wrong version of genefer %s", ip_Socket->GetSocketID(), candidateName);
-            continue;
-         }
-
-         // If we can only send one k/b/c per client, then verify that no test for the
-         // given k/b/c has been assigned to another instance.
-         if (ii_ServerType == ST_SIERPINSKIRIESEL && oneKPerInstance)
-         {
-            if (prevK != theK || prevB != theB || prevC != theC)
-            {
-               kForOtherInstance = CheckOneKPerInstance(theK, theB, theC);
-               prevK = theK;
-               prevB = theB;
-               prevC = theC;
-            }
-
-            if (kForOtherInstance)
-            {
-               ip_Log->Debug(DEBUG_WORK, "%d: k/b/c given to another instance %s", ip_Socket->GetSocketID(), candidateName);
-               break;
-            }
-         }
-
-         // Allow only one thread through here at a time
-         ip_Locker->Lock();
-
-         if (ReserveCandidate(candidateName))
-         {
-            if (completedTests == 0)
-               ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
-            else
-               ip_Log->Debug(DEBUG_WORK, "Double check for candidate %s", candidateName);
-
-            if (SendWork(candidateName, theK, theB, theN, theC))
-            {
-               sentWorkUnits++;
-               ip_DBInterface->Commit();
-            }
-            else
-            {
-               ip_DBInterface->Rollback();
-               encounteredError = true;
-            }
-         }
-
-         ip_Locker->Release();
-      }
-
-      selectStatement->CloseCursor();
-
-      if (ib_OneKPerInstance && kForOtherInstance)
-         continue;
-
-      // If we didn't retrieve enough rows (based upon our limit of 100), then we are done
-      if (selectStatement->GetFetchedRowCount() < 100)
-         break;
    }
-
-   // Just in case a commit or rollback was not done
-   ip_DBInterface->Rollback();
-
-   delete selectStatement;
+   else if (oneKPerInstance)
+   {
+      sentWorkUnits = SelectOneKPerClientCandidates(sendWorkUnits);
+   }
+   else if (ii_ServerType == ST_GFN)
+      sentWorkUnits = SelectGFNCandidates(sendWorkUnits);
+   else
+      sentWorkUnits = SelectCandidates(sendWorkUnits);
 
    // When we know that the keepalive thread has terminated, we can then exit
    // this loop and delete the memory associated with that thread.
@@ -308,12 +201,373 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits, bool oneKPerIn
    return sentWorkUnits;
 }
 
+int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, double minLength, double maxLength, int64_t olderThanTime)
+{
+   SQLStatement *selectStatement;
+   char     candidateName[NAME_LENGTH+1];
+   int64_t  theK, lastUpdateTime = 0;
+   int32_t  theB, theC, theN;
+   double   decimalLength = 0.0;
+   bool     encounteredError;
+   int32_t  sentWorkUnits;
+
+   // This will not double-check primes.  That will be changed in the future.
+   const char *selectSQL = "select CandidateName, DecimalLength, LastUpdateTime, " \
+                           "       k, b, c, n " \
+                           "  from Candidate " \
+                           " where HasPendingTest = 0 " \
+                           "   and $null_func$(MainTestResult, 0) = 0 " \
+                           "   and DoubleChecked = 0 " \
+                           "   and CompletedTests > 0 " \
+                           "   and DecimalLength >= %lf " \
+                           "   and DecimalLength < %lf " \
+                           "   and LastUpdateTime < %"PRId64" " \
+                           "   and ((DecimalLength >= ? and LastUpdateTime > ?) or (DecimalLength > ?)) " \
+                           "order by DecimalLength, LastUpdateTime limit 100";
+
+   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, minLength, maxLength, olderThanTime);
+
+   selectStatement->BindInputParameter(decimalLength);
+   selectStatement->BindInputParameter(lastUpdateTime);
+   selectStatement->BindInputParameter(decimalLength);
+
+   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+   selectStatement->BindSelectedColumn(&decimalLength);
+   selectStatement->BindSelectedColumn(&lastUpdateTime);
+   selectStatement->BindSelectedColumn(&theK);
+   selectStatement->BindSelectedColumn(&theB);
+   selectStatement->BindSelectedColumn(&theC);
+   selectStatement->BindSelectedColumn(&theN);
+
+   sentWorkUnits = 0;
+   encounteredError = false;
+   
+   // On the first open of the cursor, we start from the beginning, but if we can't find
+   // enough double-check candidates, we'll start where we left off.
+   lastUpdateTime = 0;
+   decimalLength = 0.0;
+
+   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+   {
+      // If we haven't sent enough, start over again at the shortest candidate that we haven't checked
+      selectStatement->SetInputParameterValue(decimalLength, true);
+      selectStatement->SetInputParameterValue(lastUpdateTime);
+      selectStatement->SetInputParameterValue(decimalLength);
+
+      while (sentWorkUnits < sendWorkUnits && !encounteredError)
+      {
+         // Exit both loops if no rows are selected
+         if (!selectStatement->FetchRow(false)) {
+            encounteredError = true;
+            break;
+         }
+
+         if (!CheckDoubleCheck(candidateName, decimalLength, lastUpdateTime))
+         {
+            ip_Log->Debug(DEBUG_WORK, "%d: Cannot double-check %s", ip_Socket->GetSocketID(), candidateName);
+            continue;
+         }
+
+         // Allow only one thread through here at a time
+         ip_Locker->Lock();
+         
+         // Reserve the candidate and send to the client
+         if (ReserveCandidate(candidateName))
+         {
+            ip_Log->Debug(DEBUG_WORK, "Double check for candidate %s", candidateName);
+
+            if (SendWork(candidateName, theK, theB, theN, theC))
+            {
+               sentWorkUnits++;
+               ip_DBInterface->Commit();
+            }
+            else
+            {
+               ip_DBInterface->Rollback();
+               encounteredError = true;
+            }
+         }
+
+         ip_Locker->Release();
+      }
+
+      selectStatement->CloseCursor();
+   }
+
+   // Just in case a commit or rollback was not done
+   ip_DBInterface->Rollback();
+
+   delete selectStatement;
+
+   return sentWorkUnits;
+}
+
+int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits)
+{
+   SQLStatement *selectKBCStatement;
+   SQLStatement *selectStatement;
+   char     candidateName[NAME_LENGTH+1];
+   int64_t  theK;
+   int32_t  theB, theC, theN = 0;
+   bool     encounteredError;
+   int32_t  sentWorkUnits;
+   
+   const char *selectKBCSQL = "select distinct k, b, c " \
+                              "  from CandidateGroupStats cgs " \
+                              " where SierpinskiRieselPrime is null " \
+                              "   and not exists (select 'x' " \
+                                                 "  from Candidate " \
+                                                 " where HasPendingTest > 0 " \
+                                                 "   and cgs.k = Candidate.k " \
+                                                 "   and cgs.b = Candidate.b " \
+                                                 "   and cgs.c = Candidate.c) " \
+                              "limit 1";
+
+   const char *selectSQL = "select CandidateName, n " \
+                           "  from Candidate " \
+                           " where CompletedTests = 0 " \
+                           "   and DecimalLength > 0 " \
+                           "   and k = %"PRId64" " \
+                           "   and b = %d " \
+                           "   and c = %d " \
+                           "   and n > ? " \
+                           "order by %s limit 100";
+   
+   // Allow only one thread through this method at a time since each thread
+   // is locking all Candidates for a single k/b/c.
+   ip_Locker->Lock();
+
+   selectKBCStatement = new SQLStatement(ip_Log, ip_DBInterface, selectKBCSQL);
+
+   selectKBCStatement->BindSelectedColumn(&theK);
+   selectKBCStatement->BindSelectedColumn(&theB);
+   selectKBCStatement->BindSelectedColumn(&theC);
+   
+   if (!selectKBCStatement->FetchRow(false)) {
+      ip_Locker->Release();
+      delete selectKBCStatement;
+      return 0;
+   }
+   
+   delete selectKBCStatement;
+
+   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, theK, theB, theC, is_OrderBy.c_str());
+   
+   selectStatement->BindInputParameter(theN);
+
+   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+   selectStatement->BindSelectedColumn(&theN);
+
+   sentWorkUnits = 0;
+   theN = 0;
+   encounteredError = false;
+
+   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+   {
+      // If we haven't sent enough, start over again at the last n for this k/b/c
+      selectStatement->SetInputParameterValue(theN, true);
+
+      while (sentWorkUnits < sendWorkUnits && !encounteredError)
+      {
+         // Exit both loops if no rows are selected
+         if (!selectStatement->FetchRow(false)) {
+            encounteredError = true;
+            break;
+         }
+
+         // Reserve the candidate and send to the client
+         if (ReserveCandidate(candidateName))
+         {
+            ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
+
+            if (SendWork(candidateName, theK, theB, theN, theC))
+            {
+               sentWorkUnits++;
+               ip_DBInterface->Commit();
+            }
+            else
+            {
+               ip_DBInterface->Rollback();
+               encounteredError = true;
+            }
+         }
+      }
+
+      selectStatement->CloseCursor();
+   }
+
+   // Just in case a commit or rollback was not done
+   ip_DBInterface->Rollback();
+
+   delete selectStatement;
+
+   ip_Locker->Release();
+
+   return sentWorkUnits;
+}
+
+int32_t  PrimeWorkSender::SelectGFNCandidates(int32_t sendWorkUnits)
+{
+   SQLStatement *selectStatement;
+   char     candidateName[NAME_LENGTH+1];
+   int32_t  theB = 0, theN = 0;
+   bool     encounteredError;
+   int32_t  sentWorkUnits;
+
+   const char *selectSQL = "select CandidateName, b, n " \
+                           "  from Candidate " \
+                           " where HasPendingTest = 0 " \
+                           "   and CompletedTests = 0 " \
+                           "   and DecimalLength > 0 " \
+                           "   and ((b = ? and n > ?) or (b > ?)) " \
+                           "order by %s limit 100";
+
+   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, is_OrderBy.c_str());
+
+   selectStatement->BindInputParameter(theB);
+   selectStatement->BindInputParameter(theN);
+   selectStatement->BindInputParameter(theB);
+
+   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+   selectStatement->BindSelectedColumn(&theB);
+   selectStatement->BindSelectedColumn(&theN);
+
+   sentWorkUnits = 0;
+   encounteredError = false;
+   theB = theN = 0;
+
+   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+   {
+      selectStatement->SetInputParameterValue(theB, true);
+      selectStatement->SetInputParameterValue(theN);
+      selectStatement->SetInputParameterValue(theB);
+
+      while (sentWorkUnits < sendWorkUnits && !encounteredError)
+      {
+         // Exit both loops if no rows are selected
+         if (!selectStatement->FetchRow(false)) {
+            encounteredError = true;
+            break;
+         }
+
+         if (!CheckGenefer(candidateName))
+         {
+            ip_Log->Debug(DEBUG_WORK, "%d: Client does not support version of genefer needed for %s", ip_Socket->GetSocketID(), candidateName);
+            continue;
+         }
+
+         // Allow only one thread through here at a time
+         ip_Locker->Lock();
+         
+         // Reserve the candidate and send to the client
+         if (ReserveCandidate(candidateName))
+         {
+            ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
+
+            if (SendWork(candidateName, 0, theB, theN, 0))
+            {
+               sentWorkUnits++;
+               ip_DBInterface->Commit();
+            }
+            else
+            {
+               ip_DBInterface->Rollback();
+               encounteredError = true;
+            }
+         }
+
+         ip_Locker->Release();
+      }
+
+      selectStatement->CloseCursor();
+   }
+
+   // Just in case a commit or rollback was not done
+   ip_DBInterface->Rollback();
+
+   delete selectStatement;
+
+   return sentWorkUnits;
+}
+
+int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
+{
+   SQLStatement *selectStatement;
+   char     candidateName[NAME_LENGTH+1];
+   int64_t  theK;
+   int32_t  theB, theC, theN;
+   bool     encounteredError;
+   int32_t  sentWorkUnits;
+
+   const char *selectSQL = "select CandidateName, k, b, c, n " \
+                           "  from Candidate " \
+                           " where HasPendingTest = 0 " \
+                           "   and CompletedTests = 0 " \
+                           "   and DecimalLength > 0 " \
+                           "order by %s limit 500";
+
+   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, is_OrderBy.c_str());
+
+   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+   selectStatement->BindSelectedColumn(&theK);
+   selectStatement->BindSelectedColumn(&theB);
+   selectStatement->BindSelectedColumn(&theC);
+   selectStatement->BindSelectedColumn(&theN);
+
+   sentWorkUnits = 0;
+   encounteredError = false;
+
+   // We only do a single pass because we can't control the ORDER BY.  Technically we could,
+   // but it would be a lot of work for little gain.  The only downside is that we might not
+   // be able to send as many as the client is requesting.
+   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+   {
+      // Exit if no rows are selected
+      if (!selectStatement->FetchRow(false)) {
+         encounteredError = true;
+         break;
+      }
+
+      // Allow only one thread through here at a time
+      ip_Locker->Lock();
+      
+      // Reserve the candidate and send to the client
+      if (ReserveCandidate(candidateName))
+      {
+         ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
+
+         if (SendWork(candidateName, theK, theB, theN, theC))
+         {
+            sentWorkUnits++;
+            ip_DBInterface->Commit();
+         }
+         else
+         {
+            ip_DBInterface->Rollback();
+            encounteredError = true;
+         }
+      }
+
+      ip_Locker->Release();
+   }
+
+   selectStatement->CloseCursor();
+
+   // Just in case a commit or rollback was not done
+   ip_DBInterface->Rollback();
+
+   delete selectStatement;
+
+   return sentWorkUnits;
+}
+
 bool     PrimeWorkSender::CheckGenefer(string candidateName)
 {
    SQLStatement *sqlStatement;
    int32_t  count;
    char     programName[NAME_LENGTH+1];
-   const char *selectSQL = "select count(*) from GeneferROE " \
+   const char *selectSQL = "select count(*) " \
+                           "  from GeneferROE " \
                            " where CandidateName = ? " \
                            "   and GeneferVersion = ?";
 
@@ -398,8 +652,7 @@ bool     PrimeWorkSender::CheckGenefer(string candidateName)
 // This is only called if double-checking is turned on and at least one test has been done.
 bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalLength, int64_t lastUpdateTime)
 {
-   int64_t  diffTime;
-   int32_t  jj, count;
+   int32_t  count;
    bool     canDoubleCheck = false;
    SQLStatement *sqlStatement;
    char     emailIDCondition[200], machineIDCondition[200];
@@ -408,86 +661,45 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
                            "   %s "
                            "   %s ";
 
-   diffTime = (int64_t) time(NULL);
-   diffTime -= lastUpdateTime;
+   if (ii_DoubleChecker == DC_ANY)
+      return true;
 
-   jj = 0;
-   while (jj < ii_DelayCount && ip_Delay[jj].maxLength < decimalLength)
-      jj++;
+   strcpy(emailIDCondition, "");
+   strcpy(machineIDCondition, "");
 
-   if (diffTime > ip_Delay[jj].doubleCheckDelay)
-   {
-      if (ii_DoubleChecker == DC_ANY)
-         return true;
-
-      strcpy(emailIDCondition, "");
-      strcpy(machineIDCondition, "");
-
-      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
-         sprintf(emailIDCondition, "and EmailID = ?");
+   if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
+      sprintf(emailIDCondition, "and EmailID = ?");
       
-      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
-         sprintf(machineIDCondition, "and MachineID = ?");
+   if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
+      sprintf(machineIDCondition, "and MachineID = ?");
       
-      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, 
-                                      emailIDCondition, machineIDCondition);
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, 
+                                    emailIDCondition, machineIDCondition);
 
-      sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
+   sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
 
-      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
-         sqlStatement->BindInputParameter(is_EmailID, NAME_LENGTH);
+   if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
+      sqlStatement->BindInputParameter(is_EmailID, NAME_LENGTH);
 
-      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
-         sqlStatement->BindInputParameter(is_MachineID, NAME_LENGTH);
+   if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
+      sqlStatement->BindInputParameter(is_MachineID, NAME_LENGTH);
 
-      sqlStatement->BindSelectedColumn(&count);
-      
-      sqlStatement->SetInputParameterValue(candidateName, true);
-
-      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
-         sqlStatement->SetInputParameterValue(is_EmailID, false);
-
-      if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
-         sqlStatement->SetInputParameterValue(is_MachineID, false);
-
-      if (sqlStatement->FetchRow(true) && count == 0)
-         canDoubleCheck = true;
-
-      delete sqlStatement;
-   }
-
-   return canDoubleCheck;
-}
-
-// If there is a pending for another user/email/instance, then do not send any tests
-// for this k/b/c to the client.
-bool     PrimeWorkSender::CheckOneKPerInstance(int64_t k, int32_t b, int32_t c)
-{
-   int32_t  count;
-   SQLStatement *sqlStatement;
-   bool  kForOtherClient = false;
-   const char *selectSQL = "select count(*) "
-                           "  from Candidate c, CandidateTest ct " \
-                           " where ct.CandidateName = c.CandidateName " \
-                           "   and k = ? and b = ? and c = ? " \
-                           "   and (ct.EmailID <> ? or ct.MachineID <> ? or ct.InstanceID <> ?) " \
-                           "   and c.HasPendingTest = 1 ";
-
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
-   sqlStatement->BindInputParameter(k);
-   sqlStatement->BindInputParameter(b);
-   sqlStatement->BindInputParameter(c);
-   sqlStatement->BindInputParameter(is_EmailID.c_str(), ID_LENGTH);
-   sqlStatement->BindInputParameter(is_MachineID.c_str(), ID_LENGTH);
-   sqlStatement->BindInputParameter(is_InstanceID.c_str(), ID_LENGTH);
    sqlStatement->BindSelectedColumn(&count);
+      
+   sqlStatement->SetInputParameterValue(candidateName, true);
 
-   if (sqlStatement->FetchRow(true) && count > 0)
-      kForOtherClient = true;
+   if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
+      sqlStatement->SetInputParameterValue(is_EmailID, false);
+
+   if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
+      sqlStatement->SetInputParameterValue(is_MachineID, false);
+
+   if (sqlStatement->FetchRow(true) && count == 0)
+      canDoubleCheck = true;
 
    delete sqlStatement;
 
-   return kForOtherClient;
+   return canDoubleCheck;
 }
 
 bool     PrimeWorkSender::ReserveCandidate(string candidateName)

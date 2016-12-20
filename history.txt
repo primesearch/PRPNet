@@ -1,5 +1,16 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.4.3:  December 19, 2016 - New Release
+    prpserver:  Change candidate selection to address issues with finding doublecheck work.
+	            Show default sortsequence in prpserver.ini for configurations that do not
+				allow a change to that configuration.
+
+Version 5.4.2:  September 11, 2016 - New Release
+          all:  Add support for Multifactorial searhes.
+	
+Version 5.4.1:  December 29, 2015 - New Release
+          all:  Add support for Carol/Kynea searches, (k*b^n+/-1)^2-12.
+	
 Version 5.4.0:  January 31, 2015 - New Release
           all:  Add support for generic searches (pfgw only).
                 Add support for cyclotomis searches.  The cyclotomic form is Phi(k,b^n}.

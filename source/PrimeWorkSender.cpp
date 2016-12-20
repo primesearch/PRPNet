@@ -54,7 +54,7 @@ PrimeWorkSender::~PrimeWorkSender()
 
 void  PrimeWorkSender::ProcessMessage(string theMessage)
 {
-   int32_t      sendWorkUnits, sentWorkUnits;
+   int32_t      sendWorkUnits, sentWorkUnits = 0;
    char         clientVersion[20];
    char         tempMessage[200];
 
@@ -122,13 +122,14 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
    else 
    {
       // First look for double-check work.
-      sentWorkUnits = SendWorkToClient(sendWorkUnits, true, false);
+      if (ib_NeedsDoubleCheck)
+         sentWorkUnits = SendWorkToClient(sendWorkUnits, true, false);
 
       // If we don't find that, look for first check work
-      if (!sentWorkUnits)
-         sentWorkUnits = SendWorkToClient(sendWorkUnits, false, ib_OneKPerInstance);
-      
       if (!sentWorkUnits && ib_OneKPerInstance)
+         sentWorkUnits = SendWorkToClient(sendWorkUnits, false, true);
+      
+      if (!sentWorkUnits)
          sentWorkUnits = SendWorkToClient(sendWorkUnits, false, false);
 
       if (!sentWorkUnits)

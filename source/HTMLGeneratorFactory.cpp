@@ -13,6 +13,7 @@
 #include "CyclotomicHTML.h"
 #include "CarolKyneaHTML.h"
 #include "GenericHTML.h"
+#include "WagstaffHTML.h"
 
 HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 {
@@ -78,6 +79,10 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
       case ST_WALLSUNSUN:
       case ST_WOLSTENHOLME:
          htmlGenerator = new WWWWHTMLGenerator(globals);
+         break;
+         
+      case ST_WAGSTAFF:
+         htmlGenerator = new WagstaffHTML(globals);
          break;
 
       default:

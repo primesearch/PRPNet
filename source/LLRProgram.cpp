@@ -41,6 +41,11 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
       fprintf(fp, "ABC (%d^$a$b)^2-2\n", ii_b);
       fprintf(fp, "%d %+d\n", ii_n, ii_c); 
    }
+   else if (ii_ServerType == ST_WAGSTAFF)
+   {
+      fprintf(fp, "ABC (2^$a+1)/3\n");
+      fprintf(fp, "%d\n", ii_n); 
+   }
    else
    {
       fprintf(fp, "ABC $a*$b^$c%+d\n", ii_c);

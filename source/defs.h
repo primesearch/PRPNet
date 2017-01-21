@@ -45,6 +45,7 @@ enum sgtype_t { SG_NM1 = 1, SG_NP1 } ;
 #define ST_SOPHIEGERMAIN     9
 #define ST_XYYX             10
 #define ST_MULTIFACTORIAL   11
+#define ST_WAGSTAFF         12
 
 #define ST_WIEFERICH        21
 #define ST_WILSON           22

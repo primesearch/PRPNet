@@ -132,6 +132,9 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
 {
    bool     powerOf2 = false;
    
+   if (serverType == ST_WAGSTAFF && ip_LLRProgram)
+      return ip_LLRProgram;
+
    if (serverType == ST_GFN && ip_GeneferProgram)
       return ip_GeneferProgram;
 

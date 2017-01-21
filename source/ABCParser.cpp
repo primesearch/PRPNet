@@ -51,6 +51,8 @@ static const char *xyyxstring = "$a^$b$c$b^$a";
 
 static const char *ckstring = "(%d^$a$b)^2-2";
 
+static const char *wagstaffstring = "(2^$a+1)/3";
+
 #define ABC_UNKNOWN      0
 #define ABC_CW_FBP      11
 #define ABC_CW_FBM      12
@@ -84,6 +86,7 @@ static const char *ckstring = "(%d^$a$b)^2-2";
 #define ABC_MF         114
 
 #define ABC_CK         121
+#define ABC_WAGSTAFF   122
 
 #define ABC_GENERIC    998
 #define NOT_ABC        999
@@ -355,6 +358,8 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
        return ABC_MF;
    }
    
+   if (!strncmp(tempHeader, wagstaffstring, strlen(wagstaffstring))) return ABC_WAGSTAFF;
+
    if (sscanf(tempHeader, ckstring, &ii_theB) == 1) return ABC_CK;
 
    if (!strncmp(tempHeader, factastring, strlen(factastring))) return ABC_FACTA;
@@ -492,6 +497,10 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
 
       case ST_CAROLKYNEA:
          sprintf(tempName, "(%d^%d%+d)^2-2", ii_theB, ii_theN, ii_theC);
+         break;
+         
+      case ST_WAGSTAFF:
+         sprintf(tempName, "(2^%d+1)/3", ii_theN);
          break;
 
        case ST_GENERIC:
@@ -642,6 +651,11 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
       case ABC_CK:
          if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
          il_theK = 1;
+         return true;
+
+      case ABC_WAGSTAFF:
+         if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
+         il_theK = ii_theB = ii_theC = 1;
          return true;
    }
    return false;

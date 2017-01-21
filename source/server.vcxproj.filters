@@ -207,6 +207,12 @@
     <ClCompile Include="MultiFactorialHTML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WagstaffHTML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WagstaffStatsUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ABCParser.h">
@@ -408,6 +414,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MultiFactorialHTML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WagstaffHTML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WagstaffStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

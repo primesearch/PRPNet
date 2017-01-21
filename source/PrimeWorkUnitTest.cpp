@@ -175,6 +175,10 @@ testresult_t   PrimeWorkUnitTest::DoPrimalityTest(void)
          return TR_COMPLETED;
 
       case R_PRP:
+         // For Wagstaff, pfgw cannot prove primality
+         if (ii_ServerType == ST_WAGSTAFF)
+            return TR_COMPLETED;
+
          // For XYYX, pfgw cannot prove primality
          if (ii_ServerType == ST_XYYX)
             return TR_COMPLETED;

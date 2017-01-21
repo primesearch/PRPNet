@@ -13,6 +13,7 @@
 #include "CyclotomicStatsUpdater.h"
 #include "CarolKyneaStatsUpdater.h"
 #include "WWWWStatsUpdater.h"
+#include "WagstaffStatsUpdater.h"
 
 StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *theLog, int32_t serverType, bool needsDoubleCheck)
 {
@@ -71,6 +72,10 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
          
       case ST_CAROLKYNEA:
          theUpdater = new CarolKyneaStatsUpdater();
+         break;
+
+      case ST_WAGSTAFF:
+         theUpdater = new WagstaffStatsUpdater();
          break;
 
       case ST_WIEFERICH:

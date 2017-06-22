@@ -131,7 +131,8 @@ testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
 
    *line = 0;
    while (!strstr(line, "probable prime") && !strstr(line, "is prime") && !strstr(line, "RES64") &&
-          !strstr(line, "Res64") && !strstr(line, "composite") && !strstr(line, "small factor"))
+          !strstr(line, "Res64") && !strstr(line, "Fermat PRP") &&
+          !strstr(line, "composite") && !strstr(line, "small factor"))
      if (!fgets(line, sizeof(line), fp))
      {
         ip_Log->LogMessage("%s: Test results not found in file [%s].  Assuming user stopped with ^C",
@@ -166,7 +167,7 @@ testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
       return TR_COMPLETED;
    }
 
-   if (strstr(line, "is a probable prime"))
+   if (strstr(line, "is a probable prime") || strstr(line, "Fermat PRP"))
    {
       ib_IsPRP = true;
       return TR_COMPLETED;

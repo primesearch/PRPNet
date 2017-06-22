@@ -180,6 +180,17 @@ bool     PrimeWorker::GetWork(void)
                                 &wu->i_n,
                                 &wu->i_c);
          }
+         else if (ii_ServerType == ST_WAGSTAFF)
+         {
+            toScan = 3;
+            wu->l_k = 1;
+            wu->i_b = 1;
+            wu->i_c = 1;
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %"PRIu64" %u",
+                                 wu->s_Name,
+                                &wu->l_TestID,
+                                &wu->i_n);
+         }
          else if (ii_ServerType == ST_GENERIC)
          {
             toScan = 2;

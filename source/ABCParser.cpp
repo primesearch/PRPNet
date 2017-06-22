@@ -192,6 +192,10 @@ int32_t  ABCParser::IsValidFormat(void)
    if (ii_ServerType == ST_GENERIC)
       if (ii_ABCFormat == ABC_GENERIC || ii_ABCFormat == NOT_ABC)
          return true;
+   
+   if (ii_ServerType == ST_WAGSTAFF) 
+       if (ii_ABCFormat == ABC_WAGSTAFF)
+          return true;
 
    return false;
 }

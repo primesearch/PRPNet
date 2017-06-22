@@ -21,6 +21,7 @@ Mail   *MailFactory::GetInstance(globals_t *globals, string smtpServer, int32_t 
       case ST_SOPHIEGERMAIN:
       case ST_FIXEDBKC:
       case ST_CYCLOTOMIC:
+      case ST_WAGSTAFF:
          pMail = new PrimeMail(globals, smtpServer, smtpPort);
          break;
 

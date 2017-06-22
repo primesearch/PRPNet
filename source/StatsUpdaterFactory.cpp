@@ -86,7 +86,7 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
          break;
 
       default:
-         printf("Didn't handle %d\n", serverType);
+         printf("Didn't handle servertype %d\n", serverType);
          exit(0);
    }
 

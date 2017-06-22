@@ -777,7 +777,7 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
    else if (ii_ServerType == ST_CYCLOTOMIC)
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
    else if (ii_ServerType == ST_WAGSTAFF)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %d", candidateName.c_str(), lastUpdateTime, theN);
    else 
       sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
 

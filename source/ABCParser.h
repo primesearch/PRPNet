@@ -27,6 +27,8 @@ private:
 
    Socket  *ip_Socket;
 
+   bool     ib_firstABCDLine;
+
    // These are populated from the first line of the ABC file
    int64_t  il_theK;
    int32_t  ii_theB;

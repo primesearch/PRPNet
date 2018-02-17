@@ -18,8 +18,8 @@ static const char *cwvb_string = "$a*$b^$a%d";
 static const char *cwvbastring = "$a*$b^$a$c";
 
 // Fixed k forms for k*b^n+/-c
-static const char *fk_string = "%d*$a^$b%d";
-static const char *fkastring = "%d*$a^$b$%c";
+static const char *fk_string = "%"PRId64"*$a^$b%d";
+static const char *fkastring = "%"PRId64"*$a^$b$%c";
 
 // Fixed b forms for k*b^n+/-c
 static const char *fb_string = "$a*%d^$b%d";
@@ -52,6 +52,9 @@ static const char *xyyxstring = "$a^$b$c$b^$a";
 static const char *ckstring = "(%d^$a$b)^2-2";
 
 static const char *wagstaffstring = "(2^$a+1)/3";
+
+static const char *fkabcdstring = "%"PRId64"*%d^$a%d [%d]";
+static const char *fnabcdstring = "$a*%d^%d%d [%"PRId64"]";
 
 #define ABC_UNKNOWN      0
 #define ABC_CW_FBP      11
@@ -87,6 +90,9 @@ static const char *wagstaffstring = "(2^$a+1)/3";
 
 #define ABC_CK         121
 #define ABC_WAGSTAFF   122
+
+#define ABCD_FK        201
+#define ABCD_FN        202
 
 #define ABC_GENERIC    998
 #define NOT_ABC        999
@@ -153,7 +159,8 @@ int32_t  ABCParser::IsValidFormat(void)
       if (ii_ABCFormat == ABC_FKP || ii_ABCFormat == ABC_FKM || ii_ABCFormat == ABC_FKA ||
           ii_ABCFormat == ABC_FBP || ii_ABCFormat == ABC_FBM || ii_ABCFormat == ABC_FBA ||
           ii_ABCFormat == ABC_FNP || ii_ABCFormat == ABC_FNM || ii_ABCFormat == ABC_FNA ||
-          ii_ABCFormat == ABC_VP  || ii_ABCFormat == ABC_VM  || ii_ABCFormat == ABC_VA)
+          ii_ABCFormat == ABC_VP  || ii_ABCFormat == ABC_VM  || ii_ABCFormat == ABC_VA  ||
+          ii_ABCFormat == ABCD_FK || ii_ABCFormat == ABCD_FN)
          return true;
  
    if (ii_ServerType == ST_CULLENWOODALL)
@@ -226,7 +233,22 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    char     ch, *pos;
    char     tempHeader[200];
 
+   ib_firstABCDLine = false;
+
    strcpy(tempHeader, abcHeader.c_str());
+
+   if (!memcmp(tempHeader, "ABCD ", 5))
+   {
+      strcpy(tempHeader, abcHeader.c_str() + 5);
+
+      ib_firstABCDLine = true;
+
+      if (sscanf(tempHeader, fkabcdstring, &il_theK, &ii_theB, &ii_theC, &ii_theN) == 4)
+          return ABCD_FK;
+
+      if (sscanf(tempHeader, fnabcdstring, &ii_theB, &ii_theN, &ii_theC, &il_theK) == 4)
+          return ABCD_FN;
+   }
 
    if (memcmp(tempHeader, "ABC ", 4))
    {
@@ -392,72 +414,82 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
    if (!ip_ABCFile && !ip_Socket)
       return false;
 
-   if (ip_ABCFile)
+   if (!ib_firstABCDLine)
    {
-      if (fgets(abcLine, sizeof(abcLine), ip_ABCFile) == NULL)
+      if (ip_ABCFile)
       {
-         fclose(ip_ABCFile);
-         ip_ABCFile = 0;
-         return false;
+         if (fgets(abcLine, sizeof(abcLine), ip_ABCFile) == NULL)
+         {
+            fclose(ip_ABCFile);
+            ip_ABCFile = 0;
+            return false;
+         }
+
+         StripCRLF(abcLine);
+
+         if (!ParseCandidateLine(abcLine))
+         {
+            fclose(ip_ABCFile);
+            ip_ABCFile = 0;
+            printf("Unable to parse line [%s] from ABC file.  Processing stopped\n", abcLine);
+            return false;
+         }
       }
-
-      StripCRLF(abcLine);
-
-      if (!ParseCandidateLine(abcLine))
+      else
       {
-         fclose(ip_ABCFile);
-         ip_ABCFile = 0;
-         printf("Unable to parse line [%s] from ABC file.  Processing stopped\n", abcLine);
-         return false;
-      }
-   }
-   else
-   {
-      theMessage = ip_Socket->Receive();
+         theMessage = ip_Socket->Receive();
 
-      if (!theMessage)
-         return false;
-
-      if (!memcmp(theMessage, "End of File", 11))
-         return false;
-
-      if (!memcmp(theMessage, "sent", 4))
-      {
-         theName = theMessage;
-         return true;
-      }
-
-      if (!memcmp(theMessage, "ABC ", 4))
-      {
-         if (DetermineABCFormat(theMessage) != ii_ABCFormat)
+         if (!theMessage)
             return false;
 
-         theName = theMessage;
-         return true;
-      }
+         if (!memcmp(theMessage, "End of File", 11))
+            return false;
 
-      if (ii_ABCFormat == ABC_UNKNOWN)
-      {
-         theC = 0;
-         return true;
-      }
+         if (!memcmp(theMessage, "sent", 4))
+         {
+            theName = theMessage;
+            return true;
+         }
 
-      if (!ParseCandidateLine(theMessage))
-      {
-         ip_Socket->Send("ERR: Unable to parse line [%s] from ABC file.  Processing stopped\n", theMessage);
-         theC = 0;
-         return true;
-      }
+         if (!memcmp(theMessage, "ABC ", 4) || !memcmp(theMessage, "ABCD " , 5))
+         {
+            if (DetermineABCFormat(theMessage) != ii_ABCFormat)
+               return false;
+
+            theName = theMessage;
+
+            // Return if this is not ABCD format
+            if (!ib_firstABCDLine)
+               return true;
+         }
+
+         if (ii_ABCFormat == ABC_UNKNOWN)
+         {
+            theC = 0;
+            return true;
+         }
+
+         // If is is an ABCD line from the input, then we don't need to parse it
+         // as the first Candidate is derived from that line.
+         if (!ib_firstABCDLine && !ParseCandidateLine(theMessage))
+         {
+            ip_Socket->Send("ERR: Unable to parse line [%s] from ABC file.  Processing stopped\n", theMessage);
+            theC = 0;
+            return true;
+         }
       
-      if (ii_ABCFormat == NOT_ABC)
-      {
-         sprintf(abcLine, "%s", theMessage);
-         il_theK = 0;
-         ii_theB = 0;
-         ii_theN = 0;
-         ii_theC = 0;
+         if (ii_ABCFormat == NOT_ABC)
+         {
+            sprintf(abcLine, "%s", theMessage);
+            il_theK = 0;
+            ii_theB = 0;
+            ii_theN = 0;
+            ii_theC = 0;
+         }
       }
    }
+
+   ib_firstABCDLine = false;
 
    switch (ii_ServerType)
    {
@@ -524,7 +556,9 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
 bool  ABCParser::ParseCandidateLine(string abcLine)
 {
    char tempLine[200];
-
+   int32_t value32;
+   int64_t value64;
+   
    strcpy(tempLine, abcLine.c_str());
 
    if (ii_ABCFormat == NOT_ABC)
@@ -532,6 +566,16 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
 
    switch (ii_ABCFormat)
    {
+      case ABCD_FK:
+         if (sscanf(tempLine, "%d", &value32) != 1) return false;
+         ii_theN += value32;
+         return true;
+
+      case ABCD_FN:
+         if (sscanf(tempLine, "%lld", &value64) != 1) return false;
+         il_theK += value64;
+         return true;
+
       case ABC_CW_FBP:
          if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
          il_theK = ii_theN;

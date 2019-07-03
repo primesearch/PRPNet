@@ -146,7 +146,7 @@ int32_t  PrimeWorkSender::SendWorkToClient(int32_t sendWorkUnits, bool doubleChe
 {
    KeepAliveThread  *keepAliveThread;
    SharedMemoryItem *threadWaiter;
-   boolean           endLoop;
+   bool              endLoop;
    int32_t           idx, sentWorkUnits = 0;
    int64_t           currentTime;
 

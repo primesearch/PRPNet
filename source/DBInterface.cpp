@@ -141,6 +141,11 @@ int32_t  DBInterface::Connect(int32_t clientID)
 
    port << ii_ServerPort;
 
+   int caCode;
+
+   caCode = SQLSetConnectAttr(ip_SQLConnectionHandle, SQL_ATTR_CONNECTION_TIMEOUT, (SQLPOINTER) &dbConnectTimeout, 0);
+   if (caCode != SQL_SUCCESS) GetSQLErrorAndLog(caCode);
+   
    if (is_DSN.length())
    {
       ip_Log->Debug(DEBUG_DATABASE, "%d: ODBC Connection via a DSN.  DSN=%s, User=%s, Password=%s",
@@ -175,11 +180,6 @@ int32_t  DBInterface::Connect(int32_t clientID)
 
    if (rCode == SQL_SUCCESS || rCode == SQL_SUCCESS_WITH_INFO)
    {
-      int caCode;
-
-      caCode = SQLSetConnectAttr(ip_SQLConnectionHandle, SQL_ATTR_CONNECTION_TIMEOUT, (SQLPOINTER) &dbConnectTimeout, 0);
-      if (caCode != SQL_SUCCESS) GetSQLErrorAndLog(caCode);
-
       caCode = SQLSetConnectAttr(ip_SQLConnectionHandle, SQL_ATTR_AUTOCOMMIT, (SQLPOINTER) SQL_AUTOCOMMIT_OFF, SQL_NTS);
       if (caCode != SQL_SUCCESS) GetSQLErrorAndLog(caCode);
 

@@ -66,7 +66,7 @@ void  Socket::Close()
    // Don't give the message again, but force the socket closed
    // just in case it is open.
    if (ib_IsOpen)
-      ip_Log->Debug(DEBUG_SOCKET, "%s: closing socket", is_SocketDescription.c_str());
+      ip_Log->Debug(DEBUG_SOCKET, "%s: closing socket %d", is_SocketDescription.c_str(), ii_SocketID);
 
    closesocket(ii_SocketID);
 
@@ -106,8 +106,9 @@ int32_t  Socket::GetAddress(string serverName)
       }
 
       host_alias = 0;
-      for (i=0; hp->h_addr_list[i]; i++);
-         host_alias = rand() % i;
+      for (i=0; hp->h_addr_list[i]; i++)
+         if (i > 0)
+            host_alias = rand() % i;
 
       memcpy((void *) &addr, (void *) hp->h_addr_list[host_alias], sizeof(addr));
    }
@@ -139,13 +140,18 @@ char    *Socket::GetNextMessageFromReadBuffer(void)
 
    is_TempReadBuffer[pos - is_ReadBuffer] = 0;
 
+   ip_Log->Debug(DEBUG_SOCKET, "parsed %s\n", is_TempReadBuffer);
+
    // Point to the 0 that we just put into is_TempReadBuffer
    pos = &is_TempReadBuffer[pos - is_ReadBuffer];
 
    // Point to the next character, then copy back to is_ReadBuffer
    pos++;
    if (*pos)
+   {
       strcpy(is_ReadBuffer, pos);
+      ip_Log->Debug(DEBUG_SOCKET, "next %s\n", is_ReadBuffer);
+}
    else
       ClearBuffer();
 
@@ -266,6 +272,8 @@ char    *Socket::Receive(int32_t maxWaitSeconds)
             totalBytesReceived += rc;
             strcat(is_ReadBuffer, is_TempReadBuffer);
             is_ReadBuffer[totalBytesReceived] = 0;
+
+            ip_Log->Debug(DEBUG_SOCKET, "read %s\n", is_ReadBuffer);
 
             theTime = time(NULL);
          }

@@ -147,9 +147,10 @@ void  Log::Write(string fileName, const char *logMessage, int32_t toConsole, int
 char *Log::Time()
 {
    time_t timenow;
-   struct tm *ltm;
-   static char timeString[64];
-   char   timeZone[100];
+   struct tm *result;
+   struct tm ltm;
+   static char timeString[200];
+   char   timeZone[200];
    char  *ptr1, *ptr2;
 
    while (true)
@@ -157,17 +158,17 @@ char *Log::Time()
      timenow = time(NULL);
 
      if (ib_UseLocalTime)
-        ltm = localtime(&timenow);
+        result = localtime_r(&timenow, &ltm);
      else
-        ltm = gmtime(&timenow);
+        result = gmtime(&timenow);
 
-     if (!ltm)
+     if (!result)
         continue;
 
      if (ib_UseLocalTime)
      {
         // This could return a string like "Central Standard Time" or "CST"
-        strftime(timeZone, sizeof(timeZone), "%Z", ltm);
+        strftime(timeZone, sizeof(timeZone), "%Z", &ltm);
 
         // If there are embedded spaces, this will convert
         // "Central Standard Time" to "CST"
@@ -196,7 +197,7 @@ char *Log::Time()
      else
         strcpy(timeZone, "GMT");
 
-     strftime(timeString, sizeof(timeString), "%Y-%m-%d %X", ltm);
+     strftime(timeString, sizeof(timeString), "%Y-%m-%d %X", &ltm);
      if (ib_AppendTimeZone)
      {
         strcat(timeString, " ");

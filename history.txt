@@ -1,9 +1,14 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.4.4:  March 18, 2020 - New Release
+    prpserver:  Add column to CandidateGroupStats to improve performance of "onekperinstance".
+          all:  Update usage of PRIu64/PRId64/SCNu64/SCNd64 with printf/scanf to avoid
+                compiler warnings.
+
 Version 5.4.3:  December 19, 2016 - New Release
     prpserver:  Change candidate selection to address issues with finding doublecheck work.
-	            Show default sortsequence in prpserver.ini for configurations that do not
-				allow a change to that configuration.
+	             Show default sortsequence in prpserver.ini for configurations that do not
+				    allow a change to that configuration.
 
 Version 5.4.2:  September 11, 2016 - New Release
           all:  Add support for Multifactorial searhes.
@@ -13,7 +18,7 @@ Version 5.4.1:  December 29, 2015 - New Release
 	
 Version 5.4.0:  January 31, 2015 - New Release
           all:  Add support for generic searches (pfgw only).
-                Add support for cyclotomis searches.  The cyclotomic form is Phi(k,b^n}.
+                Add support for cyclotomic searches.  The cyclotomic form is Phi(k,b^n}.
                 if k=3 and n=2^N for some integer N, cyclo will be used (if configured 
                 on the client) as it can more quickly test that form on a GPU.  For
                 other values of k and n, pfgw will be used.  Stats will be rolled up by

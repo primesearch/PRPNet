@@ -71,6 +71,7 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
       }
    }
 
+   fprintf(fp, "RunOnBattery=0\n");
    fprintf(fp, "Work=0\n");
    fprintf(fp, "PgenInputFile=%s\n", is_InFileName.c_str());
    fprintf(fp, "PgenOutputFile=%s\n", is_OutFileName.c_str());

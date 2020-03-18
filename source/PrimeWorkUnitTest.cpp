@@ -143,7 +143,7 @@ testresult_t   PrimeWorkUnitTest::DoPRPTest(void)
 
    if (testingProgram->IsPrime())
    {
-      is_Residue = "PRIME";
+      is_Residue = " PRIME";
       iwut_Result = R_PRIME;
       is_Prover = testingProgram->GetInternalProgramName();
       is_ProverVersion = testingProgram->GetProgramVersion();
@@ -223,7 +223,7 @@ testresult_t   PrimeWorkUnitTest::DoPrimalityTest(void)
          if (testingProgram->IsPrime())
          {
             is_Prover = testingProgram->GetInternalProgramName();
-            is_Residue = "PRIME";
+            is_Residue = " PRIME";
             iwut_Result = R_PRIME;
             ip_Log->LogMessage("%s proven prime by %s.  Time:  %.0lf seconds",
                                is_ChildName.c_str(), is_Prover.c_str(), seconds);

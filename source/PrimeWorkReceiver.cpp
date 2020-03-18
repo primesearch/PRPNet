@@ -7,6 +7,7 @@ PrimeWorkReceiver::PrimeWorkReceiver(DBInterface *dbInterface, Socket *theSocket
                                      : WorkReceiver(dbInterface, theSocket, globals,
                                                     userID, emailID, machineID, instanceID, teamID)
 {
+   ib_OneKPerInstance = globals->b_OneKPerInstance;
 }
 
 PrimeWorkReceiver::~PrimeWorkReceiver()
@@ -25,7 +26,7 @@ void  PrimeWorkReceiver::ProcessMessage(string theMessage)
       ip_Socket->Send("ERROR: RETURNWORK error.  The client version is not specified");
       return;
    }
-
+    
    testsReturned = testsAccepted = 0;
    ignoreBad = false;
    readBuf = ip_Socket->Receive();
@@ -463,4 +464,49 @@ bool     PrimeWorkReceiver::BadProgramVersion(string version)
    }
 
    return false;
+}
+
+bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
+{
+   SQLStatement *sqlStatement;
+   int64_t     theK;
+   int32_t     theB, theC;
+   bool        success;
+   const char *selectSQL = "select k, b, c " \
+                           "  from Candidate " \
+                           " where CandidateName = ?";
+   const char *updateSQL = "update CandidateGroupStats " \
+                           "   set PendingTestCount = PendingTestCount - 1 " \
+                           " where k = %" PRId64 " " \
+                           "   and b = %d " \
+                           "   and c = %d " \
+                           "   and PendingTestCount > 0 ";
+
+   if (!ib_OneKPerInstance)
+      return true;
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
+   sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
+   sqlStatement->BindSelectedColumn(&theK);
+   sqlStatement->BindSelectedColumn(&theB);
+   sqlStatement->BindSelectedColumn(&theC);
+    
+   success = sqlStatement->Execute();
+
+   delete sqlStatement;
+
+   if (!success)
+      return false;
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theK, theB, theC);
+
+   // It is okay if no rows are updated as we don't want PendingTestCount to go negative
+   success = sqlStatement->Execute();
+
+   if (!success)
+      ip_DBInterface->Rollback();
+
+   delete sqlStatement;
+
+   return success;
 }

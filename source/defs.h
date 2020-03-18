@@ -107,7 +107,7 @@ typedef struct
 inline result_t  ConvertResidueToResult(string residue)
 {
    if (residue == "PRP")   return R_PRP;
-   if (residue == "PRIME") return R_PRIME;
+   if (residue == " PRIME") return R_PRIME;
 
    return R_COMPOSITE;
 }

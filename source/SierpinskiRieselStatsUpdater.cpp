@@ -185,6 +185,11 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
                              "                      where b = CandidateGroupStats.b " \
                              "                        and k = CandidateGroupStats.k " \
                              "                        and c = CandidateGroupStats.c), " \
+                             "       PendingTestCount = (select count(*) from Candidate " \
+                             "                      where b = CandidateGroupStats.b " \
+                             "                        and k = CandidateGroupStats.k " \
+                             "                        and c = CandidateGroupStats.c " \
+                             "                        and HasPendingTest = 1), " \
                              "       CompletedThru = %s, " \
                              "       LeadingEdge = ?, " \
                              "       PRPandPrimesFound = (select count(*) from Candidate " \

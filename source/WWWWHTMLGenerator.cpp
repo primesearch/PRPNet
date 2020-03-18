@@ -739,7 +739,7 @@ char  *WWWWHTMLGenerator::TimeToString(time_t inTime)
         while (true)
         {
            while (*ptr2 && *ptr2 != ' ')
-	          *ptr2++;
+	           ptr2++;
 
            if (!*ptr2) break;
 

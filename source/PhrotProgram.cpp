@@ -44,7 +44,7 @@ testresult_t   PhrotProgram::Execute(testtype_t testType)
    else
    {
       fprintf(fp, "ABC $a*$b^$c%+d\n", ii_c);
-      fprintf(fp, "%"PRId64" %d %d\n", il_k, ii_b, ii_n);
+      fprintf(fp, "%" PRId64" %d %d\n", il_k, ii_b, ii_n);
    }
 
    fclose(fp);

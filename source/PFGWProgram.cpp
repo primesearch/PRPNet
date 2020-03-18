@@ -115,7 +115,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
 
 testresult_t   PFGWProgram::ParseTestResults(testtype_t testType)
 {
-   char        line[250], fileName[30], *ptr, *pos, *endOfResidue;
+   char        line[250], fileName[30], *ptr, *pos, *endOfResidue = 0;
    FILE       *fp;
    testresult_t rCode;
    int         tryCount = 0;

@@ -664,8 +664,8 @@ void  ReprocessINIFile(string configFile)
 {
    FILE    *fp;
    char     line[2001];
-   int32_t  stopOption;
-   int32_t  stopASAPOption;
+   int32_t  stopOption = 9;
+   int32_t  stopASAPOption = 9;
 
    if (gb_IsQuitting) return;
 

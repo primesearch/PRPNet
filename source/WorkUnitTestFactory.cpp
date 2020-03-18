@@ -49,11 +49,11 @@ void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType,
 {
    char          *line, *ptr;
    char           endWorkUnit[100], prefix[50];
-   WorkUnitTest  *workUnitTest = NULL, *previousWorkUnitTest;
+   WorkUnitTest  *workUnitTest = NULL, *previousWorkUnitTest = NULL;
 
    wu->m_FirstWorkUnitTest = NULL;
    line = new char[BUFFER_SIZE];
-   sprintf(endWorkUnit, "End WorkUnit %"PRId64" %s", wu->l_TestID, wu->s_Name);
+   sprintf(endWorkUnit, "End WorkUnit %" PRId64" %s", wu->l_TestID, wu->s_Name);
 
    while (fgets(line, BUFFER_SIZE, saveFile) != NULL)
    {
@@ -100,8 +100,11 @@ void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType,
 
       if (!wu->m_FirstWorkUnitTest)
          wu->m_FirstWorkUnitTest = workUnitTest;
-      else
-         previousWorkUnitTest->SetNextWorkUnitTest(workUnitTest);
+	  else
+	  {
+		  if (previousWorkUnitTest != NULL)
+			  previousWorkUnitTest->SetNextWorkUnitTest(workUnitTest);
+	  }
 
       previousWorkUnitTest = workUnitTest;
       workUnitTest->Load(saveFile, line, prefix);

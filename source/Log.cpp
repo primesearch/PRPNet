@@ -158,7 +158,7 @@ char *Log::Time()
      timenow = time(NULL);
 
      if (ib_UseLocalTime)
-        result = localtime_r(&timenow, &ltm);
+        result = localtime(&timenow);
      else
         result = gmtime(&timenow);
 

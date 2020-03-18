@@ -97,14 +97,14 @@ bool     WWWWWorker::GetWork(void)
          wu->m_FirstWorkUnitTest = 0;
 
          toScan = 3;
-         wasScanned = sscanf(readBuf, "WorkUnit: %"PRId64" %"PRId64" %"PRId64"",
+         wasScanned = sscanf(readBuf, "WorkUnit: %" PRId64" %" PRId64" %" PRId64"",
                              &wu->l_LowerLimit,
                              &wu->l_UpperLimit,
                              &wu->l_TestID);
 
          if (toScan == wasScanned)
          {
-            sprintf(wu->s_Name, "%"PRId64"", wu->l_LowerLimit);
+            sprintf(wu->s_Name, "%" PRId64"", wu->l_LowerLimit);
             wu->m_FirstWorkUnitTest = new WWWWWorkUnitTest(ip_Log, ii_ServerType, is_WorkSuffix, wu,
                                                            ii_SpecialThreshhold, ip_TestingProgramFactory);
             AddWorkUnitToList(wu);
@@ -219,13 +219,13 @@ bool  WWWWWorker::ReturnWorkUnit(workunit_t *wu, bool completed)
    wuTest = (WWWWWorkUnitTest *) wu->m_FirstWorkUnitTest;
    ip_Socket->StartBuffering();
 
-   ip_Socket->Send("WorkUnit: %"PRId64" %"PRId64" %"PRId64"", wu->l_LowerLimit, wu->l_UpperLimit, wu->l_TestID);
+   ip_Socket->Send("WorkUnit: %" PRId64" %" PRId64" %" PRId64"", wu->l_LowerLimit, wu->l_UpperLimit, wu->l_TestID);
 
    if (!completed)
       ip_Socket->Send("Test Abandoned");
    else
    {
-      ip_Socket->Send("Stats: %s %s %"PRId64" %s %lf", wuTest->GetProgram().c_str(), wuTest->GetProgramVersion().c_str(),
+      ip_Socket->Send("Stats: %s %s %" PRId64" %s %lf", wuTest->GetProgram().c_str(), wuTest->GetProgramVersion().c_str(),
                        wuTest->GetPrimesTested(), wuTest->GetCheckSum().c_str(), wuTest->GetSeconds());
 
       while (wuTest)
@@ -236,7 +236,7 @@ bool  WWWWWorker::ReturnWorkUnit(workunit_t *wu, bool completed)
       }
    }
 
-   ip_Socket->Send("End of WorkUnit: %"PRId64" %"PRId64" %"PRId64" ", wu->l_LowerLimit, wu->l_UpperLimit, wu->l_TestID);
+   ip_Socket->Send("End of WorkUnit: %" PRId64" %" PRId64" %" PRId64" ", wu->l_LowerLimit, wu->l_UpperLimit, wu->l_TestID);
    ip_Socket->SendBuffer();
 
    theMessage = ip_Socket->Receive(10);
@@ -269,7 +269,7 @@ void  WWWWWorker::Save(FILE *fPtr)
    ip_FirstWorkUnit = 0;
    while (wu)
    {
-      fprintf(fPtr, "Start WorkUnit %"PRId64" %"PRId64" %"PRId64"\n",
+      fprintf(fPtr, "Start WorkUnit %" PRId64" %" PRId64" %" PRId64"\n",
               wu->l_LowerLimit, wu->l_UpperLimit, wu->l_TestID);
 
       wuNext = (workunit_t *) wu->m_NextWorkUnit;
@@ -283,7 +283,7 @@ void  WWWWWorker::Save(FILE *fPtr)
          wuTest = wuTestNext;
       }
 
-      fprintf(fPtr, "End WorkUnit %"PRId64" %s\n", wu->l_TestID, wu->s_Name);
+      fprintf(fPtr, "End WorkUnit %" PRId64" %s\n", wu->l_TestID, wu->s_Name);
 
       AddWorkUnitToList(wu);
 
@@ -319,7 +319,7 @@ void  WWWWWorker::Load(string saveFileName)
       {
          wu = new workunit_t;
          wu->m_FirstWorkUnitTest = 0;
-         countScanned = sscanf(line, "Start WorkUnit %"PRId64" %"PRId64" %"PRId64"",
+         countScanned = sscanf(line, "Start WorkUnit %" PRId64" %" PRId64" %" PRId64"",
                                &wu->l_LowerLimit, &wu->l_UpperLimit, &wu->l_TestID);
 
          if (countScanned != 3)
@@ -328,7 +328,7 @@ void  WWWWWorker::Load(string saveFileName)
             exit(-1);
          }
 
-         sprintf(wu->s_Name, "%"PRId64"", wu->l_LowerLimit);
+         sprintf(wu->s_Name, "%" PRId64"", wu->l_LowerLimit);
          ip_WorkUnitTestFactory->LoadWorkUnitTest(fPtr, ii_ServerType, wu, ii_SpecialThreshhold);
          AddWorkUnitToList(wu);
       }

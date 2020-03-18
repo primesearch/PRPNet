@@ -24,7 +24,7 @@ SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t server
       exit(0);
    }
 
-   sprintf(tempName, "%"PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
+   sprintf(tempName, "%" PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
    is_ChildName = tempName;
 }
 

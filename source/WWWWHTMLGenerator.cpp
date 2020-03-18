@@ -253,15 +253,15 @@ void     WWWWHTMLGenerator::FindsByUser(void)
          if (showOnWebPage)
          {
             if (!remainder && !quotient)
-               ip_Socket->Send("<tr><td align=center>%"PRId64"<td>%s<td>%s<td>%s<td>%s</tr>",
+               ip_Socket->Send("<tr><td align=center>%" PRId64"<td>%s<td>%s<td>%s<td>%s</tr>",
                                prime, teamID, machineID, instanceID, TimeToString(dateReported));
             else
             {
                if (ii_ServerType == ST_WALLSUNSUN)
-                  ip_Socket->Send("<tr><td align=center>%"PRId64" (0 %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
+                  ip_Socket->Send("<tr><td align=center>%" PRId64" (0 %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
                                   prime, quotient, teamID, machineID, instanceID, TimeToString(dateReported));
                else
-                  ip_Socket->Send("<tr><td align=center>%"PRId64" (%+d %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
+                  ip_Socket->Send("<tr><td align=center>%" PRId64" (%+d %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
                                   prime, remainder, quotient, teamID, machineID, instanceID, TimeToString(dateReported));
             }
          }
@@ -362,15 +362,15 @@ void     WWWWHTMLGenerator::FindsByTeam(void)
          if (showOnWebPage)
          {
             if (!remainder && !quotient)
-               ip_Socket->Send("<tr><td align=center>%"PRId64"<td>%s<td>%s<td>%s<td>%s</tr>",
+               ip_Socket->Send("<tr><td align=center>%" PRId64"<td>%s<td>%s<td>%s<td>%s</tr>",
                                prime, userID, machineID, instanceID, TimeToString(dateReported));
             else
             {
                if (ii_ServerType == ST_WALLSUNSUN)
-                  ip_Socket->Send("<tr><td align=center>%"PRId64" (0 %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
+                  ip_Socket->Send("<tr><td align=center>%" PRId64" (0 %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
                                   prime, quotient, userID, machineID, instanceID, TimeToString(dateReported));
                else
-                  ip_Socket->Send("<tr><td align=center>%"PRId64" (%+d %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
+                  ip_Socket->Send("<tr><td align=center>%" PRId64" (%+d %+d p)<td>%s<td>%s<td>%s<td>%s</tr>",
                                   prime, remainder, quotient, userID, machineID, instanceID, TimeToString(dateReported));
             }
          }
@@ -709,7 +709,7 @@ void  WWWWHTMLGenerator::ConvertToScientificNotation(int64_t valueInt, string &v
       valueInt /= 10;
    }
 
-   sprintf(tempValue, "%"PRId64"e%d", valueInt, eValue);
+   sprintf(tempValue, "%" PRId64"e%d", valueInt, eValue);
    valueStr = tempValue;
 }
 char  *WWWWHTMLGenerator::TimeToString(time_t inTime)
@@ -807,7 +807,7 @@ void     WWWWHTMLGenerator::GetDaysLeft(void)
    if (daysLeft < 10)
       ip_Socket->Send("<font color=\"red\">");
 
-   ip_Socket->Send("Estimate of %"PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
+   ip_Socket->Send("Estimate of %" PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
 
    delete serverHelper;
 }

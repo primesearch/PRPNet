@@ -18,8 +18,8 @@ static const char *cwvb_string = "$a*$b^$a%d";
 static const char *cwvbastring = "$a*$b^$a$c";
 
 // Fixed k forms for k*b^n+/-c
-static const char *fk_string = "%"PRId64"*$a^$b%d";
-static const char *fkastring = "%"PRId64"*$a^$b$%c";
+static const char *fk_string = "%" PRId64"*$a^$b%d";
+static const char *fkastring = "%" PRId64"*$a^$b$%c";
 
 // Fixed b forms for k*b^n+/-c
 static const char *fb_string = "$a*%d^$b%d";
@@ -53,8 +53,8 @@ static const char *ckstring = "(%d^$a$b)^2-2";
 
 static const char *wagstaffstring = "(2^$a+1)/3";
 
-static const char *fkabcdstring = "%"PRId64"*%d^$a%d [%d]";
-static const char *fnabcdstring = "$a*%d^%d%d [%"PRId64"]";
+static const char *fkabcdstring = "%" PRId64"*%d^$a%d [%d]";
+static const char *fnabcdstring = "$a*%d^%d%d [%" PRId64"]";
 
 #define ABC_UNKNOWN      0
 #define ABC_CW_FBP      11
@@ -497,7 +497,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       case ST_FIXEDBKC:
       case ST_FIXEDBNC:
       case ST_TWIN:
-         sprintf(tempName, "%"PRId64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
+         sprintf(tempName, "%" PRId64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
          break;
 
       case ST_CULLENWOODALL:
@@ -526,9 +526,9 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          
       case ST_CYCLOTOMIC:
          if (ii_theN == 1)
-            sprintf(tempName, "Phi(%"PRId64",%d)", il_theK, ii_theB);
+            sprintf(tempName, "Phi(%" PRId64",%d)", il_theK, ii_theB);
          else
-            sprintf(tempName, "Phi(%"PRId64",%d^%d)", il_theK, ii_theB, ii_theN);
+            sprintf(tempName, "Phi(%" PRId64",%d^%d)", il_theK, ii_theB, ii_theN);
          break;
 
       case ST_CAROLKYNEA:
@@ -619,39 +619,39 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_FBP:
-         if (sscanf(tempLine, "%"PRId64" %d", &il_theK, &ii_theN) != 2) return false;
+         if (sscanf(tempLine, "%" PRId64" %d", &il_theK, &ii_theN) != 2) return false;
          return true;
 
       case ABC_FBM:
-         if (sscanf(tempLine, "%"PRId64" %d", &il_theK, &ii_theN) != 2) return false;
+         if (sscanf(tempLine, "%" PRId64" %d", &il_theK, &ii_theN) != 2) return false;
          return true;
 
       case ABC_FBA:
-         if (sscanf(tempLine, "%"PRId64" %d %d", &il_theK, &ii_theN, &ii_theC) != 3) return false;
+         if (sscanf(tempLine, "%" PRId64" %d %d", &il_theK, &ii_theN, &ii_theC) != 3) return false;
          return true;
 
       case ABC_FNP:
-         if (sscanf(tempLine, "%"PRId64" %d", &il_theK, &ii_theN) != 2) return false;
+         if (sscanf(tempLine, "%" PRId64" %d", &il_theK, &ii_theN) != 2) return false;
          return true;
 
       case ABC_FNM:
-         if (sscanf(tempLine, "%"PRId64" %d", &il_theK, &ii_theB) != 2) return false;
+         if (sscanf(tempLine, "%" PRId64" %d", &il_theK, &ii_theB) != 2) return false;
          return true;
 
       case ABC_FNA:
-         if (sscanf(tempLine, "%"PRId64" %d %d", &il_theK, &ii_theB, &ii_theC) != 3) return false;
+         if (sscanf(tempLine, "%" PRId64" %d %d", &il_theK, &ii_theB, &ii_theC) != 3) return false;
          return true;
 
       case ABC_VP:
-         if (sscanf(tempLine, "%"PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
+         if (sscanf(tempLine, "%" PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
          return true;
 
       case ABC_VM:
-         if (sscanf(tempLine, "%"PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
+         if (sscanf(tempLine, "%" PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
          return true;
 
       case ABC_VA:
-         return sscanf(tempLine, "%"PRId64" %d %d %d", &il_theK, &ii_theB, &ii_theN, &ii_theC) == 4;
+         return sscanf(tempLine, "%" PRId64" %d %d %d", &il_theK, &ii_theB, &ii_theN, &ii_theC) == 4;
 
       case ABC_PRIMM:
       case ABC_FACTM:
@@ -687,12 +687,12 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_PHI_AB:
-         if (sscanf(tempLine, "%"PRId64" %d", &il_theK, &ii_theB) != 2) return false;
+         if (sscanf(tempLine, "%" PRId64" %d", &il_theK, &ii_theB) != 2) return false;
          ii_theC = ii_theN = 1;
          return true;
 
       case ABC_PHI_ABC:
-         if (sscanf(tempLine, "%"PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
+         if (sscanf(tempLine, "%" PRId64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
          ii_theC = 1;
          return true;
 

@@ -199,7 +199,7 @@ const char  *SQLStatement::ExpandStatement(void)
             substitutedValue = temp;
             break;
          case SQL_C_SBIGINT:
-            sprintf(temp, "%"PRId64"", ip_SQLParam[parameterIndex].int64Value);
+            sprintf(temp, "%" PRId64"", ip_SQLParam[parameterIndex].int64Value);
             substitutedValue = temp;
             break;
          case SQL_C_DOUBLE:

@@ -71,9 +71,9 @@ void CyclotomicHTML::ServerStats(void)
          break;
       
       if (n == 1)
-         ip_Socket->Send("<td align=center>Phi(%"PRId64", b)", k);
+         ip_Socket->Send("<td align=center>Phi(%" PRId64", b)", k);
       else
-         ip_Socket->Send("<td align=center>Phi(%"PRId64", b^%d)", k, n);
+         ip_Socket->Send("<td align=center>Phi(%" PRId64", b^%d)", k, n);
       TD_32BIT(countInGroup);
       TD_64BIT(minInGroup);
       TD_64BIT(maxInGroup);

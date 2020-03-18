@@ -207,7 +207,7 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
 
       if (ii_ServerType == ST_SIERPINSKIRIESEL)
       {
-         AppendLine(2, "This prime eliminates k=%"PRId64" for %s base %d", theK, (theC == 1 ? "Sierpinski" : "Riesel"), theB);
+         AppendLine(2, "This prime eliminates k=%" PRId64" for %s base %d", theK, (theC == 1 ? "Sierpinski" : "Riesel"), theB);
 
          srStatement = new SQLStatement(ip_Log, ip_DBInterface, srStatSelect);
          srStatement->BindInputParameter(theK);

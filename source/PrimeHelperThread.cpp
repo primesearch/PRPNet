@@ -236,7 +236,7 @@ void      PrimeHelperThread::AdminFactorFile(void)
       {
          totalFactors++;
 
-         if (sscanf(theMessage, "%"PRId64" | %s", &theFactor, candidateName) != 2)
+         if (sscanf(theMessage, "%" PRId64" | %s", &theFactor, candidateName) != 2)
          {
             badFactors++;
             ip_Socket->Send("Factor line is not of the correct format", theMessage);

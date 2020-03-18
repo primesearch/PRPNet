@@ -161,7 +161,7 @@ void SierpinskiRieselHTML::ServerStats(void)
          ip_Socket->Send("<tr bgcolor=\"%s\">", (isdigit(srPrime[0]) ? "lime" : (kCountUntested ? "white" : "aqua")));
 
          if (k > 1)
-            ip_Socket->Send("<td align=center>%"PRId64"*%d^n%+d", k, b, c);
+            ip_Socket->Send("<td align=center>%" PRId64"*%d^n%+d", k, b, c);
          else
             ip_Socket->Send("<td align=center>%d^n%+d", b, c);
 

@@ -238,9 +238,9 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      sprintf(completedSQL, "(select max(n) from Candidate where b = %d and k = %"PRId64" and c = %d)", theB, theK, theC);
+      sprintf(completedSQL, "(select max(n) from Candidate where b = %d and k = %" PRId64" and c = %d)", theB, theK, theC);
    else
-      sprintf(completedSQL, "$null_func$((select max(n) from Candidate where b = %d and k = %"PRId64" and c = %d and n < %d), %d)",
+      sprintf(completedSQL, "$null_func$((select max(n) from Candidate where b = %d and k = %" PRId64" and c = %d and n < %d), %d)",
               theB, theK, theC, nextToTest, nextToTest);
 
    // Finally, update the group stats

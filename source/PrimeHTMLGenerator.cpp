@@ -808,18 +808,18 @@ void     PrimeHTMLGenerator::HeaderPlusLinks(string pageTitle)
 {
    ip_Socket->StartBuffering();
 
-   ip_Socket->Send("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">");
+   ip_Socket->Send("<html><head>");
    ip_Socket->Send("<title>PRPNet %s %s - %s</title>", PRPNET_VERSION, pageTitle.c_str(), is_HTMLTitle.c_str());
 
    if (is_SortLink.length() > 0)
 		ip_Socket->Send("<script src=\"%s\"></script>", is_SortLink.c_str());
 
-   ip_Socket->Send("<link rel=\"icon\" type=\"image/gif\" href=\"data:image/gif;base64,R0lGODlhEAAQAIABAAAAAP///yH5BAEAAAEALAAAAAAQABAAQAIijI9pwBDtoJq0Wuue1rmjuFziSB7S2YRc6G1L5qoqWNZIAQA7\">");
+   //ip_Socket->Send("<link rel=\"icon\" type=\"image/gif\" href=\"data:image/gif;base64,R0lGODlhEAAQAIABAAAAAP///yH5BAEAAAEALAAAAAAQABAAQAIijI9pwBDtoJq0Wuue1rmjuFziSB7S2YRc6G1L5qoqWNZIAQA7\">");
 	
    if (is_CSSLink.length() > 0)
-      ip_Socket->Send("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" /></head><body>", is_CSSLink.c_str());
+      ip_Socket->Send("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" />", is_CSSLink.c_str());
 
-   ip_Socket->Send("<p align=center><b><font size=6>%s</font></b></p>", is_ProjectTitle.c_str());
+   ip_Socket->Send("</head><body><p align=center><b><font size=6>%s</font></b></p>", is_ProjectTitle.c_str());
 
    if (is_ProjectTitle != is_HTMLTitle)
       ip_Socket->Send("<p align=center><b><font size=4>%s - %s</font></b></p>", is_HTMLTitle.c_str(), pageTitle.c_str());
@@ -919,7 +919,7 @@ void     PrimeHTMLGenerator::GetDaysLeft(void)
    if (daysLeft < 10)
       ip_Socket->Send("<font color=\"red\">");
 
-   ip_Socket->Send("Estimate of %"PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
+   ip_Socket->Send("Estimate of %" PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
 
    delete serverHelper;
 }

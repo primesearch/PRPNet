@@ -69,7 +69,7 @@ void FixedBKCHTML::ServerStats(void)
       if (!ip_Socket->Send("<tr bgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
          break;
       
-      ip_Socket->Send("<td align=center>%"PRId64"*%d^n%+d", k, b, c);
+      ip_Socket->Send("<td align=center>%" PRId64"*%d^n%+d", k, b, c);
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);

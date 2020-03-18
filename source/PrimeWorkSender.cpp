@@ -146,7 +146,7 @@ int32_t  PrimeWorkSender::SendWorkToClient(int32_t sendWorkUnits, bool doubleChe
 {
    KeepAliveThread  *keepAliveThread;
    SharedMemoryItem *threadWaiter;
-   bool              endLoop;
+   boolean           endLoop;
    int32_t           idx, sentWorkUnits = 0;
    int64_t           currentTime;
 
@@ -222,7 +222,7 @@ int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, dou
                            "   and CompletedTests > 0 " \
                            "   and DecimalLength >= %lf " \
                            "   and DecimalLength < %lf " \
-                           "   and LastUpdateTime < %"PRId64" " \
+                           "   and LastUpdateTime < %" PRId64" " \
                            "   and ((DecimalLength >= ? and LastUpdateTime > ?) or (DecimalLength > ?)) " \
                            "order by DecimalLength, LastUpdateTime limit 100";
 
@@ -328,7 +328,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits)
                            "  from Candidate " \
                            " where CompletedTests = 0 " \
                            "   and DecimalLength > 0 " \
-                           "   and k = %"PRId64" " \
+                           "   and k = %" PRId64" " \
                            "   and b = %d " \
                            "   and c = %d " \
                            "   and n > ? " \
@@ -764,22 +764,22 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
    threadWaiter->Lock();
 
    if (ii_ServerType == ST_GFN)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theB, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theB, theN);
    else if (ii_ServerType == ST_XYYX)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %d %d %d", candidateName.c_str(), lastUpdateTime, 
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %d %d %d", candidateName.c_str(), lastUpdateTime, 
          (theC == 1 ? theB : theN), (theC == 1 ? theN : theB), theC);
    else if (ii_ServerType == ST_GENERIC)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64"", candidateName.c_str(), lastUpdateTime);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64"", candidateName.c_str(), lastUpdateTime);
    else if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %d", candidateName.c_str(), lastUpdateTime, theN, theC);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %u %d", candidateName.c_str(), lastUpdateTime, theN, theC);
    else if (ii_ServerType == ST_MULTIFACTORIAL)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %u %u %d", candidateName.c_str(), lastUpdateTime, theN, theB, theC);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %u %u %d", candidateName.c_str(), lastUpdateTime, theN, theB, theC);
    else if (ii_ServerType == ST_CYCLOTOMIC)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %" PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
    else if (ii_ServerType == ST_WAGSTAFF)
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %d", candidateName.c_str(), lastUpdateTime, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %d", candidateName.c_str(), lastUpdateTime, theN);
    else 
-      sent = ip_Socket->Send("WorkUnit: %s %"PRId64" %"PRId64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %" PRId64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
 
    threadWaiter->Release();
 

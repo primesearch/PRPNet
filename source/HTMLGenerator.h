@@ -13,12 +13,12 @@
 #define  TD_TIME(h, m) ip_Socket->Send("<td align=center>%d:%02d", h, m)
 #define  TD_32BIT(x) ip_Socket->Send("<td align=right>%d", (x))
 #define  TD_IF_DC(x) if (ib_NeedsDoubleCheck) ip_Socket->Send("<td align=right>%d", (x))
-#define  TD_64BIT(x) ip_Socket->Send("<td align=right>%"PRId64"", (x))
+#define  TD_64BIT(x) ip_Socket->Send("<td align=right>%" PRId64"", (x))
 #define  TD_FLOAT(x) ip_Socket->Send("<td align=right>%.0lf", (x))
 
 #define  TH_32BIT(x) ip_Socket->Send("<th align=right>%d", (x))
 #define  TH_IF_DC(x) if (ib_NeedsDoubleCheck) ip_Socket->Send("<th align=right>%d", (x))
-#define  TH_64BIT(x) ip_Socket->Send("<th align=right>%"PRId64"", (x))
+#define  TH_64BIT(x) ip_Socket->Send("<th align=right>%" PRId64"", (x))
 
 #define  TH_CLMN_HDR(x) ip_Socket->Send("<th class=headertext>%s", x)
 #define  TH_CH_IF_DC(x) if (ib_NeedsDoubleCheck) ip_Socket->Send("<th class=headertext>%s", x)

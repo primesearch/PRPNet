@@ -278,7 +278,7 @@ void  SendABCFile(const char *abcFileName)
       return;
    }
 
-   if (memcmp(readBuf, "ABC ", 4))
+   if (memcmp(readBuf, "ABC ", 4) && memcmp(readBuf, "ABCD ", 5))
       g_Socket->Send("generic");
 
    StripCRLF(readBuf);
@@ -287,6 +287,13 @@ void  SendABCFile(const char *abcFileName)
    // This tells us if the ABC can be used with the server
    // If it can't, then stop here and avoid wasting bandwidth
    theMessage = g_Socket->Receive();
+   if (!theMessage)
+   {
+      printf("The server didn't respond\n");
+      fclose(fPtr);
+      return;
+   }
+
    if (memcmp(theMessage, "OK:", 3))
    {
       printf("%s\n", theMessage);

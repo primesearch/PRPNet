@@ -148,7 +148,7 @@ void      WWWWHelperThread::AdminAddRange(void)
    delete su;
    delete suf;
 
-   ip_Socket->Send("Added %d new ranges from %"PRId64" to %"PRId64" ", ranges, lowestLimit, upperLimit);
+   ip_Socket->Send("Added %d new ranges from %" PRId64" to %" PRId64" ", ranges, lowestLimit, upperLimit);
    ip_Socket->Send("End of Message");
 
    ip_Log->LogMessage("ADMIN:  %d new ranges added through the admin process", ranges);
@@ -170,7 +170,7 @@ void      WWWWHelperThread::ExpireWorkunitTest(void)
    theMessage = ip_Socket->Receive();
    if (!theMessage) return;
 
-   sscanf(theMessage, "%"PRIu64"", &lowerLimit);
+   lowerLimit = atoll(theMessage);
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteSQL);
    sqlStatement->BindInputParameter(lowerLimit);

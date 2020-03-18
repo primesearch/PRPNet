@@ -66,7 +66,7 @@ void  WWWWMail::MailSpecialResults(void)
       else
          ip_DBInterface->Rollback();
 
-      ip_Log->LogMessage("Sent e-mail for %"PRId64":(%+d %+d p)", prime, remainder, quotient);
+      ip_Log->LogMessage("Sent e-mail for %" PRId64":(%+d %+d p)", prime, remainder, quotient);
    }
 
    delete updateStatement;
@@ -102,14 +102,14 @@ bool  WWWWMail::NotifyUser(string toEmailID, int64_t prime, int32_t remainder, i
    if (ii_ServerType == ST_WOLSTENHOLME) searchType = "Wolstenholme";
 
    if (!remainder && !quotient)
-      success = NewMessage(toEmailID, "%s prime %"PRId64" found by PRPNet!", searchType, prime);
+      success = NewMessage(toEmailID, "%s prime %" PRId64" found by PRPNet!", searchType, prime);
    else
    {
       if (ii_ServerType == ST_WALLSUNSUN)
-         success = NewMessage(toEmailID, "%s special instance %"PRId64" (0 %+d) p was found by PRPNet!",
+         success = NewMessage(toEmailID, "%s special instance %" PRId64" (0 %+d) p was found by PRPNet!",
                               searchType, prime, quotient);
       else
-         success = NewMessage(toEmailID, "%s special instance %"PRId64" (%+d %+d) p was found by PRPNet!",
+         success = NewMessage(toEmailID, "%s special instance %" PRId64" (%+d %+d) p was found by PRPNet!",
                               searchType, prime, remainder, quotient);
    }
 

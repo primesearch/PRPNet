@@ -87,7 +87,7 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
    strcpy(tempMessage, theMessage.c_str());
    if (ii_ServerType == ST_GENERIC)
    {
-      if (sscanf(tempMessage, "WorkUnit: %s %"PRId64" %d", candidateName, &testID, &genericDecimalLength) != 3)
+      if (sscanf(tempMessage, "WorkUnit: %s %" PRId64" %d", candidateName, &testID, &genericDecimalLength) != 3)
       {
          ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
          return false;
@@ -95,7 +95,7 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
    }
    else
    {
-      if (sscanf(tempMessage, "WorkUnit: %s %"PRId64"", candidateName, &testID) != 2)
+      if (sscanf(tempMessage, "WorkUnit: %s %" PRId64"", candidateName, &testID) != 2)
       {
          ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
          return false;
@@ -118,7 +118,7 @@ int32_t  PrimeWorkReceiver::ReceiveWorkUnit(string theMessage)
       // The client has checks for the latter and SQL errors are extremely unlikely,
       // so this most likely will happen because the test had expired.
       ip_Socket->Send("INFO: Test for %s was ignored.  Candidate and/or test was not found", candidateName);
-      ip_Log->LogMessage("%s (%s %s): Test %"PRId64" for candidate %s was not found",
+      ip_Log->LogMessage("%s (%s %s): Test %" PRId64" for candidate %s was not found",
                             is_EmailID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str(),testID, candidateName);
       return false;
    }
@@ -256,7 +256,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
          // result for the test.
          if (strstr(theMessage, ":"))
          {
-            if (sscanf(theMessage, "End of WorkUnit: %s %"PRId64"", theName, &endTestID) != 2)
+            if (sscanf(theMessage, "End of WorkUnit: %s %" PRId64"", theName, &endTestID) != 2)
                return CT_BAD_TERMINATOR;
 
             if (strcmp(theName, candidateName.c_str()) || endTestID != testID)

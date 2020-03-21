@@ -53,7 +53,7 @@ SharedMemoryItem  *Socket::GetThreadWaiter(void)
 {
    char   id[10];
 
-   sprintf(id, "TW %d", ii_SocketID);
+   sprintf(id, "TW %d", (int32_t) ii_SocketID);
 
    if (!ip_ThreadWaiter)
       ip_ThreadWaiter = new SharedMemoryItem(id);

@@ -37,7 +37,6 @@ public:
    WWWWProgram    *GetWWWWProgram(void)    { return ip_WWWWProgram;    };
 
 private:
-   Log            *ip_Log;
 
    LLRProgram     *ip_LLRProgram;
    PFGWProgram    *ip_PFGWProgram;

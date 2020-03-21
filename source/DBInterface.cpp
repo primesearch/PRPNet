@@ -261,11 +261,11 @@ void     DBInterface::Commit(void)
 
    // For some reason SQLEndTran returns a 0, but doesn't really commit the transaction.
    // We'll do it the "hard way" because we know it works.
-#ifndef WIN32
+//#ifndef WIN32
    sqlReturnCode = SQLEndTran(SQL_HANDLE_ENV, ip_SQLEnvironmentHandle, SQL_COMMIT);
-#else
-   sqlReturnCode = SQLExecDirect(ip_SQLStatementHandle, (SQLCHAR *) "COMMIT;", SQL_NTS);
-#endif
+//#else
+//   sqlReturnCode = SQLExecDirect(ip_SQLStatementHandle, (SQLCHAR *) "COMMIT;", SQL_NTS);
+//#endif
 
    if (sqlReturnCode != SQL_SUCCESS)
       GetSQLErrorAndLog(sqlReturnCode);
@@ -277,11 +277,11 @@ void     DBInterface::Rollback(void)
 
    // For some reason SQLEndTran returns a 0, but doesn't really rollback the transaction.
    // We'll do it the "hard way" because we know it works.
-#ifndef WIN32
+//#ifndef WIN32
    sqlReturnCode = SQLEndTran(SQL_HANDLE_ENV, ip_SQLEnvironmentHandle, SQL_ROLLBACK);
-#else
-   sqlReturnCode = SQLExecDirect(ip_SQLStatementHandle, (SQLCHAR *) "ROLLBACK;", SQL_NTS);
-#endif
+//#else
+//   sqlReturnCode = SQLExecDirect(ip_SQLStatementHandle, (SQLCHAR *) "ROLLBACK;", SQL_NTS);
+//#endif
 
    if (sqlReturnCode != SQL_SUCCESS)
       GetSQLErrorAndLog(sqlReturnCode);

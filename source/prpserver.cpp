@@ -428,9 +428,6 @@ void  ProcessINIFile(string configFile, string &smtpServer)
 
    fclose(fp);
 
-   if (gp_Globals->b_OneKPerInstance)
-      gp_Globals->s_SortSequence = "k,b,c,n";
-
    if (gp_Globals->i_ServerType == ST_GENERIC)
       gp_Globals->s_SortSequence = "a,l,m";
 

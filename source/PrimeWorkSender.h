@@ -42,6 +42,7 @@ private:
    bool        CheckDoubleCheck(string candidateName, double decimalLength, int64_t lastUpdateTime);
    bool        ReserveCandidate(string candidateName);
    bool        SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC);
+   bool        UpdateGroupStats(string candidateName);
 };
 
 #endif // #ifdef _PrimeWorkSender_

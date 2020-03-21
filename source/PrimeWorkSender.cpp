@@ -126,12 +126,9 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
          sentWorkUnits = SendWorkToClient(sendWorkUnits, true, false);
 
       // If we don't find that, look for first check work
-      if (!sentWorkUnits && ib_OneKPerInstance)
-         sentWorkUnits = SendWorkToClient(sendWorkUnits, false, true);
-      
       if (!sentWorkUnits)
-         sentWorkUnits = SendWorkToClient(sendWorkUnits, false, false);
-
+         sentWorkUnits = SendWorkToClient(sendWorkUnits, false, ib_OneKPerInstance);
+     
       if (!sentWorkUnits)
          ip_Socket->Send("INACTIVE: No available candidates are left on this server.");
    }
@@ -310,23 +307,22 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits)
    char     candidateName[NAME_LENGTH+1];
    int64_t  theK;
    int32_t  theB, theC, theN = 0;
+   int32_t  countInProgress;
    bool     encounteredError;
-   int32_t  sentWorkUnits;
+   int32_t  sentWorkUnits = 0;
    
-   const char *selectKBCSQL = "select distinct k, b, c " \
-                              "  from CandidateGroupStats cgs " \
-                              " where SierpinskiRieselPrime is null " \
-                              "   and not exists (select 'x' " \
-                                                 "  from Candidate " \
-                                                 " where HasPendingTest > 0 " \
-                                                 "   and cgs.k = Candidate.k " \
-                                                 "   and cgs.b = Candidate.b " \
-                                                 "   and cgs.c = Candidate.c) " \
-                              "limit 1";
+   // This will allow a second client to grab the same k, b, c that another client has
+   // but only if no clients have that k, b, c assigned to them.
+   const char* selectKBCSQL = "select distinct k, b, c, CountInProgress " \
+	                          "  from CandidateGroupStats cgs " \
+	                          " where PRPandPrimesFound = 0 " \
+	                          "   and CountUntested > 0 " \
+	                          "order by CountInProgress, k, b, c ";
 
    const char *selectSQL = "select CandidateName, n " \
                            "  from Candidate " \
                            " where CompletedTests = 0 " \
+                           "   and HasPendingTest = 0 " \
                            "   and DecimalLength > 0 " \
                            "   and k = %" PRId64" " \
                            "   and b = %d " \
@@ -343,64 +339,64 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits)
    selectKBCStatement->BindSelectedColumn(&theK);
    selectKBCStatement->BindSelectedColumn(&theB);
    selectKBCStatement->BindSelectedColumn(&theC);
+   selectKBCStatement->BindSelectedColumn(&countInProgress);
    
-   if (!selectKBCStatement->FetchRow(false)) {
-      ip_Locker->Release();
-      delete selectKBCStatement;
-      return 0;
-   }
-   
-   delete selectKBCStatement;
-
-   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, theK, theB, theC, is_OrderBy.c_str());
-   
-   selectStatement->BindInputParameter(theN);
-
-   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
-   selectStatement->BindSelectedColumn(&theN);
-
-   sentWorkUnits = 0;
-   theN = 0;
-   encounteredError = false;
-
-   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+   if (selectKBCStatement->FetchRow(false))
    {
-      // If we haven't sent enough, start over again at the last n for this k/b/c
-      selectStatement->SetInputParameterValue(theN, true);
+	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, theK, theB, theC, is_OrderBy.c_str());
 
-      while (sentWorkUnits < sendWorkUnits && !encounteredError)
-      {
-         // Exit both loops if no rows are selected
-         if (!selectStatement->FetchRow(false)) {
-            encounteredError = true;
-            break;
-         }
+	   selectStatement->BindInputParameter(theN);
 
-         // Reserve the candidate and send to the client
-         if (ReserveCandidate(candidateName))
-         {
-            ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
+	   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+	   selectStatement->BindSelectedColumn(&theN);
 
-            if (SendWork(candidateName, theK, theB, theN, theC))
-            {
-               sentWorkUnits++;
-               ip_DBInterface->Commit();
-            }
-            else
-            {
-               ip_DBInterface->Rollback();
-               encounteredError = true;
-            }
-         }
-      }
+	   sentWorkUnits = 0;
+	   theN = 0;
+	   encounteredError = false;
 
-      selectStatement->CloseCursor();
+	   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+	   {
+		   // If we haven't sent enough, start over again at the last n for this k/b/c
+		   selectStatement->SetInputParameterValue(theN, true);
+
+		   while (sentWorkUnits < sendWorkUnits && !encounteredError)
+		   {
+			   // Exit both loops if no rows are selected
+			   if (!selectStatement->FetchRow(false)) {
+				   encounteredError = true;
+				   break;
+			   }
+
+			   // Reserve the candidate and send to the client
+			   if (ReserveCandidate(candidateName))
+			   {
+				   ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
+
+				   if (SendWork(candidateName, theK, theB, theN, theC))
+				   {
+					   sentWorkUnits++;
+					   ip_DBInterface->Commit();
+				   }
+				   else
+				   {
+					   ip_DBInterface->Rollback();
+					   encounteredError = true;
+				   }
+			   }
+		   }
+
+		   selectStatement->CloseCursor();
+	   }
+       
+      delete selectStatement;
    }
+
+   selectKBCStatement->CloseCursor();
 
    // Just in case a commit or rollback was not done
    ip_DBInterface->Rollback();
 
-   delete selectStatement;
+   delete selectKBCStatement;
 
    ip_Locker->Release();
 
@@ -706,7 +702,7 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
 bool     PrimeWorkSender::ReserveCandidate(string candidateName)
 {
    SQLStatement *sqlStatement;
-   bool     didUpdate;
+   bool        didUpdate;
    const char *updateSQL = "update Candidate " \
                            "   set HasPendingTest = 1 " \
                            " where CandidateName = ? " \
@@ -728,7 +724,7 @@ bool     PrimeWorkSender::ReserveCandidate(string candidateName)
 
    delete sqlStatement;
 
-   return didUpdate;
+   return UpdateGroupStats(candidateName);
 }
 
 bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC)
@@ -799,4 +795,46 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
                           candidateName.c_str(), is_EmailID.c_str(), is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
 
    return true;
+}
+
+bool     PrimeWorkSender::UpdateGroupStats(string candidateName)
+{
+   SQLStatement* sqlStatement;
+   int64_t     theK;
+   int32_t     theB, theC;
+   bool        success;
+   const char* selectSQL = "select k, b, c " \
+                           "  from Candidate " \
+                           " where CandidateName = ?";
+   const char* updateSQL = "update CandidateGroupStats " \
+                           "   set CountInProgress = CountInProgress + 1 " \
+                           " where k = %" PRId64 " " \
+                           "   and b = %d " \
+                           "   and c = %d ";
+
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
+   sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
+   sqlStatement->BindSelectedColumn(&theK);
+   sqlStatement->BindSelectedColumn(&theB);
+   sqlStatement->BindSelectedColumn(&theC);
+
+   success = sqlStatement->FetchRow(true);
+
+   delete sqlStatement;
+
+   if (!success)
+      return false;
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theK, theB, theC);
+
+   // It is okay if no rows are updated as we don't want CountInProgress to go negative
+   success = sqlStatement->Execute();
+
+   if (!success)
+      ip_DBInterface->Rollback();
+
+   delete sqlStatement;
+
+   return success;
 }

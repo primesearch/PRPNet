@@ -314,7 +314,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    if (abandoned || ip_TestResult[0]->HadRoundOffError() || obsolete)
    {
       if (AbandonTest(candidateName, testID))
-         return ( abandoned || ip_TestResult[0]->HadRoundOffError() ) ? CT_ABANDONED : CT_OBSOLETE;
+         return (abandoned || ip_TestResult[0]->HadRoundOffError()) ? CT_ABANDONED : CT_OBSOLETE;
       else
          return CT_SQL_ERROR;
    }
@@ -380,6 +380,10 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
 
       gfnDivisorCount += ip_TestResult[ii]->GetGFNDivisorCount();
    }
+
+   success = UpdateGroupStats(candidateName);
+
+   if (!success) return CT_SQL_ERROR;
 
    success = ((PrimeStatsUpdater *) ip_StatsUpdater)->UpdateStats(is_UserID, is_TeamID, candidateName, decimalLength, mainTestResult, gfnDivisorCount);
 
@@ -449,7 +453,7 @@ bool     PrimeWorkReceiver::AbandonTest(string candidateName, int64_t testID)
       delete sqlStatement;
    }
 
-   return success;
+   return UpdateGroupStats(candidateName);
 }
 
 bool     PrimeWorkReceiver::BadProgramVersion(string version)
@@ -476,14 +480,14 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
                            "  from Candidate " \
                            " where CandidateName = ?";
    const char *updateSQL = "update CandidateGroupStats " \
-                           "   set PendingTestCount = PendingTestCount - 1 " \
+                           "   set CountInProgress = CountInProgress - 1, " \
+	                       "       CountUntested = CountUntested - 1, " \
+	                       "       CountTested = CountTested + 1 " \
                            " where k = %" PRId64 " " \
                            "   and b = %d " \
                            "   and c = %d " \
-                           "   and PendingTestCount > 0 ";
+                           "   and CountInProgress > 0 ";
 
-   if (!ib_OneKPerInstance)
-      return true;
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
@@ -491,7 +495,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theC);
     
-   success = sqlStatement->Execute();
+   success = sqlStatement->FetchRow(true);
 
    delete sqlStatement;
 
@@ -500,7 +504,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theK, theB, theC);
 
-   // It is okay if no rows are updated as we don't want PendingTestCount to go negative
+   // It is okay if no rows are updated as we don't want CountInProgress to go negative
    success = sqlStatement->Execute();
 
    if (!success)

@@ -22,10 +22,6 @@ public:
 
    virtual bool   RollupGroupStats(bool deleteInsert) { return false; };
 
-   virtual bool   UpdateGroupStats(string candidateName) { return false; };
-
-   virtual bool   UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC) { return false; };
-
    virtual bool   InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
                                   int32_t theC, double decimalLength) { return false; };
 

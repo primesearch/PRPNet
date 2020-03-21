@@ -28,7 +28,7 @@ public:
    Worker(Log *theLog, TestingProgramFactory *testingProgramFactory,
           ClientSocket *theSocket, int32_t maxWorkUnits, string workSuffix);
 
-   ~Worker();
+   virtual ~Worker();
 
    // Return unique identifier for this class instance
    string  GetWorkSuffix() { return is_WorkSuffix; };

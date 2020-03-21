@@ -13,7 +13,7 @@ class Mail
 public:
    Mail(globals_t *globals, string serverName, uint32_t portID);
 
-   ~Mail();
+   virtual ~Mail();
 
    void     SetDBInterface(DBInterface *dbInterface) { ip_DBInterface = dbInterface; };
 

@@ -10,8 +10,9 @@ public:
                     string userID, string emailID, string machineID, 
                     string instanceID, string teamID);
 
-   ~WWWWWorkReceiver();
 
+   virtual ~WWWWWorkReceiver();
+ 
    void  ProcessMessage(string theMessage);
 
 private:

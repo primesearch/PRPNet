@@ -316,7 +316,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits)
    const char* selectKBCSQL = "select distinct k, b, c, CountInProgress " \
 	                          "  from CandidateGroupStats cgs " \
 	                          " where PRPandPrimesFound = 0 " \
-	                          "   and CountUntested > 0 " \
+	                          "   and CountUntested > CountInProgress " \
 	                          "order by CountInProgress, k, b, c ";
 
    const char *selectSQL = "select CandidateName, n " \

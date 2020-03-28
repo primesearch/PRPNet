@@ -481,8 +481,8 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
                            " where CandidateName = ?";
    const char *updateSQL = "update CandidateGroupStats " \
                            "   set CountInProgress = CountInProgress - 1, " \
-	                       "       CountUntested = CountUntested - 1, " \
-	                       "       CountTested = CountTested + 1 " \
+                           "       CountUntested = CountUntested - 1, " \
+                           "       CountTested = CountTested + 1 " \
                            " where k = %" PRId64 " " \
                            "   and b = %d " \
                            "   and c = %d " \

@@ -98,7 +98,6 @@ create table Candidate (
    n                       int,
    c                       int,
    MainTestResult          int,
-   HasSierpinskiRieselPrime int  default 0   not null,
    LastUpdateTime          bigint            not null
 );
 
@@ -183,7 +182,7 @@ create table CandidateGroupStats (
    CompletedThru           bigint            default 0,
    LeadingEdge             bigint            default 0,
    PRPandPrimesFound       int               default 0,
-   SierpinskiRieselPrime   varchar(50)       default 'none'
+   SierpinskiRieselPrimeN  int               default 0
 );
 
 create table WWWWRange (

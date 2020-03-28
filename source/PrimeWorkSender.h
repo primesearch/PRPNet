@@ -35,7 +35,7 @@ private:
    
    int32_t     SendWorkToClient(int32_t sendWorkUnits, bool doubleCheckOnly, bool oneKPerInstance);
    int32_t     SelectDoubleCheckCandidates(int32_t sendWorkUnits, double minLength, double maxLength, int64_t olderThanTime);
-   int32_t     SelectOneKPerClientCandidates(int32_t sendWorkUnits);
+   int32_t     SelectOneKPerClientCandidates(int32_t sendWorkUnits, bool firstPass);
    int32_t     SelectGFNCandidates(int32_t sendWorkUnits);
    int32_t     SelectCandidates(int32_t sendWorkUnits);
    bool        CheckGenefer(string candidateName);

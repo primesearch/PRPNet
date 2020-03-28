@@ -168,7 +168,9 @@ int32_t  PrimeWorkSender::SendWorkToClient(int32_t sendWorkUnits, bool doubleChe
    }
    else if (oneKPerInstance)
    {
-      sentWorkUnits = SelectOneKPerClientCandidates(sendWorkUnits);
+      sentWorkUnits = SelectOneKPerClientCandidates(sendWorkUnits, true);
+
+      sentWorkUnits += SelectOneKPerClientCandidates(sendWorkUnits - sentWorkUnits, false);
    }
    else if (ii_ServerType == ST_GFN)
       sentWorkUnits = SelectGFNCandidates(sendWorkUnits);
@@ -300,24 +302,41 @@ int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, dou
    return sentWorkUnits;
 }
 
-int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits)
+int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, bool firstPass)
 {
    SQLStatement *selectKBCStatement;
    SQLStatement *selectStatement;
    char     candidateName[NAME_LENGTH+1];
    int64_t  theK;
    int32_t  theB, theC, theN = 0;
+   int32_t  sierpinskiRieselPrimeN;
    int32_t  countInProgress;
    bool     encounteredError;
    int32_t  sentWorkUnits = 0;
    
+   if (sendWorkUnits == 0)
+      return 0;
+    
    // This will allow a second client to grab the same k, b, c that another client has
    // but only if no clients have that k, b, c assigned to them.
-   const char* selectKBCSQL = "select distinct k, b, c, CountInProgress " \
-	                          "  from CandidateGroupStats cgs " \
-	                          " where PRPandPrimesFound = 0 " \
-	                          "   and CountUntested > CountInProgress " \
-	                          "order by CountInProgress, k, b, c ";
+   const char* selectKBCSQL1 = "select distinct k, b, c, CountInProgress, SierpinskiRieselPrimeN " \
+	                           "  from CandidateGroupStats cgs " \
+	                           " where SierpinskiRieselPrimeN = 0 " \
+	                           "   and CountUntested > CountInProgress " \
+	                           "order by CountInProgress, k, b, c ";
+
+   // In the second pass, look for n < SierpinskiRieselPrimeN without a test
+   const char* selectKBCSQL2 = "select distinct k, b, c, CountInProgress, SierpinskiRieselPrimeN " \
+	                           "  from CandidateGroupStats cgs " \
+	                           " where SierpinskiRieselPrimeN > (select min(n) " \
+                                                              "   from Candidate " \
+                                                              "  where b = cgs.b " \
+                                                              "    and k = cgs.k " \
+                                                              "    and c = cgs.c " \
+                                                              "    and CompletedTests = 0 " \
+                                                              "    and HasPendingTest = 0) " \
+	                           "   and CountUntested > CountInProgress " \
+	                           "order by CountInProgress, k, b, c ";
 
    const char *selectSQL = "select CandidateName, n " \
                            "  from Candidate " \
@@ -328,22 +347,27 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits)
                            "   and b = %d " \
                            "   and c = %d " \
                            "   and n > ? " \
+                           "   and (n < %d  or %d = 0)" \
                            "order by %s limit 100";
    
    // Allow only one thread through this method at a time since each thread
    // is locking all Candidates for a single k/b/c.
    ip_Locker->Lock();
 
-   selectKBCStatement = new SQLStatement(ip_Log, ip_DBInterface, selectKBCSQL);
+   if (firstPass)
+      selectKBCStatement = new SQLStatement(ip_Log, ip_DBInterface, selectKBCSQL1);
+   else
+      selectKBCStatement = new SQLStatement(ip_Log, ip_DBInterface, selectKBCSQL2);
 
    selectKBCStatement->BindSelectedColumn(&theK);
    selectKBCStatement->BindSelectedColumn(&theB);
    selectKBCStatement->BindSelectedColumn(&theC);
    selectKBCStatement->BindSelectedColumn(&countInProgress);
+   selectKBCStatement->BindSelectedColumn(&sierpinskiRieselPrimeN);
    
    if (selectKBCStatement->FetchRow(false))
    {
-	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, theK, theB, theC, is_OrderBy.c_str());
+	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, theK, theB, theC, sierpinskiRieselPrimeN, sierpinskiRieselPrimeN, is_OrderBy.c_str());
 
 	   selectStatement->BindInputParameter(theN);
 

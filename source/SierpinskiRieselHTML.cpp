@@ -8,7 +8,7 @@ void SierpinskiRieselHTML::ServerStats(void)
    int32_t     b, c, prevB, prevC;
    int32_t     kCountInGroup, kMinN, kMaxN, kCountInProgress;
    int32_t     kCountedTested, kCountDoubleChecked, kCountUntested;
-   int32_t     kCompletedThru, kLeadingEdge, kPRPsAndPrimesFound;
+   int32_t     kCompletedThru, kLeadingEdge, kPRPsAndPrimesFound, sierpinskiRieselPrimeN;
    int32_t     conjectureKs = 0, conjectureNs = 0, conjectureMinN = 999999999;
    int32_t     conjectureMaxN = 0, conjectureTested = 0, conjectureDoubleChecked = 0;
    int32_t     conjectureUntested = 0, conjectureCompletedThru = 999999999, conjectureLeadingEdge = 999999999;
@@ -17,12 +17,11 @@ void SierpinskiRieselHTML::ServerStats(void)
    int32_t     totalMaxN = 0, totalTested = 0, totalDoubleChecked = 0;
    int32_t     totalUntested = 0, totalCompletedThru = 999999999, totalLeadingEdge = 999999999;
    int32_t     totalPRPsAndPrimesFound = 0, totalCountInProgress = 0;
-   char        srPrime[50];
 
    const char *theSelect = "select k, b, c, CountInGroup, MinInGroup, MaxInGroup, " \
                            "       CountTested, CountDoubleChecked, CountUntested, " \
                            "       CountInProgress, CompletedThru, LeadingEdge, PRPandPrimesFound, " \
-                           "       $null_func$(SierpinskiRieselPrime, 'None Found') " \
+                           "       SierpinskiRieselPrimeN " \
                            "  from CandidateGroupStats " \
                            "order by b, c, k";
 
@@ -41,7 +40,7 @@ void SierpinskiRieselHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&kCompletedThru);
    sqlStatement->BindSelectedColumn(&kLeadingEdge);
    sqlStatement->BindSelectedColumn(&kPRPsAndPrimesFound);
-   sqlStatement->BindSelectedColumn(srPrime, sizeof(srPrime));
+   sqlStatement->BindSelectedColumn(&sierpinskiRieselPrimeN);
 
    if (!sqlStatement->FetchRow(false))
    {
@@ -154,11 +153,12 @@ void SierpinskiRieselHTML::ServerStats(void)
       if (!kPRPsAndPrimesFound)
          conjectureLeadingEdge = (kLeadingEdge < conjectureLeadingEdge ? kLeadingEdge : conjectureLeadingEdge);
 
-      if (isdigit(srPrime[0])) conjecturePRPsAndPrimesFound++;
+      if (sierpinskiRieselPrimeN > 0) 
+         conjecturePRPsAndPrimesFound++;
 
       if (!ib_ServerStatsSummaryOnly)
       {
-         ip_Socket->Send("<tr bgcolor=\"%s\">", (isdigit(srPrime[0]) ? "lime" : (kCountUntested ? "white" : "aqua")));
+         ip_Socket->Send("<tr bgcolor=\"%s\">", ((sierpinskiRieselPrimeN > 0) ? "lime" : (kCountUntested ? "white" : "aqua")));
 
          if (k > 1)
             ip_Socket->Send("<td align=center>%" PRId64"*%d^n%+d", k, b, c);
@@ -176,7 +176,10 @@ void SierpinskiRieselHTML::ServerStats(void)
          TD_32BIT(kLeadingEdge);
          TD_32BIT(kPRPsAndPrimesFound);
 
-         ip_Socket->Send("<td align=center>%s</tr>", srPrime);
+         if (sierpinskiRieselPrimeN > 0)
+            ip_Socket->Send("<td align=center>%" PRIu64"*%d^%d%+d</tr>", k, b, sierpinskiRieselPrimeN, c);
+         else
+            ip_Socket->Send("<td align=center>none found</tr>");
       }
    } while (sqlStatement->FetchRow(false));
 

@@ -93,7 +93,6 @@ create table Candidate (
    n                       int,
    c                       int,
    MainTestResult          int,
-   HasSierpinskiRieselPrime int              default 0 not null,
    LastUpdateTime          bigint            not null,
    primary key (CandidateName),
    index ix_bkcn (b, k, c, n),
@@ -173,7 +172,7 @@ create table CandidateGroupStats (
    CompletedThru           bigint            default 0,
    LeadingEdge             bigint            default 0,
    PRPandPrimesFound       int               default 0,
-   SierpinskiRieselPrime   varchar(50)       default 'none'
+   SierpinskiRieselPrimeN  int               default 0 
 ) ENGINE=InnoDB;
 
 create table WWWWRange (

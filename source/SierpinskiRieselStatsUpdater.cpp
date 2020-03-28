@@ -54,8 +54,7 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
    SQLStatement  *sqlStatement;
    int32_t        theN;
    bool           success;
-   char           thePrime[NAME_LENGTH+1];
-   const char    *selectSQL = "select CandidateName, n from Candidate " \
+   const char    *selectSQL = "select n from Candidate " \
                               " where b = ? " \
                               "   and k = ? " \
                               "   and c = ? " \
@@ -64,9 +63,7 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
                                           "   and k = ? " \
                                           "   and c = ? " \
                                           "   and MainTestResult > 0)";
-   const char    *updateSQL1 = "update Candidate set HasSierpinskiRieselPrime = 1 " \
-                               " where b = ? and k = ? and c = ? and n >= ?";
-   const char    *updateSQL2 = "update CandidateGroupStats set SierpinskiRieselPrime = ? " \
+   const char    *updateSQL  = "update CandidateGroupStats set SierpinskiRieselPrimeN = %d " \
                                " where b = ? and k = ? and c = ?";
 
    foundOne = false;
@@ -78,7 +75,6 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
-   sqlStatement->BindSelectedColumn(thePrime, NAME_LENGTH);
    sqlStatement->BindSelectedColumn(&theN);
 
    success = sqlStatement->FetchRow(true);
@@ -89,19 +85,7 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
 
    foundOne = true;
 
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL1);
-   sqlStatement->BindInputParameter(theB);
-   sqlStatement->BindInputParameter(theK);
-   sqlStatement->BindInputParameter(theC);
-   sqlStatement->BindInputParameter(theN);
-
-   success = sqlStatement->Execute();
-   delete sqlStatement;
-
-   if (!success) return false;
-
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL2);
-   sqlStatement->BindInputParameter(thePrime, NAME_LENGTH);
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theN);
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
@@ -160,7 +144,7 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
                              "                         where b = CandidateGroupStats.b " \
                              "                           and k = CandidateGroupStats.k " \
                              "                           and c = CandidateGroupStats.c " \
-                             "                           and HasSierpinskiRieselPrime = 0 " \
+                             "                           and (n < CandidateGroupStats.SierpinskiRieselPrimeN or SierpinskiRieselPrimeN = 0) " \
                              "                           and CompletedTests = 0), " \
                              "       CountTested = (select count(*) from Candidate " \
                              "                       where b = CandidateGroupStats.b " \

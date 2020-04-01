@@ -12,11 +12,11 @@ void SierpinskiRieselHTML::ServerStats(void)
    int32_t     conjectureKs = 0, conjectureNs = 0, conjectureMinN = 999999999;
    int32_t     conjectureMaxN = 0, conjectureTested = 0, conjectureDoubleChecked = 0;
    int32_t     conjectureUntested = 0, conjectureCompletedThru = 999999999, conjectureLeadingEdge = 999999999;
-   int32_t     conjecturePRPsAndPrimesFound = 0, conjectureCountInProgress = 0;
+   int32_t     conjecturePRPsAndPrimesFound = 0, conjectureCountInProgress = 0, conjectureTestsSkipped = 0;
    int32_t     totalConjectures = 0, totalKs = 0, totalNs = 0, totalMinN = 999999999;
    int32_t     totalMaxN = 0, totalTested = 0, totalDoubleChecked = 0;
    int32_t     totalUntested = 0, totalCompletedThru = 999999999, totalLeadingEdge = 999999999;
-   int32_t     totalPRPsAndPrimesFound = 0, totalCountInProgress = 0;
+   int32_t     totalPRPsAndPrimesFound = 0, totalCountInProgress = 0, totalTestsSkipped = 0;
 
    const char *theSelect = "select k, b, c, CountInGroup, MinInGroup, MaxInGroup, " \
                            "       CountTested, CountDoubleChecked, CountUntested, " \
@@ -63,6 +63,7 @@ void SierpinskiRieselHTML::ServerStats(void)
       TH_CH_IF_DC("Count DC\'d");
       TH_CLMN_HDR("Count Untested");
       TH_CLMN_HDR("In Progress");
+      TH_CLMN_HDR("Tests Skipped");
       TH_CLMN_HDR("Completed Thru");
       TH_CLMN_HDR("Leading Edge");
       TH_CLMN_HDR("PRPs/Primes");
@@ -94,6 +95,7 @@ void SierpinskiRieselHTML::ServerStats(void)
             TH_IF_DC(conjectureDoubleChecked);
             TH_32BIT(conjectureUntested);
             TH_32BIT(conjectureCountInProgress);
+            TH_32BIT(conjectureTestsSkipped);
             TH_32BIT(conjectureCompletedThru);
             TH_32BIT(conjectureLeadingEdge);
             TH_32BIT(conjecturePRPsAndPrimesFound);
@@ -129,6 +131,8 @@ void SierpinskiRieselHTML::ServerStats(void)
          totalTested += conjectureTested;
          totalDoubleChecked += conjectureDoubleChecked;
          totalUntested += conjectureUntested;
+         totalTestsSkipped += conjectureTestsSkipped;
+
          if (conjecturePRPsAndPrimesFound != conjectureKs && totalCompletedThru)
             totalCompletedThru = (conjectureCompletedThru < totalCompletedThru ? conjectureCompletedThru : totalCompletedThru);
          if (conjecturePRPsAndPrimesFound != conjectureKs)
@@ -138,6 +142,7 @@ void SierpinskiRieselHTML::ServerStats(void)
          conjectureMaxN = 0; conjectureTested = 0; conjectureDoubleChecked = 0;
          conjectureUntested = 0; conjectureCompletedThru = 999999999; conjectureLeadingEdge = 999999999;
          conjecturePRPsAndPrimesFound = 0, conjectureCountInProgress = 0;
+         conjectureTestsSkipped = 0;
       }
 
       conjectureKs++;
@@ -148,13 +153,11 @@ void SierpinskiRieselHTML::ServerStats(void)
       conjectureTested += kCountedTested;
       conjectureDoubleChecked += kCountDoubleChecked;
       conjectureUntested += kCountUntested;
+
       if (!kPRPsAndPrimesFound && conjectureCompletedThru)
          conjectureCompletedThru = (kCompletedThru < conjectureCompletedThru ? kCompletedThru : conjectureCompletedThru);
       if (!kPRPsAndPrimesFound)
          conjectureLeadingEdge = (kLeadingEdge < conjectureLeadingEdge ? kLeadingEdge : conjectureLeadingEdge);
-
-      if (sierpinskiRieselPrimeN > 0) 
-         conjecturePRPsAndPrimesFound++;
 
       if (!ib_ServerStatsSummaryOnly)
       {
@@ -172,6 +175,16 @@ void SierpinskiRieselHTML::ServerStats(void)
          TD_IF_DC(kCountDoubleChecked);
          TD_32BIT(kCountUntested);
          TD_32BIT(kCountInProgress);
+
+         if (sierpinskiRieselPrimeN > 0)
+         {
+            TD_32BIT(kCountInGroup - kCountInProgress - kCountedTested);
+            conjecturePRPsAndPrimesFound++;
+            conjectureTestsSkipped += (kCountInGroup - kCountInProgress - kCountedTested);
+         }
+         else
+            TD_32BIT(0);
+            
          TD_32BIT(kCompletedThru);
          TD_32BIT(kLeadingEdge);
          TD_32BIT(kPRPsAndPrimesFound);
@@ -198,6 +211,7 @@ void SierpinskiRieselHTML::ServerStats(void)
    TH_IF_DC(conjectureDoubleChecked);
    TH_32BIT(conjectureUntested);
    TH_32BIT(conjectureCountInProgress);
+   TH_32BIT(conjectureTestsSkipped);
    TH_32BIT(conjectureCompletedThru);
    TH_32BIT(conjectureLeadingEdge);
    TH_32BIT(conjecturePRPsAndPrimesFound);
@@ -215,6 +229,7 @@ void SierpinskiRieselHTML::ServerStats(void)
    totalTested += conjectureTested;
    totalDoubleChecked += conjectureDoubleChecked;
    totalUntested += conjectureUntested;
+   totalTestsSkipped += conjectureTestsSkipped;
    if (conjecturePRPsAndPrimesFound != conjectureKs && totalCompletedThru)
       totalCompletedThru = (conjectureCompletedThru < totalCompletedThru ? conjectureCompletedThru : totalCompletedThru);
    if (conjecturePRPsAndPrimesFound != conjectureKs)
@@ -230,7 +245,7 @@ void SierpinskiRieselHTML::ServerStats(void)
          ip_Socket->Send("<tr class=headercolor><th class=headertext>Total k<th class=headertext>Total Candidates<th class=headertext>Min N<th class=headertext>Max N");
          ip_Socket->Send("<th class=headertext>Count Tested");
          if (ib_NeedsDoubleCheck) ip_Socket->Send("<th class=headertext>Count DC\'d");
-         ip_Socket->Send("<th class=headertext>Count Untested<th class=headertext>In Progress");
+         ip_Socket->Send("<th class=headertext>Count Untested<th class=headertext>In Progress<th class=headertext>Tests Skipped");
          ip_Socket->Send("<th class=headertext>Completed Thru<th class=headertext>Leading Edge<th class=headertext>PRPs/Primes<th class=headertext>Remaining k");
          ip_Socket->Send("</tr>");
 
@@ -245,6 +260,7 @@ void SierpinskiRieselHTML::ServerStats(void)
       TH_IF_DC(totalDoubleChecked);
       TH_32BIT(totalUntested);
       TH_32BIT(totalCountInProgress);
+      TH_32BIT(totalTestsSkipped);
       TH_32BIT(totalCompletedThru);
       TH_32BIT(totalLeadingEdge);
       TH_32BIT(totalPRPsAndPrimesFound);

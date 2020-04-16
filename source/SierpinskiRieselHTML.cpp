@@ -113,7 +113,7 @@ void SierpinskiRieselHTML::ServerStats(void)
             ip_Socket->Send("<tr class=headercolor><th class=headertext>Form<th class=headertext>Total Candidates<th class=headertext>Min N<th class=headertext>Max N");
             ip_Socket->Send("<th class=headertext>Count Tested");
             if (ib_NeedsDoubleCheck) ip_Socket->Send("<th class=headertext>Count DC\'d");
-            ip_Socket->Send("<th class=headertext>Count Untested<th class=headertext>In Progress");
+            ip_Socket->Send("<th class=headertext>Count Untested<th class=headertext>In Progress<th class=headertext>Tests Skipped");
             ip_Socket->Send("<th class=headertext>Completed Thru<th class=headertext>Leading Edge<th class=headertext>PRPs/Primes<th class=headertext>Smallest Prime");
             ip_Socket->Send("</tr>");
          }

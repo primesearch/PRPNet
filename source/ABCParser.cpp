@@ -47,7 +47,7 @@ static const char *gfnstring = "$a^$b+1";
 static const char *phiabstring  = "Phi($a,$b)";
 static const char *phiabcstring = "Phi($a,$b^$c)";
 
-static const char *xyyxstring = "$a^$b$c$b^$a";
+static const char *xyyxstring = "$a^$b$c*$b^$a";
 
 static const char *ckstring = "(%d^$a$b)^2-2";
 

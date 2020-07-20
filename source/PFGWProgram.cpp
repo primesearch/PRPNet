@@ -60,11 +60,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
          exit(-1);
       }
 
-      if (unlink(is_OutFileName.c_str()) < 0)
-      {
-         printf("Could not delete file %s\n", is_OutFileName.c_str());
-         exit(0);
-      }
+      unlink(is_OutFileName.c_str());
 
       if (ii_ServerType == ST_GENERIC)
          DetermineDecimalLength();

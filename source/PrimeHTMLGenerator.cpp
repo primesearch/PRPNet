@@ -204,14 +204,14 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
    int32_t    primeCount, prpCount, showOnWebPage, hiddenCount;
    int32_t    testResult;
    char       userID[ID_LENGTH+1], prevUserID[ID_LENGTH+1];
-   char       candidatName[NAME_LENGTH+1], machineID[ID_LENGTH+1];
+   char       candidateName[NAME_LENGTH+1], machineID[ID_LENGTH+1];
    char       instanceID[ID_LENGTH+1], teamID[ID_LENGTH+1];
    double     decimalLength;
 
    const char *theSelect = "select UserID, $null_func$(TeamID, '&nbsp;'), MachineID, InstanceId, TestedNumber, TestResult, " \
                            "       DateReported, DecimalLength, ShowOnWebPage " \
                            "  from UserPrimes " \
-                           "order by UserID, DecimalLength";
+                           "order by UserID, CandidateName, DecimalLength";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect);
 
@@ -219,7 +219,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
    sqlStatement->BindSelectedColumn(teamID, ID_LENGTH);
    sqlStatement->BindSelectedColumn(machineID, ID_LENGTH);
    sqlStatement->BindSelectedColumn(instanceID, ID_LENGTH);
-   sqlStatement->BindSelectedColumn(candidatName, NAME_LENGTH);
+   sqlStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
    sqlStatement->BindSelectedColumn(&testResult);
    sqlStatement->BindSelectedColumn(&dateReported);
    sqlStatement->BindSelectedColumn(&decimalLength);
@@ -279,7 +279,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
          {
             ip_Socket->Send("<tr>");
 
-            TD_CHAR(candidatName);
+            TD_CHAR(candidateName);
             TD_CHAR(((testResult == R_PRIME) ? "Prime" : "PRP"));
             TD_CHAR(machineID);
             TD_CHAR(instanceID);

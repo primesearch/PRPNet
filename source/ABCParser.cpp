@@ -47,7 +47,8 @@ static const char *gfnstring = "$a^$b+1";
 static const char *phiabstring  = "Phi($a,$b)";
 static const char *phiabcstring = "Phi($a,$b^$c)";
 
-static const char *xyyxstring = "$a^$b$c*$b^$a";
+static const char *xyyxpstring = "$a^$b+$b^$a";
+static const char *xyyxmstring = "$a^$b-$b^$a";
 
 static const char *ckstring = "(%d^$a$b)^2-2";
 
@@ -76,7 +77,8 @@ static const char *fnabcdstring = "$a*%d^%d%d [%" PRId64"]";
 #define ABC_VM          62
 #define ABC_VA          63
 #define ABC_GFN         71
-#define ABC_XYYX        81
+#define ABC_XYYXP       81
+#define ABC_XYYXM       82
 #define ABC_PHI_AB      91
 #define ABC_PHI_ABC     92
 
@@ -185,7 +187,7 @@ int32_t  ABCParser::IsValidFormat(void)
          return true;
    
    if (ii_ServerType == ST_XYYX)
-      if (ii_ABCFormat == ABC_XYYX)
+      if (ii_ABCFormat == ABC_XYYXP || ii_ABCFormat == ABC_XYYXM)
          return true;
    
    if (ii_ServerType == ST_CYCLOTOMIC)
@@ -392,7 +394,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (!strncmp(tempHeader, gfnstring, strlen(gfnstring))) return ABC_GFN;
 
-   if (!strncmp(tempHeader, xyyxstring, strlen(xyyxstring))) return ABC_XYYX;
+   if (!strncmp(tempHeader, xyyxpstring, strlen(xyyxpstring))) return ABC_XYYXP;
+
+   if (!strncmp(tempHeader, xyyxmstring, strlen(xyyxmstring))) return ABC_XYYXM;
 
    if (!strncmp(tempHeader, phiabstring, strlen(phiabstring))) return ABC_PHI_AB;
 
@@ -681,9 +685,16 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          il_theK = ii_theC = 1;
          return true;
 
-      case ABC_XYYX:
-         if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theN, &ii_theC) != 3) return false;
+      case ABC_XYYXP:
+         if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
          il_theK = 1;
+         ii_theC = 1;
+         return true;
+
+      case ABC_XYYXM:
+         if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
+         il_theK = 1;
+         ii_theC = -1;
          return true;
 
       case ABC_PHI_AB:

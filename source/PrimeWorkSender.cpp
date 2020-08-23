@@ -748,6 +748,9 @@ bool     PrimeWorkSender::ReserveCandidate(string candidateName)
 
    delete sqlStatement;
 
+   if (!didUpdate)
+      return false;
+   
    return UpdateGroupStats(candidateName);
 }
 

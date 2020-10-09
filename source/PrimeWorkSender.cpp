@@ -520,14 +520,28 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
    bool     encounteredError;
    int32_t  sentWorkUnits;
 
-   const char *selectSQL = "select CandidateName, k, b, c, n " \
-                           "  from Candidate " \
-                           " where HasPendingTest = 0 " \
-                           "   and CompletedTests = 0 " \
-                           "   and DecimalLength > 0 " \
-                           "order by %s limit 500";
+   const char *selectSQL1 = "select CandidateName, k, b, c, n " \
+                            "  from Candidate " \
+                            " where HasPendingTest = 0 " \
+                            "   and CompletedTests = 0 " \
+                            "   and DecimalLength > 0 " \
+                            "order by %s limit 500";
 
-   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, is_OrderBy.c_str());
+   const char *selectSQL2 = "select c.CandidateName, c.k, c.b, c.c, c.n " \
+                            "  from Candidate c, CandidateGroupStats cgs" \
+                            " where c.HasPendingTest = 0 " \
+                            "   and c.CompletedTests = 0 " \
+                            "   and c.DecimalLength > 0 " \
+                            "   and c.k = cgs.k " \
+                            "   and c.b = cgs.b " \
+                            "   and c.c = cgs.c " \
+                            "   and (c.n < cgs.SierpinskiRieselPrimeN or cgs.SierpinskiRieselPrimeN = 0) " \
+                            "order by %s limit 500";
+
+   if (ii_ServerType == ST_SIERPINSKIRIESEL)
+      selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2, is_OrderBy.c_str());
+   else
+      selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1, is_OrderBy.c_str());
 
    selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
    selectStatement->BindSelectedColumn(&theK);
@@ -750,7 +764,7 @@ bool     PrimeWorkSender::ReserveCandidate(string candidateName)
 
    if (!didUpdate)
       return false;
-   
+
    return UpdateGroupStats(candidateName);
 }
 

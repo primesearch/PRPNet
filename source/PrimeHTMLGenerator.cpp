@@ -204,7 +204,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
    int32_t    primeCount, prpCount, showOnWebPage, hiddenCount;
    int32_t    testResult;
    char       userID[ID_LENGTH+1], prevUserID[ID_LENGTH+1];
-   char       candidateName[NAME_LENGTH+1], machineID[ID_LENGTH+1];
+   char       candidatName[NAME_LENGTH+1], machineID[ID_LENGTH+1];
    char       instanceID[ID_LENGTH+1], teamID[ID_LENGTH+1];
    double     decimalLength;
 
@@ -219,7 +219,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
    sqlStatement->BindSelectedColumn(teamID, ID_LENGTH);
    sqlStatement->BindSelectedColumn(machineID, ID_LENGTH);
    sqlStatement->BindSelectedColumn(instanceID, ID_LENGTH);
-   sqlStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+   sqlStatement->BindSelectedColumn(candidatName, NAME_LENGTH);
    sqlStatement->BindSelectedColumn(&testResult);
    sqlStatement->BindSelectedColumn(&dateReported);
    sqlStatement->BindSelectedColumn(&decimalLength);
@@ -279,7 +279,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
          {
             ip_Socket->Send("<tr>");
 
-            TD_CHAR(candidateName);
+            TD_CHAR(candidatName);
             TD_CHAR(((testResult == R_PRIME) ? "Prime" : "PRP"));
             TD_CHAR(machineID);
             TD_CHAR(instanceID);
@@ -909,17 +909,19 @@ bool     PrimeHTMLGenerator::HasTeams(void)
 
 void     PrimeHTMLGenerator::GetDaysLeft(void)
 {
-   int64_t daysLeft;
    PrimeServerHelper *serverHelper = new PrimeServerHelper(ip_DBInterface, ip_Log);
-  
-   daysLeft = serverHelper->ComputeDaysRemaining();
+   int64_t hoursLeft = serverHelper->ComputeHoursRemaining();
+   int64_t daysLeft = hoursLeft / 24;
 
    ip_Socket->Send("<p align=center>");
 
    if (daysLeft < 10)
       ip_Socket->Send("<font color=\"red\">");
 
-   ip_Socket->Send("Estimate of %" PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
+   if (hoursLeft < 72)
+      ip_Socket->Send("Estimate of %" PRId64" hour%s before the server runs out of work<p><p>", hoursLeft, (hoursLeft > 1 ? "s" : ""));
+   else
+      ip_Socket->Send("Estimate of %" PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
 
    delete serverHelper;
 }

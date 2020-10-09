@@ -797,17 +797,20 @@ void     WWWWHTMLGenerator::HeaderPlusLinks(string pageTitle)
 
 void     WWWWHTMLGenerator::GetDaysLeft(void)
 {
-   int64_t  daysLeft;
    WWWWServerHelper *serverHelper = new WWWWServerHelper(ip_DBInterface, ip_Log);
   
-   daysLeft = serverHelper->ComputeDaysRemaining();
+   int64_t hoursLeft = serverHelper->ComputeHoursRemaining();
+   int64_t daysLeft = hoursLeft / 24;
 
    ip_Socket->Send("<p align=center>");
 
    if (daysLeft < 10)
       ip_Socket->Send("<font color=\"red\">");
 
-   ip_Socket->Send("Estimate of %" PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
+   if (hoursLeft < 72)
+     ip_Socket->Send("Estimate of %" PRId64" hour%s before the server runs out of work<p><p>", hoursLeft, (hoursLeft > 1 ? "s" : ""));
+   else
+     ip_Socket->Send("Estimate of %" PRId64" day%s before the server runs out of work<p><p>", daysLeft, (daysLeft > 1 ? "s" : ""));
 
    delete serverHelper;
 }

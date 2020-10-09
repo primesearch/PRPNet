@@ -237,7 +237,7 @@ int   main(int argc, char *argv[])
             if (gp_Mail) {
                timerDBInterface->Connect(3);
 
-               int32_t daysLeft = serverHelper->ComputeDaysRemaining();
+               int32_t daysLeft = serverHelper->ComputeHoursRemaining() / 24;
 
                if (daysLeft < gp_Globals->i_NotifyLowWork)
                   gp_Mail->MailLowWorkNotification(daysLeft);

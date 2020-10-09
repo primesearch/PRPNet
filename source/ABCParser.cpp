@@ -290,7 +290,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (sscanf(tempHeader, cwfbastring, &ii_theB, &ch) == 2)
    {
-     if (ch == 'b')
+     if (ch == 'c')
        return ABC_CW_FBA;
    }
 
@@ -328,6 +328,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
      if (ii_theC < 0)
        return ABC_FBM;
    }
+
    if (sscanf(tempHeader, fbastring, &ii_theB, &ch) == 2)
    {
      if (ch == 'c')

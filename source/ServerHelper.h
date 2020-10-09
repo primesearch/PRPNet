@@ -13,7 +13,7 @@ public:
 
    virtual ~ServerHelper() {};
 
-   virtual int32_t   ComputeDaysRemaining(void) { return 0; };
+   virtual int32_t   ComputeHoursRemaining(void) { return 0; };
 
    virtual void      ExpireTests(bool canExpire, int32_t delayCount, delay_t *delays) {};
 

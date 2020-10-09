@@ -13,7 +13,7 @@ class WWWWServerHelper : public ServerHelper
 public:
    WWWWServerHelper(DBInterface *dbInterface, Log *theLog) : ServerHelper(dbInterface, theLog) {};
 
-   int32_t  ComputeDaysRemaining(void);
+   int32_t  ComputeHoursRemaining(void);
 
    void     ExpireTests(bool canExpire, int32_t delayCount, delay_t *delays);
 

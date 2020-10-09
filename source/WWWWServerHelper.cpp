@@ -1,10 +1,10 @@
 #include "WWWWServerHelper.h"
 #include "SQLStatement.h"
 
-int32_t   WWWWServerHelper::ComputeDaysRemaining(void)
+int32_t   WWWWServerHelper::ComputeHoursRemaining(void)
 {
    SQLStatement *sqlStatement;
-   int32_t  countTested, countUntested, daysLeft;
+   int32_t  countTested, countUntested, hoursLeft;
    int64_t  startTime, nowTime, endTime;
    double   percent;
    bool     success;
@@ -34,9 +34,9 @@ int32_t   WWWWServerHelper::ComputeDaysRemaining(void)
 
    percent = (double) countTested / (double) (countTested + countUntested);
    endTime = (int64_t) ((double) (nowTime - startTime) / percent);
-   daysLeft = (int32_t) ((endTime - nowTime + startTime) / 86400);
+   hoursLeft = (int32_t) ((endTime - nowTime + startTime) / 3600);
 
-   return daysLeft;
+   return hoursLeft;
 }
 
 void  WWWWServerHelper::ExpireTests(bool canExpire, int32_t delayCount, delay_t *delays)

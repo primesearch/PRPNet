@@ -100,8 +100,16 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
          return floor(log10(doubleB) * doubleN + log10(doubleN) + 1.0);
 
       case ST_GFN:
-         doubleB = (double) intB;
-         doubleN = (double) intN;
+         if (intB < intN)
+         {
+            doubleB = (double) intB;
+            doubleN = (double) intN;
+         }
+         else
+         {
+            doubleN = (double) intB;
+            doubleB = (double) intN;
+         }
          return floor(log10(doubleB) * doubleN + 1.0);
  
       case ST_XYYX:

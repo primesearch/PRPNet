@@ -34,7 +34,7 @@ private:
 
    bool        AbandonTest(string candidateName, int64_t testID);
 
-   bool        UpdateGroupStats(string candidateName);
+   bool        UpdateGroupStats(string candidateName, result_t mainTestResult);
   
    bool        BadProgramVersion(string version);
 };

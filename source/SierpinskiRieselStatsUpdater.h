@@ -6,12 +6,13 @@
 
 class SierpinskiRieselStatsUpdater : public PrimeStatsUpdater
 {
+public:
+   bool  SetSierspinkiRieselPrimeN(int64_t theK, int32_t theB, int32_t theN, int32_t theC);
+
 private:
    bool  SetHasSierspinkiRieselPrime(int64_t theK, int32_t theB, int32_t theC, bool &foundOne);
 
    bool  RollupGroupStats(bool deleteInsert);
-
-   bool  UpdateGroupStats(string candidateName);
 
    bool  UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC);
 

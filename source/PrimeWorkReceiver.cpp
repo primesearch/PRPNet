@@ -1,5 +1,6 @@
 #include "PrimeWorkReceiver.h"
 #include "PrimeStatsUpdater.h"
+#include "SierpinskiRieselStatsUpdater.h"
 
 PrimeWorkReceiver::PrimeWorkReceiver(DBInterface *dbInterface, Socket *theSocket, globals_t *globals,
                                      string userID, string emailID,
@@ -381,7 +382,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
       gfnDivisorCount += ip_TestResult[ii]->GetGFNDivisorCount();
    }
 
-   success = UpdateGroupStats(candidateName);
+   success = UpdateGroupStats(candidateName, mainTestResult);
 
    if (!success) return CT_SQL_ERROR;
 
@@ -453,7 +454,7 @@ bool     PrimeWorkReceiver::AbandonTest(string candidateName, int64_t testID)
       delete sqlStatement;
    }
 
-   return UpdateGroupStats(candidateName);
+   return UpdateGroupStats(candidateName, R_UNKNOWN);
 }
 
 bool     PrimeWorkReceiver::BadProgramVersion(string version)
@@ -470,13 +471,13 @@ bool     PrimeWorkReceiver::BadProgramVersion(string version)
    return false;
 }
 
-bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
+bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t mainTestResult)
 {
    SQLStatement *sqlStatement;
    int64_t     theK;
-   int32_t     theB, theC;
+   int32_t     theB, theC, theN;
    bool        success;
-   const char *selectSQL = "select k, b, c " \
+   const char *selectSQL = "select k, b, c, n " \
                            "  from Candidate " \
                            " where CandidateName = ?";
    const char *updateSQL = "update CandidateGroupStats " \
@@ -494,6 +495,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
    sqlStatement->BindSelectedColumn(&theK);
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theC);
+   sqlStatement->BindSelectedColumn(&theN);
     
    success = sqlStatement->FetchRow(true);
 
@@ -511,6 +513,21 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName)
       ip_DBInterface->Rollback();
 
    delete sqlStatement;
+
+   if (!success)
+      return false;
+
+   if (ii_ServerType != ST_SIERPINSKIRIESEL)
+      return success;
+
+   if (!PRP_OR_PRIME(mainTestResult))
+      return success;
+
+   SierpinskiRieselStatsUpdater *sp = (SierpinskiRieselStatsUpdater *) ip_StatsUpdater;
+   success = sp->SetSierspinkiRieselPrimeN(theK, theB, theC, theN); 
+
+   if (!success)
+      ip_DBInterface->Rollback();
 
    return success;
 }

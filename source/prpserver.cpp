@@ -256,7 +256,7 @@ int   main(int argc, char *argv[])
          ReprocessINIFile("prpserver.ini");
 
       // Send e-mail every 1024 seconds (if new primes/PRPs have been reported)
-      if (!(counter & 0x3ff))
+      if (!(counter & 0x3fff))
       {
          timerDBInterface->Connect(3);
 

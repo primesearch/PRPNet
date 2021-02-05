@@ -41,12 +41,52 @@ bool  SierpinskiRieselStatsUpdater::RollupGroupStats(bool deleteInsert)
 
       if (!UpdateGroupStats(theK, theB, 0, theC))
          return false;
+
+      ip_DBInterface->Commit();
    }
 
    sqlStatement->CloseCursor();
    delete sqlStatement;
 
    return true;
+}
+
+bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int32_t theB, int32_t theC, int32_t theN)
+{
+   SQLStatement  *sqlStatement;
+   int32_t        sierpinskiRieselPrimeN;
+   bool           success;
+   const char    *selectSQL = "select n from CandidateGroupStats " \
+                              " where b = ? " \
+                              "   and k = ? " \
+                              "   and c = ? ";
+   const char    *updateSQL  = "update CandidateGroupStats set SierpinskiRieselPrimeN = %d " \
+                               " where b = ? and k = ? and c = ?";
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
+   sqlStatement->BindInputParameter(theB);
+   sqlStatement->BindInputParameter(theK);
+   sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindSelectedColumn(&sierpinskiRieselPrimeN);
+
+   success = sqlStatement->FetchRow(true);
+   delete sqlStatement;
+
+   if (!success) 
+      return false;
+
+   if (theN > sierpinskiRieselPrimeN && sierpinskiRieselPrimeN > 0)
+      return success;
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theN);
+   sqlStatement->BindInputParameter(theB);
+   sqlStatement->BindInputParameter(theK);
+   sqlStatement->BindInputParameter(theC);
+
+   success = sqlStatement->Execute();
+   delete sqlStatement;
+
+   return success;
 }
 
 bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, int32_t theB, int32_t theC, bool &foundOne)
@@ -94,39 +134,6 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
    delete sqlStatement;
 
    return success;
-}
-
-// This function is only called for a PRP or prime.
-bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(string candidateName)
-{
-   SQLStatement  *sqlStatement;
-   bool           success, foundOne;
-   int64_t        theK;
-   int32_t        theB, theN, theC;
-   const char    *selectSQL = "select b, k, c, n, MainTestResult from Candidate " \
-                              " where CandidateName = ?";
-
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
-   sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
-   sqlStatement->BindSelectedColumn(&theB);
-   sqlStatement->BindSelectedColumn(&theK);
-   sqlStatement->BindSelectedColumn(&theC);
-   sqlStatement->BindSelectedColumn(&theN);
-
-   success = sqlStatement->FetchRow(true);
-   delete sqlStatement;
-
-   // If we don't find the row, then we have a problem.
-   if (!success)
-      return false;
-
-   if (!SetHasSierspinkiRieselPrime(theK, theB, theC, foundOne))
-      return false;
-
-   if (!foundOne)
-      return true;
-
-   return UpdateGroupStats(theK, theB, 0, theC);
 }
 
 bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)

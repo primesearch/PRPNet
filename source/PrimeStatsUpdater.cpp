@@ -160,10 +160,6 @@ bool  PrimeStatsUpdater::UpdateStats(string   userID,
       if (!success) return false;
    }
 
-   // Done hourly unless this number is PRP/prime
-   if (PRP_OR_PRIME(testResult))
-      return UpdateGroupStats(candidateName);
-
    return success;
 }
 

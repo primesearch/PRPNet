@@ -1,5 +1,9 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Verions 5.4.5:  February 15, 2021 - New Release
+    prpserver:  Update CandidateGroupStats column SierpinskiRieselPrimeN immediately upon
+                finding a prime to prevent tests for higher n from being sent to clients.
+
 Version 5.4.4:  March 18, 2020 - New Release
     prpserver:  Add column to CandidateGroupStats to improve performance of "onekperinstance".
           all:  Update usage of PRIu64/PRId64/SCNu64/SCNd64 with printf/scanf to avoid

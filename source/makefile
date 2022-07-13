@@ -1,28 +1,33 @@
 # specify the compiler
-CPP=gcc
+CC=g++
 
 CPPFLAGS=-c -O2 -m64 -Wall
 
-# prpclient/prpadmin link flags
-LFLAGS_CLIENT=-lpthread -lstdc++ -o
-
-# use this on most Unix systems for prpserver
-LFLAGS_SERVER=-lpthread -liodbc -lstdc++ -o
-
-# use this on MacPPC for prpserver
-#LFLAGS=-framework Carbon -lpthread -liodbc -o
-
-if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
+ifeq ($(OS),Windows_NT)
+   LFLAGS_CLIENT=-lpthread -lstdc++ -o
+   LFLAGS_SERVER=-lpthread -liodbc -lstdc++ -o
+else
+   UNAME_S := $(shell uname -s)
+   
+   ifeq ($(UNAME_S),Darwin)
+      LFLAGS_CLIENT=-lpthread -lstdc++ -o
+      LFLAGS_SERVER=-framework Carbon -lpthread -liodbc -lstdc++ -o
+      if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
+   else
+      LFLAGS_CLIENT=-pthread -lpthread -lstdc++ -o
+      LFLAGS_SERVER=-pthread -lpthread -liodbc -lstdc++ -o
+   endif
+endif
 
 HTMLOBJECTS=HTMLGeneratorFactory.o PrimeHTMLGenerator.o CullenWoodallHTML.o \
 	SierpinskiRieselHTML.o FixedBKCHTML.o FixedBNCHTML.o GFNHTML.o XYYXHTML.o \
 	PrimorialHTML.o FactorialHTML.o MultiFactorialHTML.o SophieGermainHTML.o WWWWHTMLGenerator.o \
-   CyclotomicHTML.o GenericHTML.o HTMLGenerator.o CarolKyneaHTML.o WagstaffHTML.o MultiFactorialHTML.o
+   CyclotomicHTML.o GenericHTML.o HTMLGenerator.o CarolKyneaHTML.o WagstaffHTML.o
 STATSOBJECTS=StatsUpdaterFactory.o StatsUpdater.o MultiFactorialStatsUpdater.o FactorialStatsUpdater.o \
 	PrimorialStatsUpdater.o FixedBKCStatsUpdater.o FixedBNCStatsUpdater.o \
 	GFNStatsUpdater.o SierpinskiRieselStatsUpdater.o CullenWoodallStatsUpdater.o \
 	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o XYYXStatsUpdater.o \
-	CyclotomicStatsUpdater.o GenericStatsUpdater.o CarolKyneaStatsUpdater.o WagstaffStatsUpdater.o MultiFactorialStatsUpdater.o
+	CyclotomicStatsUpdater.o GenericStatsUpdater.o CarolKyneaStatsUpdater.o WagstaffStatsUpdater.o
 MAILOBJECTS=MailFactory.o Mail.o PrimeMail.o WWWWMail.o
 HELPEROBJECTS=ServerHelperFactory.o PrimeServerHelper.o WWWWServerHelper.o
 SOCKETOBJECTS=Socket.o ServerSocket.o MailSocket.o HelperSocket.o
@@ -36,41 +41,47 @@ WORKEROBJECTS=ServerHandler.o Worker.o PrimeWorker.o WWWWWorker.o
 WORKUNITOBJECTS=WorkUnitTestFactory.o WorkUnitTest.o MainWorkUnitTest.o \
 	TwinWorkUnitTest.o SophieGermainWorkUnitTest.o WWWWWorkUnitTest.o PrimeWorkUnitTest.o
 
+
+ADMINOBJECTS=prpadmin.o Log.o Socket.o ClientSocket.o ABCParser.o SharedMemoryItem.o
+CLIENTOBJECTS=prpclient.o Log.o Socket.o ClientSocket.o SharedMemoryItem.o \
+   $(PROGRAMOBJECTS) $(WORKUNITOBJECTS) $(WORKEROBJECTS)
+SERVEROBJECTS=prpserver.o Log.o ABCParser.o LengthCalculator.o \
+   $(DBOBJECTS) $(THREADOBJECTS) $(HTMLOBJECTS) $(STATSOBJECTS) $(SOCKETOBJECTS) $(HELPEROBJECTS) $(MAILOBJECTS)
+
 all:  prpclient prpserver
 
 prpclient.o: prpclient.cpp defs.h Log.h Socket.h Worker.h
-	$(CPP) $(CPPFLAGS) prpclient.cpp
+	$(CC) $(CPPFLAGS) prpclient.cpp
 
 prpserver.o: prpserver.cpp defs.h server.h Log.h Socket.h Mail.h
-	$(CPP) $(CPPFLAGS) prpserver.cpp
+	$(CC) $(CPPFLAGS) prpserver.cpp
 
 HTMLGenerator.o: HTMLGenerator.cpp defs.h
-	$(CPP) $(CPPFLAGS) HTMLGenerator.cpp
+	$(CC) $(CPPFLAGS) HTMLGenerator.cpp
 
 %HTML.o: %HTML.cpp %HTML.h %HTMLGenerator.h Socket.h Candidate.h
-	$(CPP) $(CPPFLAGS) $<
+	$(CC) $(CPPFLAGS) $<
 
 %Program.o: %Program.cpp %Program.h TestingProgram.h
-	$(CPP) $(CPPFLAGS) $<
+	$(CC) $(CPPFLAGS) $<
 
 %WorkUnitTest.o: %WorkUnitTest.cpp %WorkUnitTest.h WorkUnitTest.h
-	$(CPP) $(CPPFLAGS) $<
+	$(CC) $(CPPFLAGS) $<
 
 %.o: %.cpp %.h Log.h Socket.h
-	$(CPP) $(CPPFLAGS) $<
+	$(CC) $(CPPFLAGS) $<
 
-prpadmin: prpadmin.o Log.o Socket.o ClientSocket.o ABCParser.o SharedMemoryItem.o
-	$(CPP) $(LFLAGS_CLIENT) prpadmin prpadmin.o Log.o Socket.o ClientSocket.o ABCParser.o SharedMemoryItem.o
+prpadmin: $(ADMINOBJECTS)
+	$(CC) $(LFLAGS_CLIENT) -o $@ $^
 
-prpclient: prpclient.o Log.o Socket.o ClientSocket.o SharedMemoryItem.o \
-	$(PROGRAMOBJECTS) $(WORKUNITOBJECTS) $(WORKEROBJECTS)
-	$(CPP) $(LFLAGS_CLIENT) prpclient prpclient.o Log.o Socket.o ClientSocket.o  SharedMemoryItem.o  \
-	$(WORKUNITOBJECTS) $(PROGRAMOBJECTS) $(WORKEROBJECTS)
+prpclient: $(CLIENTOBJECTS)
+	$(CC) $(LFLAGS_CLIENT) -o $@ $^
 
-prpserver: prpserver.o Log.o ABCParser.o LengthCalculator.o \
-	$(DBOBJECTS) $(THREADOBJECTS) $(HTMLOBJECTS) $(STATSOBJECTS) $(SOCKETOBJECTS) $(HELPEROBJECTS) $(MAILOBJECTS)
-	$(CPP) $(LFLAGS_SERVER) prpserver prpserver.o Log.o ABCParser.o LengthCalculator.o \
-	$(DBOBJECTS) $(THREADOBJECTS) $(HTMLOBJECTS) $(STATSOBJECTS) $(SOCKETOBJECTS) $(HELPEROBJECTS) $(MAILOBJECTS)
+prpserver: $(SERVEROBJECTS) 
+	$(CC) $(LFLAGS_SERVER) -o $@ $^
 
+clean_objs:
+	rm -f $(ADMINOBJECTS) $(CLIENTOBJECTS) $(SERVEROBJECTS) *.log
+   
 clean:
 	rm *.o prpclient prpserver prpadmin

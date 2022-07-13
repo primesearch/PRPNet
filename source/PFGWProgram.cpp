@@ -9,7 +9,8 @@ void     PFGWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWor
 
 testresult_t   PFGWProgram::Execute(testtype_t testType)
 {
-   char           command[100], sign, *normalPriority;
+   char           command[100], sign, * normalPriority;
+   char           affinity[20];
    testresult_t   testResult;
    int32_t        aValue;
    FILE          *fp;
@@ -47,7 +48,13 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
       sign = 'p';
    else
       sign = ((ii_c > 0) ? 'm' : 'p');
-   normalPriority = (char *) (ii_NormalPriority ? "-N" : "");
+
+   if (ii_Affinity >= 0)
+      sprintf(affinity, "-A%u\n", ii_Affinity);
+   else
+      affinity[0] = 0;
+
+   normalPriority = (char*)(ii_NormalPriority ? "-N" : "");
 
    do
    {
@@ -68,8 +75,8 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
       switch (testType)
       {
          case TT_PRP:
-            sprintf(command, "%s -k -f0 %s -a%d -l%s %s",
-                    is_ExeName.c_str(), normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
+            sprintf(command, "%s %s -k -f0 %s -a%d -l%s %s",
+                    is_ExeName.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          case TT_PRIMALITY:
@@ -77,16 +84,16 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
             // is necessary for a primality proof.  This is an issue with GFNs which tend to
             // have large bases.
             if (ii_ServerType == ST_CYCLOTOMIC)
-               sprintf(command, "%s -k -f0 %s -a%d -t%c -l%s %s",
-                       is_ExeName.c_str(), normalPriority, aValue, sign, is_OutFileName.c_str(), is_InFileName.c_str());
+               sprintf(command, "%s %s -k -f0 %s -a%d -t%c -l%s %s",
+                       is_ExeName.c_str(), affinity, normalPriority, aValue, sign, is_OutFileName.c_str(), is_InFileName.c_str());
             else
-               sprintf(command, "%s -k -f0 %s -a%d -e%d -t%c -l%s %s",
-                       is_ExeName.c_str(), normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
+               sprintf(command, "%s %s -k -f0 %s -a%d -e%d -t%c -l%s %s",
+                       is_ExeName.c_str(), affinity, normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          case TT_GFN:
-            sprintf(command, "%s -k -f0 %s -a%d -gxo -l%s %s", 
-                    is_ExeName.c_str(), normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
+            sprintf(command, "%s %s -k -f0 %s -a%d -gxo -l%s %s", 
+                    is_ExeName.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          default:

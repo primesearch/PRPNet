@@ -459,7 +459,7 @@ int main(int argc, char *argv[])
    signal(SIGPIPE, SIG_IGN);
 
    int lockFile;
-   lockFile = open("client.lock", O_WRONLY | O_CREAT | O_EXCL);
+   lockFile = open("client.lock", O_WRONLY | O_CREAT | O_EXCL, 0600);
    if (lockFile <= 0)
       TerminateWithError("Only one copy of the PRPNet client can be run from this folder at a time.");
 #endif

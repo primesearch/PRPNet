@@ -195,7 +195,7 @@ int   main(int argc, char *argv[])
    signal(SIGPIPE, SIG_IGN);
 
    int lockFile;
-   lockFile = open("server.lock", O_WRONLY | O_CREAT | O_EXCL);
+   lockFile = open("server.lock", O_WRONLY | O_CREAT | O_EXCL, 0600);
    if (lockFile <= 0)
    {
       printf("Only one copy of the PRPNet server can be run from this folder at a time.\n");

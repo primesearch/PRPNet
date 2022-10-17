@@ -49,8 +49,8 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    else
       sign = ((ii_c > 0) ? 'm' : 'p');
 
-   if (ii_Affinity >= 0)
-      sprintf(affinity, "-A%u\n", ii_Affinity);
+   if (ii_Affinity > 0)
+      sprintf(affinity, "-A%u", ii_Affinity);
    else
       affinity[0] = 0;
 
@@ -100,6 +100,8 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
             printf("Unhandled case for test type %d\n", (int32_t) testType);
             exit(0);
       }
+
+      ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
       system(command);
 
@@ -311,6 +313,8 @@ void  PFGWProgram::DetermineVersion(void)
 
    sprintf(command, "%s -V 2> a.out", is_ExeName.c_str());
 
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
    system(command);
 
    fp = fopen("a.out", "r");
@@ -362,7 +366,9 @@ void  PFGWProgram::DetermineDecimalLength(void)
 
    sprintf(command, "%s -k -od -f0 -l%s %s",
          is_ExeName.c_str(), is_OutFileName.c_str(), is_InFileName.c_str());
-   
+
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
    system(command);
 
    id_Seconds = 0;

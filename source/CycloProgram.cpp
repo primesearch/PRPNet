@@ -52,6 +52,8 @@ testresult_t   CycloProgram::Execute(testtype_t testType)
    // -o will write the results to results.out
    sprintf(command, "%s %s", is_ExeName.c_str(), is_InFileName.c_str());
 
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
    system(command);
 
    testResult = ParseTestResults(testType);
@@ -161,6 +163,8 @@ void  CycloProgram::DetermineVersion(void)
    FILE *fp;
 
    sprintf(command, "%s -v > a.out", is_ExeName.c_str());
+
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
    system(command);
 

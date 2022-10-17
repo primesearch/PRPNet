@@ -53,6 +53,8 @@ testresult_t   PhrotProgram::Execute(testtype_t testType)
    // -o will write the results to results.out
    sprintf(command, "%s -t -o %s", is_ExeName.c_str(), is_InFileName.c_str());
 
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
    system(command);
 
    testResult = ParseTestResults(testType);
@@ -162,6 +164,8 @@ void  PhrotProgram::DetermineVersion(void)
    FILE *fp;
 
    sprintf(command, "%s 2> a.out", is_ExeName.c_str());
+
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
    system(command);
 

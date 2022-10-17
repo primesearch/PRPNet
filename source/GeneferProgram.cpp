@@ -88,6 +88,8 @@ testresult_t   GeneferProgram::Execute(testtype_t testType)
       else
          sprintf(command, "%s %s", is_InternalProgramName.c_str(), is_InFileName.c_str());
 
+      ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
       system(command);
 
       testResult = ParseTestResults(testType);
@@ -245,6 +247,8 @@ uint32_t GeneferProgram::ValidateExe(void)
 
       sprintf(command, "%s -v > a.out", is_ProgramList[index].c_str());
 
+      ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
       system(command);
 
       fPtr = fopen("a.out", "r");
@@ -306,6 +310,8 @@ void  GeneferProgram::DetermineVersion(void)
    FILE *fp;
 
    sprintf(command, "%s -v > a.out", is_ExeName.c_str());
+
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
    system(command);
 

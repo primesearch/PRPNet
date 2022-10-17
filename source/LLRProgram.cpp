@@ -83,6 +83,8 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
 
    sprintf(command, "%s -d", is_ExeName.c_str());
 
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
    system(command);
 
    testResult = ParseTestResults(testType);
@@ -220,6 +222,8 @@ void  LLRProgram::DetermineVersion(void)
    FILE *fp;
 
    sprintf(command, "%s -v > a.out", is_ExeName.c_str());
+
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
    system(command);
 

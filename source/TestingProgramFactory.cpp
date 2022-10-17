@@ -47,6 +47,7 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
 
    if (ip_LLRProgram)      ip_LLRProgram->SetAffinity(cpuAffinity);
    if (ip_GeneferProgram)  ip_GeneferProgram->SetAffinity(gpuAffinity);
+   if (ip_PFGWProgram)     ip_PFGWProgram->SetAffinity(cpuAffinity);
    if (ip_PFGWProgram)     ip_PFGWProgram->SetNormalPriority(normalPriority);
 }
 

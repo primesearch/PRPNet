@@ -501,6 +501,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       case ST_SIERPINSKIRIESEL:
       case ST_FIXEDBKC:
       case ST_FIXEDBNC:
+      case ST_SOPHIEGERMAIN:
       case ST_TWIN:
          sprintf(tempName, "%" PRId64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
          break;

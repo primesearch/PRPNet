@@ -43,7 +43,9 @@ int   main(int argc, char *argv[])
    string   s_Mail;
    bool     lowWorkCheckDone = false;
    int32_t  showUsage;
-   int32_t  ii, quit, counter, unhideSeconds;
+   int32_t  ii, quit, counter;
+   uint32_t unhideSeconds;
+   time_t   nextRefreshTime;
    time_t   theTime;
    struct tm *theTm;
    ServerThread *serverThread = 0;
@@ -120,6 +122,7 @@ int   main(int argc, char *argv[])
    gp_Globals->s_EmailPassword = "";
    gp_Globals->i_UnhidePrimeHours = 0;
    gp_Globals->i_SpecialThreshhold = 100;
+   gp_Globals->i_MinutesBetweenStatsRefresh = 60;
    gp_Globals->i_NotifyLowWork = 0;
    gp_Globals->p_Quitting = new SharedMemoryItem("quit");
    gp_Globals->p_ClientCounter = new SharedMemoryItem("client_counter");
@@ -204,7 +207,7 @@ int   main(int argc, char *argv[])
 #endif
 
    // If unhideprimehours is set to 0, then show primes immediately
-   gp_Globals->b_ShowOnWebPage = !gp_Globals->i_UnhidePrimeHours;
+   gp_Globals->b_ShowOnWebPage = (gp_Globals->i_UnhidePrimeHours == 0);
 
    sprintf(name, "prpnet_port_%d", gp_Globals->i_PortID);
    gp_Globals->p_Locker = new SharedMemoryItem(name);
@@ -225,6 +228,8 @@ int   main(int argc, char *argv[])
    unhideSeconds = gp_Globals->i_UnhidePrimeHours * 3600 + 600;
    counter = 0;
    quit = false;
+   time(&nextRefreshTime);
+   nextRefreshTime += (gp_Globals->i_MinutesBetweenStatsRefresh * 60);
    while (!quit)
    {
       counter++;
@@ -255,9 +260,10 @@ int   main(int argc, char *argv[])
       if (!(counter & 0xff))
          ReprocessINIFile("prpserver.ini");
 
-      // Send e-mail every 1024 seconds (if new primes/PRPs have been reported)
-      if (!(counter & 0x3fff))
+      if (theTime >= nextRefreshTime)
       {
+         nextRefreshTime += (gp_Globals->i_MinutesBetweenStatsRefresh * 60);
+   
          timerDBInterface->Connect(3);
 
          if (gp_Mail) gp_Mail->MailSpecialResults();
@@ -267,15 +273,9 @@ int   main(int argc, char *argv[])
          SyncGroupStats(timerDBInterface, gp_Globals->b_NeedsDoubleCheck);
 
          timerDBInterface->Disconnect();
-      }
 
-      if (!(counter % unhideSeconds))
-      {
-         timerDBInterface->Connect(3);
-
-         serverHelper->UnhideSpecials(unhideSeconds);
-
-         timerDBInterface->Disconnect();
+         if (gp_Globals->i_UnhidePrimeHours > 0)
+            serverHelper->UnhideSpecials(unhideSeconds);
       }
 
       // If the user is trying to terminate the process, then
@@ -390,6 +390,8 @@ void  ProcessINIFile(string configFile, string &smtpServer)
          gp_Globals->b_LocalTimeHTML = (atol(line+14) == 0 ? false : true);
       else if (!memcmp(line, "serverstatssummaryonly=", 23))
          gp_Globals->b_ServerStatsSummaryOnly = (atol(line+23) == 0 ? false : true);
+      else if (!memcmp(line, "minutesbetweenstatsrefresh=", 27))
+         gp_Globals->i_MinutesBetweenStatsRefresh = atol(line+27);
       else if (!memcmp(line, "maxworkunits=", 13))
          gp_Globals->i_MaxWorkUnits = atol(line+13);
       else if (!memcmp(line, "maxclients=", 11))
@@ -639,25 +641,25 @@ bool     ValidateConfiguration(string smtpServer)
          switch (toupper(*ptr))
          {
             case 'M':
-               gp_Globals->s_SortSequence += "CandidateName";
+               gp_Globals->s_SortSequence += "c.CandidateName";
                break;
             case 'L':
-               gp_Globals->s_SortSequence += "DecimalLength";
+               gp_Globals->s_SortSequence += "c.DecimalLength";
                break;
             case 'A':
-               gp_Globals->s_SortSequence += "LastUpdateTime";
+               gp_Globals->s_SortSequence += "c.LastUpdateTime";
                break;
             case 'B':
-               gp_Globals->s_SortSequence += "abs(b)";
+               gp_Globals->s_SortSequence += "abs(c.b)";
                break;
             case 'K':
-               gp_Globals->s_SortSequence += "k";
+               gp_Globals->s_SortSequence += "c.k";
                break;
             case 'N':
-               gp_Globals->s_SortSequence += "n";
+               gp_Globals->s_SortSequence += "c.n";
                break;
             case 'C':
-               gp_Globals->s_SortSequence += "abs(c)";
+               gp_Globals->s_SortSequence += "abs(c.c)";
                break;
             default:
                printf("sortoption %c is invalid. It will be ignored.\n", *ptr);

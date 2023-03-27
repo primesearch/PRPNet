@@ -47,6 +47,7 @@ typedef struct
    int32_t  i_DestIDCount;
    int32_t  i_SpecialThreshhold;
    int32_t  i_NotifyLowWork;
+   int32_t  i_MinutesBetweenStatsRefresh;
    delay_t *p_Delay;
    string   s_SortSequence;
    string   s_HTMLTitle;

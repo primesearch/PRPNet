@@ -4,30 +4,30 @@ CC=g++
 CPPFLAGS=-c -O2 -m64 -Wall
 
 ifeq ($(OS),Windows_NT)
-   LFLAGS_CLIENT=-lpthread -lstdc++ -o
-   LFLAGS_SERVER=-lpthread -liodbc -lstdc++ -o
+   LFLAGS_CLIENT=-lpthread -lstdc++
+   LFLAGS_SERVER=-lpthread -liodbc -lstdc++
 else
    UNAME_S := $(shell uname -s)
    
    ifeq ($(UNAME_S),Darwin)
-      LFLAGS_CLIENT=-lpthread -lstdc++ -o
-      LFLAGS_SERVER=-framework Carbon -lpthread -liodbc -lstdc++ -o
+      LFLAGS_CLIENT=-lpthread -lstdc++
+      LFLAGS_SERVER=-framework Carbon -lpthread -liodbc -lstdc++
       if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
    else
-      LFLAGS_CLIENT=-pthread -lpthread -lstdc++ -o
-      LFLAGS_SERVER=-pthread -lpthread -liodbc -lstdc++ -o
+      LFLAGS_CLIENT=-pthread -lpthread -lstdc++
+      LFLAGS_SERVER=-pthread -lpthread -liodbc -lstdc++
    endif
 endif
 
 HTMLOBJECTS=HTMLGeneratorFactory.o PrimeHTMLGenerator.o CullenWoodallHTML.o \
 	SierpinskiRieselHTML.o FixedBKCHTML.o FixedBNCHTML.o GFNHTML.o XYYXHTML.o \
 	PrimorialHTML.o FactorialHTML.o MultiFactorialHTML.o SophieGermainHTML.o WWWWHTMLGenerator.o \
-   CyclotomicHTML.o GenericHTML.o HTMLGenerator.o CarolKyneaHTML.o WagstaffHTML.o
+   CyclotomicHTML.o GenericHTML.o HTMLGenerator.o CarolKyneaHTML.o WagstaffHTML.o MultiFactorialHTML.o
 STATSOBJECTS=StatsUpdaterFactory.o StatsUpdater.o MultiFactorialStatsUpdater.o FactorialStatsUpdater.o \
 	PrimorialStatsUpdater.o FixedBKCStatsUpdater.o FixedBNCStatsUpdater.o \
 	GFNStatsUpdater.o SierpinskiRieselStatsUpdater.o CullenWoodallStatsUpdater.o \
 	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o XYYXStatsUpdater.o \
-	CyclotomicStatsUpdater.o GenericStatsUpdater.o CarolKyneaStatsUpdater.o WagstaffStatsUpdater.o
+	CyclotomicStatsUpdater.o GenericStatsUpdater.o CarolKyneaStatsUpdater.o WagstaffStatsUpdater.o MultiFactorialStatsUpdater.o
 MAILOBJECTS=MailFactory.o Mail.o PrimeMail.o WWWWMail.o
 HELPEROBJECTS=ServerHelperFactory.o PrimeServerHelper.o WWWWServerHelper.o
 SOCKETOBJECTS=Socket.o ServerSocket.o MailSocket.o HelperSocket.o

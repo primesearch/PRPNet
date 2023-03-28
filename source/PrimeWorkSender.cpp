@@ -521,7 +521,7 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
    int32_t  sentWorkUnits;
 
    const char *selectSQL1 = "select CandidateName, k, b, c, n " \
-                            "  from Candidate " \
+                            "  from Candidate c " \
                             " where HasPendingTest = 0 " \
                             "   and CompletedTests = 0 " \
                             "   and DecimalLength > 0 " \

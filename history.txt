@@ -1,5 +1,16 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.5.0:  March 31, 2023 - New Release
+    prpserver:  Added HTML5 support.
+                Updated prpnet.css for HTML5 and provided default URL for it in prpserver.ini.
+                Replaced sprintf and vsprintf with snprintf and vsnprintf.
+                Added minutesbetweenstatsrefresh= configuration option to prpserver.ini.
+                Fixed Sohpie-Germain server support.
+                Fixed length calculation for Carol/Kynea servers.
+                Fixed sorting of candidates for work selection.
+    prpclient:  Add support for new -A parameter for pfgw.  This allows targeting pfgw to
+                a specific CPU (Windows only).
+                
 Verions 5.4.5:  February 15, 2021 - New Release
     prpserver:  Update CandidateGroupStats column SierpinskiRieselPrimeN immediately upon
                 finding a prime to prevent tests for higher n from being sent to clients.

@@ -335,7 +335,7 @@ bool  ConfirmBatch(int countSent, bool allDone)
    char   expectedMessage[100];
    bool   successful = false;
 
-   sprintf(expectedMessage, "processed %d records", countSent);
+   snprintf(expectedMessage, 100, "processed %d records", countSent);
 
    printf(" sent %d, server has processed %d      \r", countSent, countSent - RECORDS_PER_CONFIRM);
    fflush(stdout);
@@ -564,7 +564,7 @@ int main(int argc, char *argv[])
    _CrtSetDbgFlag( tmpFlag );
 #endif
 
-   sprintf(logFile, "prpadmin.log");
+   snprintf(logFile, 200, "prpadmin.log");
 
    // Set default values for the global variables
    strcpy(g_EmailID, "PRPNet_Admin_user@");

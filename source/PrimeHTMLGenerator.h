@@ -4,6 +4,8 @@
 
 #include <string>
 #include "HTMLGenerator.h"
+#include "ServerHelper.h"
+#include "SQLStatement.h"
 
 typedef enum { BY_K, BY_B, BY_N, BY_Y } sss_t;
 
@@ -14,8 +16,6 @@ public:
 
    virtual ~PrimeHTMLGenerator() {};
 
-   void     Send(string thePage);
-
    void     PendingTests(void);
 
    void     PrimesByUser(void);
@@ -25,7 +25,6 @@ public:
    void     GFNDivisorsByUser(void);
 
    bool     CanCheckForGFNs(void);
-   bool     HasTeams(void);
 
    void     UserStats(void);
    void     UserTeamStats(void);
@@ -35,10 +34,12 @@ public:
 
    virtual void  ServerStats(void) {};
 
-private:
-   string   TimeToString(time_t theTime);
-   void     HeaderPlusLinks(string pageTitle);
-   void     GetDaysLeft(void);
+protected:
+
+   bool          SendSpecificPage(string thePage);
+   ServerHelper *GetServerHelper(void);
+
+   void     SendLinks();
 };
 
 #endif // #ifndef _PrimeHTMLGenerator_

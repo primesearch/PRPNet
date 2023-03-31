@@ -443,7 +443,7 @@ int main(int argc, char *argv[])
    SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 
    // prevent multiple copies from running
-   sprintf(processName, "PRPNetClient_Id%s", gp_Globals->s_InstanceID.c_str());
+   snprintf(processName, 200, "PRPNetClient_Id%s", gp_Globals->s_InstanceID.c_str());
    void *mutex = CreateMutex(NULL, FALSE, processName);
    if (!mutex || ERROR_ALREADY_EXISTS == GetLastError())
       TerminateWithError("Unable to run multiple instances of the PRPNet client with id %s.", gp_Globals->s_InstanceID.c_str());
@@ -891,7 +891,7 @@ void  RemoveTempFiles(string filter)
    int32_t  rc;
    FILE    *fPtr;
 
-   sprintf(command, "%s %s > file_list.out", LIST_COMMAND, filter.c_str());
+   snprintf(command, 200, "%s %s > file_list.out", LIST_COMMAND, filter.c_str());
 
    system(command);
 

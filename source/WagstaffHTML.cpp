@@ -31,14 +31,8 @@ void  WagstaffHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&leadingEdge);
    sqlStatement->BindSelectedColumn(&prpsAndPrimesFound);
 
-   if (!sqlStatement->FetchRow(false))
-   {
-      ip_Socket->Send("<table frame=box align=center border=1>");
-      ip_Socket->Send("<tr align=center><td class=headertext>No group stats found</tr>");
-      ip_Socket->Send("</table>");
-      delete sqlStatement;
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
-   }
 
    ServerStatsHeader(BY_N);
 
@@ -57,10 +51,10 @@ void  WagstaffHTML::ServerStats(void)
       summaryPRPsAndPrimesFound += prpsAndPrimesFound;
 
       // If the socket was closed, then stop sending data
-      if (!ip_Socket->Send("<trbgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
+      if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<td align=center>(2^n+1)/3");
+      ip_Socket->Send("<th scope=\"row\">(2^<var>n</var>+1)/3</th>");
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);
@@ -75,9 +69,7 @@ void  WagstaffHTML::ServerStats(void)
       ip_Socket->Send("</tr>");
    } while (sqlStatement->FetchRow(false));
 
-   ip_Socket->Send("<tr class=totalcolor>");
-
-   ip_Socket->Send("</tr></table>");
+   ip_Socket->Send("</tbody></table></article>");
 
    delete sqlStatement;
 }

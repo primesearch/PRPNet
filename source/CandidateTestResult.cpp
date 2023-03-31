@@ -224,21 +224,21 @@ void     CandidateTestResult::LogResults(int32_t socketID, int32_t completedTest
       return;
 
    if (needsDoubleCheck)
-      sprintf(doubleCheck, "DoubleCheck? %s", ((completedTests > 1) ? "Yes" : "No"));
+      snprintf(doubleCheck, 30, "DoubleCheck? %s", ((completedTests > 1) ? "Yes" : "No"));
    else
       *doubleCheck = 0;
 
    if (ib_BriefTestLog)
-      sprintf(logHeader, "%s received by %s/%s/%s/%s/%s",
+      snprintf(logHeader, 200, "%s received by %s/%s/%s/%s/%s",
               is_ParentName.c_str(), is_EmailID.c_str(), is_UserID.c_str(),
               is_MachineID.c_str(), is_InstanceID.c_str(), is_Program.c_str());
    else
-      sprintf(logHeader, "%s received by Email: %s  User: %s  Machine: %s  Instance: %s  Program: %s",
+      snprintf(logHeader, 200, "%s received by Email: %s  User: %s  Machine: %s  Instance: %s  Program: %s",
               is_ParentName.c_str(), is_EmailID.c_str(), is_UserID.c_str(),
               is_MachineID.c_str(), is_InstanceID.c_str(), is_Program.c_str());
 
-   sprintf(prover,  "Prover: %s",  is_Prover.c_str());
-   sprintf(residue, "Residue: %s", is_Residue.c_str());
+   snprintf(prover,  50, "Prover: %s",  is_Prover.c_str());
+   snprintf(residue, 50, "Residue: %s", is_Residue.c_str());
 
    testLog = new Log(0, "completed_tests.log", 0, false);
    testLog->SetUseLocalTime(ip_Log->GetUseLocalTime());

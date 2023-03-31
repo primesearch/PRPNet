@@ -22,7 +22,7 @@ Candidate::Candidate(Log *theLog, uint32_t serverType, char *name, char *inputLi
    i_GFNDivisors = 0;
 
    strcpy(s_Name, name);
-   sprintf(tempName, "%sx1", name);
+   snprintf(tempName, 40, "%sx1", name);
 
    switch (i_ServerType)
    {
@@ -121,22 +121,22 @@ Candidate::Candidate(Log *theLog, uint32_t serverType, uint64_t k, uint32_t b, u
    switch (i_ServerType)
    {
       case ST_PRIMORIAL:
-         sprintf(s_Name, "%u#%+d", i_n, i_c);
+         snprintf(s_Name, sizeof(s_Name), "%u#%+d", i_n, i_c);
          l_k = i_b = i_n;
          break;
 
       case ST_FACTORIAL:
-         sprintf(s_Name, "%u!%+d", i_n, i_c);
+         snprintf(s_Name, sizeof(s_Name),"%u!%+d", i_n, i_c);
          l_k = i_b = i_n;
          break;
 
       case ST_GFN:
-         sprintf(s_Name, "%u^%u+1", i_b, i_n);
+         snprintf(s_Name, sizeof(s_Name),"%u^%u+1", i_b, i_n);
          l_k = i_c = 1;
          break;
 
       default:
-         sprintf(s_Name, "%llu*%u^%u%+d", l_k, i_b, i_n, i_c);
+         snprintf(s_Name, sizeof(s_Name),"%llu*%u^%u%+d", l_k, i_b, i_n, i_c);
  
          if (l_k < 2 || i_b < 2 || i_n < 2)
          {
@@ -404,16 +404,16 @@ void    Candidate::LogCompletedTest(test_t *theTest, char *inetAddress)
    char     *ptr1, *ptr2;
 
    if (b_NeedsDoubleCheck)
-      sprintf(doubleCheck, "DoubleCheck? %s", ((i_CompletedTests > 0) ? "Yes" : "No"));
+      snprintf(doubleCheck, 30, "DoubleCheck? %s", ((i_CompletedTests > 0) ? "Yes" : "No"));
    else
       *doubleCheck = 0;
 
-   sprintf(logHeader, "%s received by Email: %s  User: %s  Client: %s Program: %s",
+   snprintf(logHeader, 100, "%s received by Email: %s  User: %s  Client: %s Program: %s",
            s_Name, theTest->s_EmailID, theTest->s_UserID, theTest->s_ClientID, theTest->s_Program);
 
-   sprintf(prover,      "Prover: %s",       theTest->s_Prover);
-   sprintf(residue,     "Residue: %s",      theTest->s_Residue);
-   sprintf(twinResidue, "Twin Residue: %s", theTest->s_TwinResidue);
+   snprintf(prover,      50, "Prover: %s",       theTest->s_Prover);
+   snprintf(residue,     50, "Residue: %s",      theTest->s_Residue);
+   snprintf(twinResidue, 50, "Twin Residue: %s", theTest->s_TwinResidue);
 
    if (!strcmp(theTest->s_Residue,     "PRP"))   b_IsPRP       = true;
    if (!strcmp(theTest->s_Residue,     "PRIME")) b_IsPrime     = true;
@@ -805,12 +805,12 @@ uint32_t  Candidate::HadRoundoffError(char *geneferName)
    test_t  *tPtr;
    char     nameToFind[20], geneferROE[100];
 
-   sprintf(nameToFind, "%s ", geneferName);
+   snprintf(nameToFind,20,  "%s ", geneferName);
 
    tPtr = m_Test;
    while (tPtr)
    {
-      sprintf(geneferROE, "%s ", tPtr->s_GeneferROE);
+      snprintf(geneferROE, 100, "%s ", tPtr->s_GeneferROE);
 
       if (strstr(geneferROE, nameToFind) > 0)
          return true;
@@ -885,8 +885,8 @@ int32_t   Candidate::WriteToDB(DBInterface *dbInterface)
 
    sqlStatement->PrepareInsert("Candidate");
 
-   sprintf(theK, "%lld", l_k);
-   sprintf(lastUpdateTime, "%lld", l_LastUpdateTime);
+   snprintf(theK, 20, "%lld", l_k);
+   snprintf(lastUpdateTime, 20, "%lld", l_LastUpdateTime);
    sqlStatement->InsertNameValuePair("CandidateName", s_Name);
    sqlStatement->InsertNameValuePair("DecimalLength", (int32_t) 0);
    sqlStatement->InsertNameValuePair("CompletedTests", (int32_t) i_CompletedTests);
@@ -962,7 +962,7 @@ int32_t   Candidate::WriteToDB(DBInterface *dbInterface)
    {
       sqlStatement->PrepareInsert("CandidateTest");
 
-      sprintf(testID, "%lld", t1->l_TestID);
+      snprintf(testID, 20, "%lld", t1->l_TestID);
       sqlStatement->InsertNameValuePair("CandidateName", s_Name);
       sqlStatement->InsertNameValuePair("TestID", testID);
       if (strcmp(t1->s_Program, "na"))

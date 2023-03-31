@@ -104,7 +104,7 @@ bool     WWWWWorker::GetWork(void)
 
          if (toScan == wasScanned)
          {
-            sprintf(wu->s_Name, "%" PRId64"", wu->l_LowerLimit);
+            snprintf(wu->s_Name, sizeof(wu->s_Name), "%" PRId64"", wu->l_LowerLimit);
             wu->m_FirstWorkUnitTest = new WWWWWorkUnitTest(ip_Log, ii_ServerType, is_WorkSuffix, wu,
                                                            ii_SpecialThreshhold, ip_TestingProgramFactory);
             AddWorkUnitToList(wu);
@@ -328,7 +328,7 @@ void  WWWWWorker::Load(string saveFileName)
             exit(-1);
          }
 
-         sprintf(wu->s_Name, "%" PRId64"", wu->l_LowerLimit);
+         snprintf(wu->s_Name, sizeof(wu->s_Name), "%" PRId64"", wu->l_LowerLimit);
          ip_WorkUnitTestFactory->LoadWorkUnitTest(fPtr, ii_ServerType, wu, ii_SpecialThreshhold);
          AddWorkUnitToList(wu);
       }

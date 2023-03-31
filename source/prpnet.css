@@ -1,0 +1,131 @@
+* {
+    box-sizing: border-box;
+}
+
+body {font-family:Arial,Helvetica,sans-serif;}
+
+table, th, td {border:1px solid black;}
+
+/* New properties */
+table {
+    margin: 0 auto;
+    margin-bottom: 2em;
+}
+
+article {
+    margin: 2em;
+}
+
+h1, h2, h3 {text-align: center;}
+tr.untested {background-color: white;}
+tr.tested {background-color: aqua;}
+tr.found {background-color: lime;}
+tr.conjectureComplete {background-color: red;}
+tr.conjectureIncomplete {background-color: yellow;}
+
+td.number {text-align: right;}
+td.time {text-align: center;}
+
+div.header-box,
+div.no-records-found {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1em;
+}
+
+div.header-box span,
+div.no-records-found span {
+    background-color: white;
+    border: 1px solid black;
+    padding: 2px;
+}
+
+div.header-box span span,
+div.no-records-found span span {
+    background-color: #00386B;
+    color: white;
+    font-weight: bold;
+    padding: 1px;
+    text-align: center;
+    display: table-cell;
+}
+
+.server-stats tbody th[scope="row"],
+#server-stats-table tbody th[scope="row"] {
+    text-align: right;
+}
+
+.server-stats tfoot,
+#server-stats-table tfoot {
+    background-color:yellow;
+    color: black;
+    font-weight: bold;
+}
+
+table thead,
+th[scope="rowgroup"] {
+    background-color: #00386B;
+    color: white;
+    font-weight: bold;
+}
+
+#work-remaining-notice {
+    text-align: center;
+}
+
+.warning {
+    color: red;
+}
+
+table.primes-by-user-table tfoot,
+table.primes-by-team-table tfoot,
+table.gfn-divisors-by-user-table tfoot {
+    text-align: center;
+}
+
+nav {
+    font-weight: bold;
+    font-size: large;
+    width: 50%;
+    margin: 0 auto;
+    margin-bottom: 2em;
+    border: 1px solid black;
+}
+
+nav > div {
+    padding: 2px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+@supports (display: grid) {
+    nav > div {
+        width: auto;
+    }
+
+    nav.five-track {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    }
+
+    nav.four-track {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+}
+
+@supports not (display: grid) {
+    nav {
+        display: table;
+    }
+
+    nav.five-track > div {
+        display: table-cell;
+        width: 20%;
+    }
+
+    nav.four-track > div {
+        display: table-cell;
+        width: 25%;
+    }
+}

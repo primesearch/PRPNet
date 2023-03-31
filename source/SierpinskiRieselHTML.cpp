@@ -42,23 +42,17 @@ void SierpinskiRieselHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&kPRPsAndPrimesFound);
    sqlStatement->BindSelectedColumn(&sierpinskiRieselPrimeN);
 
-   if (!sqlStatement->FetchRow(false))
-   {
-      ip_Socket->Send("<table frame=box align=center border=1>");
-      ip_Socket->Send("<tr align=center><td class=headertext>No group stats found</tr>");
-      ip_Socket->Send("</table>");
-      delete sqlStatement;
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
-   }
 
    if (ib_ServerStatsSummaryOnly)
    {
-      ip_Socket->Send("<table frame=box align=center border=1><tr class=headercolor>");
+      ip_Socket->Send("<table class=\"server-stats sortable\"><thead><tr>");
 
       TH_CLMN_HDR("Form");
       TH_CLMN_HDR("Total Candidates");
-      TH_CLMN_HDR("Min N");
-      TH_CLMN_HDR("Max N");
+      TH_CLMN_HDR("Min <var>N</var>");
+      TH_CLMN_HDR("Max <var>N</var>");
       TH_CLMN_HDR("Count Tested");
       TH_CH_IF_DC("Count DC\'d");
       TH_CLMN_HDR("Count Untested");
@@ -68,7 +62,7 @@ void SierpinskiRieselHTML::ServerStats(void)
       TH_CLMN_HDR("Leading Edge");
       TH_CLMN_HDR("PRPs/Primes");
 
-      ip_Socket->Send("</tr>");
+      ip_Socket->Send("</tr></thead><tbody>");
    }
 
    prevB = prevC = 0;
@@ -81,41 +75,53 @@ void SierpinskiRieselHTML::ServerStats(void)
             totalConjectures++;
 
             if (ib_ServerStatsSummaryOnly)
-               ip_Socket->Send("<tr><th align=center>%c%d k\'s: %d",
-                               (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
+                ip_Socket->Send("<tr><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
+                                (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
             else
-               ip_Socket->Send("<tr class=totalcolor bgcolor=\"%s\"><th class=totaltext align=center>%c%d k\'s: %d",
-                               (conjectureKs == conjecturePRPsAndPrimesFound ? "red" : "yellow"),
-                               (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
+                ip_Socket->Send("</tbody><tfoot><tr class=\"%s\"><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
+                      (conjectureKs == conjecturePRPsAndPrimesFound ? "conjectureComplete" : "conjectureIncomplete"),
+                      (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
 
-            TH_32BIT(conjectureNs);
-            TH_32BIT(conjectureMinN);
-            TH_32BIT(conjectureMaxN);
-            TH_32BIT(conjectureTested);
-            TH_IF_DC(conjectureDoubleChecked);
-            TH_32BIT(conjectureUntested);
-            TH_32BIT(conjectureCountInProgress);
-            TH_32BIT(conjectureTestsSkipped);
-            TH_32BIT(conjectureCompletedThru);
-            TH_32BIT(conjectureLeadingEdge);
-            TH_32BIT(conjecturePRPsAndPrimesFound);
+            TD_32BIT(conjectureNs);
+            TD_32BIT(conjectureMinN);
+            TD_32BIT(conjectureMaxN);
+            TD_32BIT(conjectureTested);
+            TD_IF_DC(conjectureDoubleChecked);
+            TD_32BIT(conjectureUntested);
+            TD_32BIT(conjectureCountInProgress);
+            TD_32BIT(conjectureTestsSkipped);
+            TD_32BIT(conjectureCompletedThru);
+            TD_32BIT(conjectureLeadingEdge);
+            TD_32BIT(conjecturePRPsAndPrimesFound);
 
-            ip_Socket->Send("<th class=totaltext align=center>%d remain</tr></table><p><p>", conjectureKs - conjecturePRPsAndPrimesFound);
+            if (ib_ServerStatsSummaryOnly)
+                ip_Socket->Send("<td style=\"text-align: center;\">%d remain</td></tr>", conjectureKs - conjecturePRPsAndPrimesFound);
+            else
+                ip_Socket->Send("<td style=\"text-align: center;\">%d remain</td></tr></tfoot></table>", conjectureKs - conjecturePRPsAndPrimesFound);
          }
 
          if (!ib_ServerStatsSummaryOnly)
          {
-            ip_Socket->Send("<table frame=box align=center border=1>");
-	         ip_Socket->Send("<tr class=headercolor><th class=headertext align=center colspan=%d>%s base %d</tr>",
-	                        (ib_NeedsDoubleCheck ? 12 : 11), (c > 0 ? "Sierpinski" : "Riesel"), b);
-            ip_Socket->Send("</table><p>");
-            ip_Socket->Send("<table frame=box align=center border=1 class=sortable>");
-            ip_Socket->Send("<tr class=headercolor><th class=headertext>Form<th class=headertext>Total Candidates<th class=headertext>Min N<th class=headertext>Max N");
-            ip_Socket->Send("<th class=headertext>Count Tested");
-            if (ib_NeedsDoubleCheck) ip_Socket->Send("<th class=headertext>Count DC\'d");
-            ip_Socket->Send("<th class=headertext>Count Untested<th class=headertext>In Progress<th class=headertext>Tests Skipped");
-            ip_Socket->Send("<th class=headertext>Completed Thru<th class=headertext>Leading Edge<th class=headertext>PRPs/Primes<th class=headertext>Smallest Prime");
-            ip_Socket->Send("</tr>");
+            ip_Socket->Send("<div class=\"header-box\">");
+            ip_Socket->Send("<span><span>%s base %d</span></span>", (c > 0 ? "Sierpinski" : "Riesel"), b);
+            ip_Socket->Send("</div>");
+            ip_Socket->Send("<table class=\"server-stats sortable\"><thead><tr>");
+
+            TH_CLMN_HDR("Form");
+            TH_CLMN_HDR("Total Candidates");
+            TH_CLMN_HDR("Min <var>N</var>");
+            TH_CLMN_HDR("Max <var>N</var>");
+            TH_CLMN_HDR("Count Tested");
+            TH_CH_IF_DC("Count DC\'d");
+            TH_CLMN_HDR("Count Untested");
+            TH_CLMN_HDR("In Progress");
+            TH_CLMN_HDR("Tests Skipped");
+            TH_CLMN_HDR("Completed Thru");
+            TH_CLMN_HDR("Leading Edge");
+            TH_CLMN_HDR("PRPs/Primes");
+            TH_CLMN_HDR("Smallest Prime");
+
+            ip_Socket->Send("</tr></thead><tbody>");
          }
 
          prevB = b;
@@ -161,12 +167,12 @@ void SierpinskiRieselHTML::ServerStats(void)
 
       if (!ib_ServerStatsSummaryOnly)
       {
-         ip_Socket->Send("<tr bgcolor=\"%s\">", ((sierpinskiRieselPrimeN > 0) ? "lime" : (kCountUntested ? "white" : "aqua")));
+         ip_Socket->Send("<tr class=\"%s\">", ((sierpinskiRieselPrimeN > 0) ? "found" : (kCountUntested ? "untested" : "tested")));
 
          if (k > 1)
-            ip_Socket->Send("<td align=center>%" PRId64"*%d^n%+d", k, b, c);
+            ip_Socket->Send("<th scope=\"row\">%" PRId64"*%d^<var>n</var>%+d</th>", k, b, c);
          else
-            ip_Socket->Send("<td align=center>%d^n%+d", b, c);
+            ip_Socket->Send("<th scope=\"row\">%d^<var>n</var>%+d</th>", b, c);
 
          TD_32BIT(kCountInGroup);
          TD_32BIT(kMinN);
@@ -184,39 +190,42 @@ void SierpinskiRieselHTML::ServerStats(void)
          }
          else
             TD_32BIT(0);
-            
+
          TD_32BIT(kCompletedThru);
          TD_32BIT(kLeadingEdge);
          TD_32BIT(kPRPsAndPrimesFound);
 
          if (sierpinskiRieselPrimeN > 0)
-            ip_Socket->Send("<td align=center>%" PRIu64"*%d^%d%+d</tr>", k, b, sierpinskiRieselPrimeN, c);
+            ip_Socket->Send("<td style=\"text-align: center;\">%" PRIu64"*%d^%d%+d</td></tr>", k, b, sierpinskiRieselPrimeN, c);
          else
-            ip_Socket->Send("<td align=center>none found</tr>");
+            ip_Socket->Send("<td style=\"text-align: center;\">none found</td></tr>");
       }
    } while (sqlStatement->FetchRow(false));
 
    if (ib_ServerStatsSummaryOnly)
-      ip_Socket->Send("<tr><th align=center>%c%d k\'s: %d",
+      ip_Socket->Send("<tr><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
                       (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
    else
-      ip_Socket->Send("<tr class=totalcolor bgcolor=\"%s\"><th class=totaltext align=center>%c%d k\'s: %d",
-                      (conjectureKs == conjecturePRPsAndPrimesFound ? "red" : "yellow"),
+      ip_Socket->Send("</tbody><tfoot><tr class=\"%s\"><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
+                      (conjectureKs == conjecturePRPsAndPrimesFound ? "conjectureComplete" : "conjectureIncomplete"),
                       (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
 
-   TH_32BIT(conjectureNs);
-   TH_32BIT(conjectureMinN);
-   TH_32BIT(conjectureMaxN);
-   TH_32BIT(conjectureTested);
-   TH_IF_DC(conjectureDoubleChecked);
-   TH_32BIT(conjectureUntested);
-   TH_32BIT(conjectureCountInProgress);
-   TH_32BIT(conjectureTestsSkipped);
-   TH_32BIT(conjectureCompletedThru);
-   TH_32BIT(conjectureLeadingEdge);
-   TH_32BIT(conjecturePRPsAndPrimesFound);
+   TD_32BIT(conjectureNs);
+   TD_32BIT(conjectureMinN);
+   TD_32BIT(conjectureMaxN);
+   TD_32BIT(conjectureTested);
+   TD_IF_DC(conjectureDoubleChecked);
+   TD_32BIT(conjectureUntested);
+   TD_32BIT(conjectureCountInProgress);
+   TD_32BIT(conjectureTestsSkipped);
+   TD_32BIT(conjectureCompletedThru);
+   TD_32BIT(conjectureLeadingEdge);
+   TD_32BIT(conjecturePRPsAndPrimesFound);
 
-   ip_Socket->Send("<th class=totaltext align=center>%d remain</tr></table><p><p>", conjectureKs - conjecturePRPsAndPrimesFound);
+   if (ib_ServerStatsSummaryOnly)
+      ip_Socket->Send("<td style=\"text-align: center;\">%d remain</td></tr>", conjectureKs - conjecturePRPsAndPrimesFound);
+   else
+      ip_Socket->Send("<td style=\"text-align: center;\">%d remain</td></tr></tfoot></table>", conjectureKs - conjecturePRPsAndPrimesFound);
 
    totalConjectures++;
    totalKs += conjectureKs;
@@ -239,38 +248,50 @@ void SierpinskiRieselHTML::ServerStats(void)
    {
       if (!ib_ServerStatsSummaryOnly)
       {
-         ip_Socket->Send("<table frame=box align=center border=1>");
-	      ip_Socket->Send("<tr class=headercolor><th class=headertext align=center colspan=%d>Totals Across %d Conjectures</tr>",
-	                     (ib_NeedsDoubleCheck ? 12 : 11), totalConjectures);
-         ip_Socket->Send("<tr class=headercolor><th class=headertext>Total k<th class=headertext>Total Candidates<th class=headertext>Min N<th class=headertext>Max N");
-         ip_Socket->Send("<th class=headertext>Count Tested");
-         if (ib_NeedsDoubleCheck) ip_Socket->Send("<th class=headertext>Count DC\'d");
-         ip_Socket->Send("<th class=headertext>Count Untested<th class=headertext>In Progress<th class=headertext>Tests Skipped");
-         ip_Socket->Send("<th class=headertext>Completed Thru<th class=headertext>Leading Edge<th class=headertext>PRPs/Primes<th class=headertext>Remaining k");
-         ip_Socket->Send("</tr>");
+         ip_Socket->Send("<table class=\"server-stats\">");
+         ip_Socket->Send("<thead><tr><th colspan=\"%d\">Totals Across %d Conjectures</th></tr>",
+                         (ib_NeedsDoubleCheck ? 12 : 11), totalConjectures);
+         ip_Socket->Send("<tr>");
 
-         ip_Socket->Send("<tr bgcolor=\"white\">");
+         TH_CLMN_HDR("Total <var>k</var>");
+         TH_CLMN_HDR("Total Candidates");
+         TH_CLMN_HDR("Min <var>N</var>");
+         TH_CLMN_HDR("Max <var>N</var>");
+         TH_CLMN_HDR("Count Tested");
+         TH_CH_IF_DC("Count DC\'d");
+         TH_CLMN_HDR("Count Untested");
+         TH_CLMN_HDR("In Progress");
+         TH_CLMN_HDR("Tests Skipped");
+         TH_CLMN_HDR("Completed Thru");
+         TH_CLMN_HDR("Leading Edge");
+         TH_CLMN_HDR("PRPs/Primes");
+         TH_CLMN_HDR("Remaining <var>k</var>");
+
+         ip_Socket->Send("</tr></thead>");
+         ip_Socket->Send("<tbody><tr>");
       }
+      else
+         ip_Socket->Send("</tbody><tfoot><tr>");
 
-      TH_32BIT(totalKs);
-      TH_32BIT(totalNs);
-      TH_32BIT(totalMinN);
-      TH_32BIT(totalMaxN);
-      TH_32BIT(totalTested);
-      TH_IF_DC(totalDoubleChecked);
-      TH_32BIT(totalUntested);
-      TH_32BIT(totalCountInProgress);
-      TH_32BIT(totalTestsSkipped);
-      TH_32BIT(totalCompletedThru);
-      TH_32BIT(totalLeadingEdge);
-      TH_32BIT(totalPRPsAndPrimesFound);
-      TH_32BIT(totalKs - totalPRPsAndPrimesFound);
-      
-      ip_Socket->Send("</tr></table><p><p>");
-   }
+      TD_32BIT(totalKs);
+      TD_32BIT(totalNs);
+      TD_32BIT(totalMinN);
+      TD_32BIT(totalMaxN);
+      TD_32BIT(totalTested);
+      TD_IF_DC(totalDoubleChecked);
+      TD_32BIT(totalUntested);
+      TD_32BIT(totalCountInProgress);
+      TD_32BIT(totalTestsSkipped);
+      TD_32BIT(totalCompletedThru);
+      TD_32BIT(totalLeadingEdge);
+      TD_32BIT(totalPRPsAndPrimesFound);
+      if (!ib_ServerStatsSummaryOnly)
+         ip_Socket->Send("<td style=\"text-align: right;\">%d</td></tr></tbody></table></article>", conjectureKs - conjecturePRPsAndPrimesFound);
+      else
+         ip_Socket->Send("<td style=\"text-align: center;\">%d remain</td></tr></tfoot></table></article>", conjectureKs - conjecturePRPsAndPrimesFound);
 
-   if (ib_ServerStatsSummaryOnly)
-      ip_Socket->Send("<tr bgcolor=\"white\">");
+   } else if (ib_ServerStatsSummaryOnly)
+      ip_Socket->Send("</tbody></table></article>");
 
    delete sqlStatement;
 }

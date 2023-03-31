@@ -115,9 +115,9 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32
                              "   and (CompletedTests > 0 or HasPendingTest = 1)";
 
    if (ib_NeedsDoubleCheck)
-      sprintf(completedSQL, "DoubleChecked = 0");
+      snprintf(completedSQL, sizeof(completedSQL), "DoubleChecked = 0");
    else
-      sprintf(completedSQL, "CompletedTests = 0");
+      snprintf(completedSQL, sizeof(completedSQL), "CompletedTests = 0");
 
    // First, get the lowest value that has no completed tests
    // (or has not been double-checked).
@@ -151,9 +151,9 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      sprintf(completedSQL, "(select max(abs(b)) from Candidate where k = %" PRId64" and n = %d)", theK, theN);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(abs(b)) from Candidate where k = %" PRId64" and n = %d)", theK, theN);
    else
-      sprintf(completedSQL, "$null_func$((select max(abs(b)) from Candidate where k = %" PRId64" and n = %d and abs(b) < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(abs(b)) from Candidate where k = %" PRId64" and n = %d and abs(b) < %d), %d)",
               theK, theN, nextToTest, nextToTest);
 
    // Finally, update the group stats

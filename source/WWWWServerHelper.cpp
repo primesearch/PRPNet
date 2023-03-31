@@ -20,15 +20,15 @@ int32_t   WWWWServerHelper::ComputeHoursRemaining(void)
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
-   if (!success) return 0;
-   if (!countTested || !countUntested) return 0;
+   if (!success) return -1;
+   if (!countTested || !countUntested) return -2;
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, timeSelect);
    sqlStatement->BindSelectedColumn(&startTime);
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
-   if (!success) return 0;
+   if (!success) return -1;
 
    nowTime = time(NULL);
 

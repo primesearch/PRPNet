@@ -25,21 +25,15 @@ void  GenericHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&countInProgress);
    sqlStatement->BindSelectedColumn(&prpsAndPrimesFound);
 
-   if (!sqlStatement->FetchRow(false))
-   {
-      ip_Socket->Send("<table frame=box align=center border=1>");
-      ip_Socket->Send("<tr align=center><td class=headertext>No group stats found</tr>");
-      ip_Socket->Send("</table>");
-      delete sqlStatement;
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
-   }
 
    ServerStatsHeader(BY_N);
 
    do
    {
       // If the socket was closed, then stop sending data
-      if (!ip_Socket->Send("<trbgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
+      if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
       TD_32BIT(countInGroup);
@@ -52,14 +46,14 @@ void  GenericHTML::ServerStats(void)
       ip_Socket->Send("</tr>");
    } while (sqlStatement->FetchRow(false));
 
-   ip_Socket->Send("<tr class=totalcolor>");
+   ip_Socket->Send("</tbody></table></article>");
 
    delete sqlStatement;
 }
 
 void     GenericHTML::ServerStatsHeader(sss_t summarizedBy)
 {
-   ip_Socket->Send("<table frame=box align=center border=1 class=sortable><tr class=headercolor>");
+   ip_Socket->Send("<article><table id=\"server-stats-table\" class=\"sortable\"><thead><tr>");
 
    TH_CLMN_HDR("Total Candidates");
    TH_CLMN_HDR("Count Tested");
@@ -68,5 +62,5 @@ void     GenericHTML::ServerStatsHeader(sss_t summarizedBy)
    TH_CLMN_HDR("In Progress");
    TH_CLMN_HDR("PRPs/Primes");
 
-   ip_Socket->Send("</tr>");
+   ip_Socket->Send("</tr></thead><tbody>");
 }

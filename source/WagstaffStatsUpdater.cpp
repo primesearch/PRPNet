@@ -103,9 +103,9 @@ bool  WagstaffStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
                              "   and (CompletedTests > 0 or HasPendingTest = 1)";
 
    if (ib_NeedsDoubleCheck)
-      sprintf(completedSQL, "DoubleChecked = 0");
+      snprintf(completedSQL, sizeof(completedSQL), "DoubleChecked = 0");
    else
-      sprintf(completedSQL, "CompletedTests = 0");
+      snprintf(completedSQL, sizeof(completedSQL), "CompletedTests = 0");
 
    // First, get the lowest value that has no completed tests
    // (or has not been double-checked).
@@ -137,9 +137,9 @@ bool  WagstaffStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      sprintf(completedSQL, "(select max(n) from Candidate where c = %d)", theC);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where c = %d)", theC);
    else
-      sprintf(completedSQL, "$null_func$((select max(n) from Candidate where c = %d and n < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where c = %d and n < %d), %d)",
               theC, nextToTest, nextToTest);
 
    // Finally, update the group stats

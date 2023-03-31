@@ -182,9 +182,9 @@ bool  WWWWStatsUpdater::UpdateGroupStats(void)
                              " where (CompletedTests > 0 or HasPendingTest = 1) ";
 
    if (ib_NeedsDoubleCheck)
-      sprintf(completedSQL, "DoubleChecked = 0");
+      snprintf(completedSQL, sizeof(completedSQL), "DoubleChecked = 0");
    else
-      sprintf(completedSQL, "CompletedTests = 0");
+      snprintf(completedSQL, sizeof(completedSQL), "CompletedTests = 0");
 
    // First, get the lowest value that has no completed tests
    // (or has not been double-checked).
@@ -214,9 +214,9 @@ bool  WWWWStatsUpdater::UpdateGroupStats(void)
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      sprintf(completedSQL, "(select max(UpperLimit) from WWWWRange)");
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(UpperLimit) from WWWWRange)");
    else
-      sprintf(completedSQL, "$null_func$((select max(UpperLimit) from WWWWRange where UpperLimit < %" PRId64"), %" PRId64")",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(UpperLimit) from WWWWRange where UpperLimit < %" PRId64"), %" PRId64")",
               nextToTest, nextToTest);
 
    // Finally, update the group stats

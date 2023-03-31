@@ -84,9 +84,9 @@ testresult_t   GeneferProgram::Execute(testtype_t testType)
       is_InternalProgramName = is_ProgramList[ii_RunIndex[index]];
 
       if (ii_Affinity >= 0 && index == 0)
-         sprintf(command, "%s -d %d %s", is_InternalProgramName.c_str(), ii_Affinity, is_InFileName.c_str());
+         snprintf(command, 200, "%s -d %d %s", is_InternalProgramName.c_str(), ii_Affinity, is_InFileName.c_str());
       else
-         sprintf(command, "%s %s", is_InternalProgramName.c_str(), is_InFileName.c_str());
+         snprintf(command, 200, "%s %s", is_InternalProgramName.c_str(), is_InFileName.c_str());
 
       ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
@@ -245,7 +245,7 @@ uint32_t GeneferProgram::ValidateExe(void)
          return false;
       }
 
-      sprintf(command, "%s -v > a.out", is_ProgramList[index].c_str());
+      snprintf(command, 150, "%s -v > a.out", is_ProgramList[index].c_str());
 
       ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
@@ -309,7 +309,7 @@ void  GeneferProgram::DetermineVersion(void)
    char version[20];
    FILE *fp;
 
-   sprintf(command, "%s -v > a.out", is_ExeName.c_str());
+   snprintf(command, 200, "%s -v > a.out", is_ExeName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 

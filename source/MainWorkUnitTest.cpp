@@ -14,40 +14,40 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
    switch (serverType)
    {
       case ST_PRIMORIAL:
-        sprintf(tempName, "%d#%+d", ii_b, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d#%+d", ii_b, ii_c);
         break;
 
       case ST_FACTORIAL:
-        sprintf(tempName, "%d!%+d", ii_b, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d!%+d", ii_b, ii_c);
         break;
 
       case ST_MULTIFACTORIAL:
-        sprintf(tempName, "%d!%d%+d", ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d!%d%+d", ii_b, ii_n, ii_c);
         break;
 
       case ST_GFN:
-        sprintf(tempName, "%d^%d%+d", ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d^%d%+d", ii_b, ii_n, ii_c);
         break;
 
       case ST_XYYX:
-         sprintf(tempName, "%d^%d%c%d^%d", ii_b, ii_n, ((ii_c == 1) ? '+' : '-'), ii_n, ii_b);
+         snprintf(tempName, sizeof(tempName), "%d^%d%c%d^%d", ii_b, ii_n, ((ii_c == 1) ? '+' : '-'), ii_n, ii_b);
          break;
 
       case ST_GENERIC:
       case ST_CYCLOTOMIC:
-         sprintf(tempName, "%s", wu->s_Name);
+         snprintf(tempName, sizeof(tempName), "%s", wu->s_Name);
          break;
 
       case ST_CAROLKYNEA:
-        sprintf(tempName, "(%d^%d%+d)^2-2", ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "(%d^%d%+d)^2-2", ii_b, ii_n, ii_c);
         break;
 
       case ST_WAGSTAFF:
-        sprintf(tempName, "(2^%d+1)/3", ii_n);
+        snprintf(tempName, sizeof(tempName), "(2^%d+1)/3", ii_n);
         break;
 
       default:
-        sprintf(tempName, "%" PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "%" PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
         break;
    }
 

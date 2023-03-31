@@ -12,7 +12,7 @@ int32_t   PrimeServerHelper::ComputeHoursRemaining(void)
    const char *sumSelect = "select sum(CountTested), sum(countUntested) " \
                            "  from CandidateGroupStats";
    const char *timeSelect = "select min(TestID) " \
-                            "  from CandidateTest";
+                           "  from CandidateTest";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, sumSelect);
    sqlStatement->BindSelectedColumn(&countTested);
@@ -20,15 +20,15 @@ int32_t   PrimeServerHelper::ComputeHoursRemaining(void)
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
-   if (!success) return 0;
-   if (!countTested || !countUntested) return 0;
+   if (!success) return -1;
+   if (!countTested || !countUntested) return -2;
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, timeSelect);
    sqlStatement->BindSelectedColumn(&startTime);
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
-   if (!success) return 0;
+   if (!success) return -1;
 
    nowTime = time(NULL);
 
@@ -106,7 +106,7 @@ void  PrimeServerHelper::ExpireTests(bool canExpire, int32_t delayCount, delay_t
          {
             ip_Log->LogMessage("Test of %s for email %s / machine %s / instance %s has expired.",
                                           candidateName, emailID, machineID, instanceID);
-             ip_DBInterface->Commit();
+            ip_DBInterface->Commit();
          }
          else
             ip_DBInterface->Rollback();

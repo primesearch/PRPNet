@@ -30,24 +30,18 @@ void GFNHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&leadingEdge);
    sqlStatement->BindSelectedColumn(&prpsAndPrimesFound);
 
-   if (!sqlStatement->FetchRow(false))
-   {
-      ip_Socket->Send("<table frame=box align=center border=1>");
-      ip_Socket->Send("<tr align=center><td class=headertext>No group stats found</tr>");
-      ip_Socket->Send("</table>");
-      delete sqlStatement;
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
-   }
 
    ServerStatsHeader(BY_B);
 
    do
    {
       // If the socket was closed, then stop sending data
-      if (!ip_Socket->Send("<tr bgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
+      if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<td align=center>b^%d+1", n);
+      ip_Socket->Send("<th scope=\"row\"><var>b</var>^%d+1</th>", n);
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);
@@ -62,7 +56,7 @@ void GFNHTML::ServerStats(void)
       ip_Socket->Send("</tr>");
    } while (sqlStatement->FetchRow(false));
 
-   ip_Socket->Send("</table>");
+   ip_Socket->Send("</tbody></table></article>");
 
    delete sqlStatement;
 }

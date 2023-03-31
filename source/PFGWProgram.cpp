@@ -9,7 +9,7 @@ void     PFGWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWor
 
 testresult_t   PFGWProgram::Execute(testtype_t testType)
 {
-   char           command[100], sign, * normalPriority;
+   char           command[200], sign, * normalPriority;
    char           affinity[20];
    testresult_t   testResult;
    int32_t        aValue;
@@ -50,7 +50,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
       sign = ((ii_c > 0) ? 'm' : 'p');
 
    if (ii_Affinity > 0)
-      sprintf(affinity, "-A%u", ii_Affinity);
+      snprintf(affinity, 20, "-A%u", ii_Affinity);
    else
       affinity[0] = 0;
 
@@ -75,7 +75,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
       switch (testType)
       {
          case TT_PRP:
-            sprintf(command, "%s %s -k -f0 %s -a%d -l%s %s",
+            snprintf(command, 200, "%s %s -k -f0 %s -a%d -l%s %s",
                     is_ExeName.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
@@ -84,15 +84,15 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
             // is necessary for a primality proof.  This is an issue with GFNs which tend to
             // have large bases.
             if (ii_ServerType == ST_CYCLOTOMIC)
-               sprintf(command, "%s %s -k -f0 %s -a%d -t%c -l%s %s",
+               snprintf(command, 200, "%s %s -k -f0 %s -a%d -t%c -l%s %s",
                        is_ExeName.c_str(), affinity, normalPriority, aValue, sign, is_OutFileName.c_str(), is_InFileName.c_str());
             else
-               sprintf(command, "%s %s -k -f0 %s -a%d -e%d -t%c -l%s %s",
+               snprintf(command, 200, "%s %s -k -f0 %s -a%d -e%d -t%c -l%s %s",
                        is_ExeName.c_str(), affinity, normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          case TT_GFN:
-            sprintf(command, "%s %s -k -f0 %s -a%d -gxo -l%s %s", 
+            snprintf(command, 200, "%s %s -k -f0 %s -a%d -gxo -l%s %s", 
                     is_ExeName.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
@@ -311,7 +311,7 @@ void  PFGWProgram::DetermineVersion(void)
    char  command[200], line[200], *ptr1, *ptr2;
    FILE *fp;
 
-   sprintf(command, "%s -V 2> a.out", is_ExeName.c_str());
+   snprintf(command, 200, "%s -V 2> a.out", is_ExeName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
@@ -364,7 +364,7 @@ void  PFGWProgram::DetermineDecimalLength(void)
    FILE       *fp;
    int         tryCount = 0, bytes;
 
-   sprintf(command, "%s -k -od -f0 -l%s %s",
+   snprintf(command, 200, "%s -k -od -f0 -l%s %s",
          is_ExeName.c_str(), is_OutFileName.c_str(), is_InFileName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);

@@ -51,7 +51,7 @@ testresult_t   PhrotProgram::Execute(testtype_t testType)
 
    // -t will use "terse" output
    // -o will write the results to results.out
-   sprintf(command, "%s -t -o %s", is_ExeName.c_str(), is_InFileName.c_str());
+   snprintf(command, 200, "%s -t -o %s", is_ExeName.c_str(), is_InFileName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
@@ -163,7 +163,7 @@ void  PhrotProgram::DetermineVersion(void)
    char  command[200], line[200], *ptr1, *ptr2;
    FILE *fp;
 
-   sprintf(command, "%s 2> a.out", is_ExeName.c_str());
+   snprintf(command, 200, "%s 2> a.out", is_ExeName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 

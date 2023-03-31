@@ -35,14 +35,8 @@ void CarolKyneaHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&leadingEdge);
    sqlStatement->BindSelectedColumn(&prpsAndPrimesFound);
 
-   if (!sqlStatement->FetchRow(false))
-   {
-      ip_Socket->Send("<table frame=box align=center border=1>");
-      ip_Socket->Send("<tr align=center><td class=headertext>No group stats found</tr>");
-      ip_Socket->Send("</table>");
-      delete sqlStatement;
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
-   }
 
    ServerStatsHeader(BY_N);
 
@@ -63,10 +57,10 @@ void CarolKyneaHTML::ServerStats(void)
       if (ib_ServerStatsSummaryOnly) continue;
 
       // If the socket was closed, then stop sending data
-      if (!ip_Socket->Send("<tr bgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
+      if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<td align=right>(%d^n%+d)^2-2", b, c);
+      ip_Socket->Send("<th scope=\"row\">(%d^<var>n</var>%+d)^2-2</th>", b, c);
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);
@@ -81,22 +75,21 @@ void CarolKyneaHTML::ServerStats(void)
       ip_Socket->Send("</tr>");
    } while (sqlStatement->FetchRow(false));
 
-   ip_Socket->Send("<tr class=totalcolor>");
-   
-   ip_Socket->Send("<th class=totaltext align=center>Bases: %d", summaryBases);
-   TH_32BIT(summaryCountInGroup);
-   TH_32BIT(summaryMinInGroup);
-   TH_32BIT(summaryMaxInGroup);
-   TH_32BIT(summaryTested);
-   TH_IF_DC(summaryDoubleChecked);
-   TH_32BIT(summaryUntested);
-   TH_32BIT(summaryCountInProgress);
-   TH_32BIT(summaryCompletedThru);
-   TH_32BIT(summaryLeadingEdge);
-   TH_32BIT(summaryPRPsAndPrimesFound);
+   ip_Socket->Send("</tbody><tfoot><tr>");
 
-   ip_Socket->Send("</tr></table>");
+   ip_Socket->Send("<th scope=\"row\">Bases: %d</th>", summaryBases);
+   TD_32BIT(summaryCountInGroup);
+   TD_32BIT(summaryMinInGroup);
+   TD_32BIT(summaryMaxInGroup);
+   TD_32BIT(summaryTested);
+   TD_IF_DC(summaryDoubleChecked);
+   TD_32BIT(summaryUntested);
+   TD_32BIT(summaryCountInProgress);
+   TD_32BIT(summaryCompletedThru);
+   TD_32BIT(summaryLeadingEdge);
+   TD_32BIT(summaryPRPsAndPrimesFound);
+
+   ip_Socket->Send("</tr></tfoot></table></article>");
 
    delete sqlStatement;
 }
-

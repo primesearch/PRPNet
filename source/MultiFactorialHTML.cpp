@@ -21,7 +21,7 @@ void  MultiFactorialHTML::ServerStats(void)
                            "order by b, c";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect);
-   
+
    sqlStatement->BindSelectedColumn(&b);
    sqlStatement->BindSelectedColumn(&c);
    sqlStatement->BindSelectedColumn(&countInGroup);
@@ -35,14 +35,8 @@ void  MultiFactorialHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&leadingEdge);
    sqlStatement->BindSelectedColumn(&prpsAndPrimesFound);
 
-   if (!sqlStatement->FetchRow(false))
-   {
-      ip_Socket->Send("<table frame=box align=center border=1>");
-      ip_Socket->Send("<tr align=center><td class=headertext>No group stats found</tr>");
-      ip_Socket->Send("</table>");
-      delete sqlStatement;
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
-   }
 
    ServerStatsHeader(BY_N);
 
@@ -61,10 +55,10 @@ void  MultiFactorialHTML::ServerStats(void)
       summaryPRPsAndPrimesFound += prpsAndPrimesFound;
 
       // If the socket was closed, then stop sending data
-      if (!ip_Socket->Send("<trbgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
+      if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<td align=center>n!%d%+d", b, c);
+      ip_Socket->Send("<th scope=\"row\"><var>n</var>!%d%+d</th>", b, c);
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);
@@ -79,21 +73,21 @@ void  MultiFactorialHTML::ServerStats(void)
       ip_Socket->Send("</tr>");
    } while (sqlStatement->FetchRow(false));
 
-   ip_Socket->Send("<tr class=totalcolor>");
+   ip_Socket->Send("</tbody><tfoot><tr>");
 
-   ip_Socket->Send("<th class=totaltext align=center>Signs: %d", summarySigns);
-   TH_32BIT(summaryCountInGroup);
-   TH_32BIT(summaryMinInGroup);
-   TH_32BIT(summaryMaxInGroup);
-   TH_32BIT(summaryTested);
-   TH_IF_DC(summaryDoubleChecked);
-   TH_32BIT(summaryUntested);
-   TH_32BIT(summaryCountInProgress);
-   TH_32BIT(summaryCompletedThru);
-   TH_32BIT(summaryLeadingEdge);
-   TH_32BIT(summaryPRPsAndPrimesFound);
+   ip_Socket->Send("<th scope=\"row\">Signs: %d</th>", summarySigns);
+   TD_32BIT(summaryCountInGroup);
+   TD_32BIT(summaryMinInGroup);
+   TD_32BIT(summaryMaxInGroup);
+   TD_32BIT(summaryTested);
+   TD_IF_DC(summaryDoubleChecked);
+   TD_32BIT(summaryUntested);
+   TD_32BIT(summaryCountInProgress);
+   TD_32BIT(summaryCompletedThru);
+   TD_32BIT(summaryLeadingEdge);
+   TD_32BIT(summaryPRPsAndPrimesFound);
 
-   ip_Socket->Send("</tr></table>");
+   ip_Socket->Send("</tr></tfoot></table></article>");
 
    delete sqlStatement;
 }

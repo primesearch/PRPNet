@@ -101,7 +101,7 @@ int32_t  WWWWWorkReceiver::ReceiveWorkUnit(string theMessage)
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
-   sprintf(name, "range %" PRId64":%" PRId64"", lowerLimit, upperLimit);
+   snprintf(name, 60, "range %" PRId64":%" PRId64"", lowerLimit, upperLimit);
 
    // Verify whether or not the test exists.  It might have expired or the client
    // might be trying to send bad results.

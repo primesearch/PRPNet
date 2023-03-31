@@ -81,7 +81,7 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
       fprintf(fp, "Affinity=%u\n", ii_Affinity);
    fclose(fp);
 
-   sprintf(command, "%s -d", is_ExeName.c_str());
+   snprintf(command, 100, "%s -d", is_ExeName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
@@ -221,7 +221,7 @@ void  LLRProgram::DetermineVersion(void)
    char  command[200], line[200], *ptr, *ptr2;
    FILE *fp;
 
-   sprintf(command, "%s -v > a.out", is_ExeName.c_str());
+   snprintf(command, 200, "%s -v > a.out", is_ExeName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 

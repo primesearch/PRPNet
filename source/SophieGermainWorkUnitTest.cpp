@@ -6,6 +6,7 @@ SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t server
          : PrimeWorkUnitTest(theLog, serverType, workSuffix, wu, testingProgramFactory)
 {
    char  tempName[200];
+   
    il_k = wu->l_k;
    ii_b = wu->i_b;
 
@@ -24,7 +25,7 @@ SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t server
       exit(0);
    }
 
-   sprintf(tempName, "%" PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
+   snprintf(tempName, 200, "%" PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
    is_ChildName = tempName;
 }
 

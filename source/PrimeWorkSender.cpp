@@ -703,10 +703,10 @@ bool     PrimeWorkSender::CheckDoubleCheck(string candidateName, double decimalL
    strcpy(machineIDCondition, "");
 
    if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFEMAIL)
-      sprintf(emailIDCondition, "and EmailID = ?");
+      snprintf(emailIDCondition, 200, "and EmailID = ?");
       
    if (ii_DoubleChecker == DC_DIFFBOTH || ii_DoubleChecker == DC_DIFFMACHINE)
-      sprintf(machineIDCondition, "and MachineID = ?");
+      snprintf(machineIDCondition, 200, "and MachineID = ?");
       
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, 
                                     emailIDCondition, machineIDCondition);

@@ -4,15 +4,15 @@
 
 #include <string>
 #include "HTMLGenerator.h"
+#include "ServerHelper.h"
+#include "SQLStatement.h"
 
 class WWWWHTMLGenerator : public HTMLGenerator
 {
 public:
-   WWWWHTMLGenerator(globals_t *theGlobals) : HTMLGenerator(theGlobals) {};
+   WWWWHTMLGenerator(globals_t *theGlobals);
 
    virtual ~WWWWHTMLGenerator() {};
-
-   void     Send(string thePage);
 
    void     PendingTests(void);
    void     FindsByUser(void);
@@ -27,11 +27,15 @@ protected:
 
    char     ic_SearchType[20];
 
+   bool          SendSpecificPage(string thePage);
+   ServerHelper *GetServerHelper(void);
+
+   bool     CheckIfRecordsWereFound(SQLStatement *sqlStatement, string noRecordsFoundMessage, ...);
+
+   void     SendLinks();
+
 private:
-   char    *TimeToString(time_t theTime);
    void     ConvertToScientificNotation(int64_t valueInt, string &valueStr);
-   void     HeaderPlusLinks(string pageTitle);
-   void     GetDaysLeft(void);
 };
 
 #endif // #ifndef _WWWWHTMLGenerator_

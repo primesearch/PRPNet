@@ -485,7 +485,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       
          if (ii_ABCFormat == NOT_ABC)
          {
-            sprintf(abcLine, "%s", theMessage);
+            snprintf(abcLine, sizeof(abcLine), "%s", theMessage);
             il_theK = 0;
             ii_theB = 0;
             ii_theN = 0;
@@ -503,51 +503,51 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       case ST_FIXEDBNC:
       case ST_SOPHIEGERMAIN:
       case ST_TWIN:
-         sprintf(tempName, "%" PRId64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%" PRId64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
          break;
 
       case ST_CULLENWOODALL:
-         sprintf(tempName, "%d*%d^%d%+d", ii_theN, ii_theB, ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d*%d^%d%+d", ii_theN, ii_theB, ii_theN, ii_theC);
          break;
 
       case ST_PRIMORIAL:
-         sprintf(tempName, "%d#%+d", ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d#%+d", ii_theN, ii_theC);
          break;
 
       case ST_FACTORIAL:
-         sprintf(tempName, "%d!%+d", ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d!%+d", ii_theN, ii_theC);
          break;
          
       case ST_MULTIFACTORIAL:
-         sprintf(tempName, "%d!%d%+d", ii_theN, ii_theB, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d!%d%+d", ii_theN, ii_theB, ii_theC);
          break;
 
       case ST_GFN:
-         sprintf(tempName, "%d^%d%+d", ii_theB, ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d^%d%+d", ii_theB, ii_theN, ii_theC);
          break;
 
       case ST_XYYX:
-         sprintf(tempName, "%d^%d%c%d^%d", ii_theB, ii_theN, ((ii_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
+         snprintf(tempName, BUFFER_SIZE, "%d^%d%c%d^%d", ii_theB, ii_theN, ((ii_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
          break;
          
       case ST_CYCLOTOMIC:
          if (ii_theN == 1)
-            sprintf(tempName, "Phi(%" PRId64",%d)", il_theK, ii_theB);
+            snprintf(tempName, BUFFER_SIZE, "Phi(%" PRId64",%d)", il_theK, ii_theB);
          else
-            sprintf(tempName, "Phi(%" PRId64",%d^%d)", il_theK, ii_theB, ii_theN);
+            snprintf(tempName, BUFFER_SIZE, "Phi(%" PRId64",%d^%d)", il_theK, ii_theB, ii_theN);
          break;
 
       case ST_CAROLKYNEA:
-         sprintf(tempName, "(%d^%d%+d)^2-2", ii_theB, ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "(%d^%d%+d)^2-2", ii_theB, ii_theN, ii_theC);
          break;
          
       case ST_WAGSTAFF:
-         sprintf(tempName, "(2^%d+1)/3", ii_theN);
+         snprintf(tempName, BUFFER_SIZE, "(2^%d+1)/3", ii_theN);
          break;
 
        case ST_GENERIC:
           if (ii_ABCFormat == NOT_ABC)
-             sprintf(tempName, "%s", abcLine);
+             snprintf(tempName, BUFFER_SIZE, "%s", abcLine);
    }
 
    theK = il_theK;

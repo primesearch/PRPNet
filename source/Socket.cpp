@@ -53,7 +53,7 @@ SharedMemoryItem  *Socket::GetThreadWaiter(void)
 {
    char   id[10];
 
-   sprintf(id, "TW %d", (int32_t) ii_SocketID);
+   snprintf(id, 10, "TW %d", (int32_t) ii_SocketID);
 
    if (!ip_ThreadWaiter)
       ip_ThreadWaiter = new SharedMemoryItem(id);
@@ -300,7 +300,7 @@ bool     Socket::Send(string fmt, ...)
    va_list  args;
 
    va_start(args, fmt);
-   vsprintf(is_TempSendBuffer, fmt.c_str(), args);
+   vsnprintf(is_TempSendBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
    va_end(args);
 
    ip_Log->Debug(DEBUG_SOCKET, "%s: sending [%s]", is_SocketDescription.c_str(), is_TempSendBuffer);

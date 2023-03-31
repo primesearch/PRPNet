@@ -1,5 +1,7 @@
 #include "Log.h"
 
+#define TEMP_BUFFER_SIZE   10000
+
 Log::Log(int32_t logLimit, string logFileName, int32_t debugLevel, bool echoToConsole)
 {
    ip_FileLock = new SharedMemoryItem(logFileName);
@@ -14,7 +16,7 @@ Log::Log(int32_t logLimit, string logFileName, int32_t debugLevel, bool echoToCo
    ib_UseLocalTime = true;
    ib_AppendTimeZone = true;
 
-   is_TempBuffer = new char[10000];
+   is_TempBuffer = new char[TEMP_BUFFER_SIZE];
 }
 
 Log::~Log()
@@ -28,7 +30,7 @@ void  Log::LogMessage(string fmt, ...)
    va_list  args;
 
    va_start(args, fmt);
-   vsprintf(is_TempBuffer, fmt.c_str(), args);
+   vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
    va_end(args);
 
    ip_FileLock->Lock();
@@ -44,7 +46,7 @@ void  Log::TestMessage(string fmt, ...)
    va_list  args;
 
    va_start(args, fmt);
-   vsprintf(is_TempBuffer, fmt.c_str(), args);
+   vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
    va_end(args);
    
    ip_FileLock->Lock();
@@ -69,7 +71,7 @@ void  Log::Debug(int32_t debugLevel, string fmt, ...)
       ip_FileLock->Lock();
 
       va_start(args, fmt);
-      vsprintf(is_TempBuffer, fmt.c_str(), args);
+      vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
       va_end(args);
 
       Write(is_LogFileName, is_TempBuffer, true, true);

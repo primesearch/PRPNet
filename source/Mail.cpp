@@ -46,7 +46,7 @@ Mail::~Mail()
 
 bool     Mail::NewMessage(string toEmailID, string subject, ...)
 {
-   uint32_t   rc;
+   uint32_t rc;
    char     theSubject[BUFFER_SIZE];
    va_list  args;
 
@@ -54,7 +54,7 @@ bool     Mail::NewMessage(string toEmailID, string subject, ...)
       return false;
 
    va_start(args, subject);
-   vsprintf(theSubject, subject.c_str(), args);
+   vsnprintf(theSubject, BUFFER_SIZE, subject.c_str(), args);
    va_end(args);
 
    if (!ip_Socket->Open())
@@ -89,7 +89,7 @@ void    Mail::AppendLine(int32_t newLines, string line, ...)
    va_list  args;
 
    va_start(args, line);
-   vsprintf(theLine, line.c_str(), args);
+   vsnprintf(theLine, 2000, line.c_str(), args);
    va_end(args);
 
    while (newLines-- > 0)

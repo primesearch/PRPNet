@@ -4,10 +4,12 @@
 
 #include "SQLStatement.h"
 
-#define  PARAM_TYPE_STRING          1
-#define  PARAM_TYPE_INTEGER32       2
-#define  PARAM_TYPE_INTEGER64       3
-#define  PARAM_TYPE_DOUBLE          4
+#define PARAM_TYPE_STRING          1
+#define PARAM_TYPE_INTEGER32       2
+#define PARAM_TYPE_INTEGER64       3
+#define PARAM_TYPE_DOUBLE          4
+
+#define TEMP_BUFFER_SIZE   10000
 
 // Constructor
 SQLStatement::SQLStatement(Log *theLog, DBInterface *dbInterface, string fmt, ...)
@@ -31,10 +33,10 @@ SQLStatement::SQLStatement(Log *theLog, DBInterface *dbInterface, string fmt, ..
    ii_BoundInputCount = 0;
    ii_LengthIndicator = 0;
 
-   theSQL = new char[10000];
+   theSQL = new char[TEMP_BUFFER_SIZE];
 
    va_start(args, fmt);
-   vsprintf(theSQL, fmt.c_str(), args);
+   vsnprintf(theSQL, TEMP_BUFFER_SIZE, fmt.c_str(), args);
    va_end(args);
 
    is_SQLStatement = theSQL;
@@ -191,19 +193,19 @@ const char  *SQLStatement::ExpandStatement(void)
       switch (ip_SQLParam[parameterIndex].sqlType)
       {
          case SQL_C_CHAR:
-            sprintf(temp, "\'%s\'", ip_SQLParam[parameterIndex].charValue);
+            snprintf(temp, sizeof(temp), "\'%s\'", ip_SQLParam[parameterIndex].charValue);
             substitutedValue = temp;
             break;
          case SQL_C_LONG:
-            sprintf(temp, "%d", ip_SQLParam[parameterIndex].int32Value);
+            snprintf(temp, sizeof(temp), "%d", ip_SQLParam[parameterIndex].int32Value);
             substitutedValue = temp;
             break;
          case SQL_C_SBIGINT:
-            sprintf(temp, "%" PRId64"", ip_SQLParam[parameterIndex].int64Value);
+            snprintf(temp, sizeof(temp), "%" PRId64"", ip_SQLParam[parameterIndex].int64Value);
             substitutedValue = temp;
             break;
          case SQL_C_DOUBLE:
-            sprintf(temp, "%lf", ip_SQLParam[parameterIndex].doubleValue);
+            snprintf(temp, sizeof(temp), "%lf", ip_SQLParam[parameterIndex].doubleValue);
             substitutedValue = temp;
             break;
          default:

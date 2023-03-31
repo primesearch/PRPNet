@@ -124,8 +124,8 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
          
       case ST_CAROLKYNEA:
          doubleB = (double) (intB);
-         doubleN = (double) (intN);
-         return floor((2.0 * floor((log10(doubleB) * doubleN) + 1.0)) + 1.0);
+         doubleN = (double) (intN * 2);
+         return floor((log10(doubleB) * doubleN) / 3.0 + 1.0);
          
       case ST_WAGSTAFF:
          doubleB = 2.0;

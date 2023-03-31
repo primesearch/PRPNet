@@ -65,7 +65,7 @@ static void  *ServerThreadEntryPoint(void *threadInfo)
       // If this is a client, generate a thread to handle it
       if (clientSocketID)
       {
-         sprintf(socketDescription, "%d", (int32_t) clientSocketID);
+         snprintf(socketDescription, 50, "%d", (int32_t) clientSocketID);
          helperSocket = new HelperSocket(globals->p_Log, clientSocketID, clientAddress, socketDescription);
 
          if (clientsConnected >= globals->i_MaxClients)

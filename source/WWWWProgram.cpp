@@ -22,7 +22,7 @@ testresult_t   WWWWProgram::Execute(int32_t serverType, int32_t specialThreshhol
    if (serverType == ST_WALLSUNSUN)   searchType = "WallSunSun";
    if (serverType == ST_WOLSTENHOLME) searchType = "Wolstenholme";
 
-   sprintf(command, "%s -%c%s -s%d -p%" PRId64" -P%" PRId64"", is_ExeName.c_str(),
+   snprintf(command, 200, "%s -%c%s -s%d -p%" PRId64" -P%" PRId64"", is_ExeName.c_str(),
       (is_ProgramName == "wwww" ? 't' : 'T'), 
       searchType, specialThreshhold, lowerLimit, upperLimit);
 
@@ -172,7 +172,7 @@ void  WWWWProgram::DetermineVersion(void)
    char  command[200], line[200], *ptr1, *ptr2 = 0;
    FILE *fp;
 
-   sprintf(command, "%s -V > a.out", is_ExeName.c_str());
+   snprintf(command, 200, "%s -V > a.out", is_ExeName.c_str());
 
    system(command);
 

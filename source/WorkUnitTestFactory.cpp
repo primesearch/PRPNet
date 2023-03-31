@@ -53,7 +53,7 @@ void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType,
 
    wu->m_FirstWorkUnitTest = NULL;
    line = new char[BUFFER_SIZE];
-   sprintf(endWorkUnit, "End WorkUnit %" PRId64" %s", wu->l_TestID, wu->s_Name);
+   snprintf(endWorkUnit, 100, "End WorkUnit %" PRId64" %s", wu->l_TestID, wu->s_Name);
 
    while (fgets(line, BUFFER_SIZE, saveFile) != NULL)
    {

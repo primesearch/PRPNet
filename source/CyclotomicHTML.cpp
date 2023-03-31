@@ -38,14 +38,8 @@ void CyclotomicHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&leadingEdge);
    sqlStatement->BindSelectedColumn(&prpsAndPrimesFound);
 
-   if (!sqlStatement->FetchRow(false))
-   {
-      ip_Socket->Send("<table frame=box align=center border=1>");
-      ip_Socket->Send("<tr align=center><td class=headertext>No group stats found</tr>");
-      ip_Socket->Send("</table>");
-      delete sqlStatement;
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
-   }
 
    ServerStatsHeader(BY_B);
 
@@ -62,18 +56,18 @@ void CyclotomicHTML::ServerStats(void)
       summaryCompletedThru = (completedThru < summaryCompletedThru ? completedThru : summaryCompletedThru);
       summaryLeadingEdge = (leadingEdge < summaryLeadingEdge ? leadingEdge : summaryLeadingEdge);
       summaryPRPsAndPrimesFound += prpsAndPrimesFound;
-      
+
       if (ib_ServerStatsSummaryOnly)
          continue;
 
       // If the socket was closed, then stop sending data
-      if (!ip_Socket->Send("<tr bgcolor=\"%s\">", (countUntested ? "white" : "aqua")))
+      if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
-      
+
       if (n == 1)
-         ip_Socket->Send("<td align=center>Phi(%" PRId64", b)", k);
+         ip_Socket->Send("<th scope=\"row\">Phi(%" PRId64", <var>b</var>)</th>", k);
       else
-         ip_Socket->Send("<td align=center>Phi(%" PRId64", b^%d)", k, n);
+         ip_Socket->Send("<th scope=\"row\">Phi(%" PRId64", <var>b</var>^%d)</th>", k, n);
       TD_32BIT(countInGroup);
       TD_64BIT(minInGroup);
       TD_64BIT(maxInGroup);
@@ -88,21 +82,21 @@ void CyclotomicHTML::ServerStats(void)
       ip_Socket->Send("</tr>");
    } while (sqlStatement->FetchRow(false));
 
-   ip_Socket->Send("<tr class=totalcolor>");
-   
-   ip_Socket->Send("<th class=totaltext align=center>Groups: %d", summaryGroups);
-   TH_32BIT(summaryCountInGroup);
-   TH_64BIT(summaryMinInGroup);
-   TH_64BIT(summaryMaxInGroup);
-   TH_32BIT(summaryTested);
-   TH_IF_DC(summaryDoubleChecked);
-   TH_32BIT(summaryUntested);
-   TH_32BIT(summaryCountInProgress);
-   TH_64BIT(summaryCompletedThru);
-   TH_64BIT(summaryLeadingEdge);
-   TH_32BIT(summaryPRPsAndPrimesFound);
+   ip_Socket->Send("</tbody><tfoot><tr>");
 
-   ip_Socket->Send("</tr></table>");
+   ip_Socket->Send("<th scope=\"row\">Groups: %d</th>", summaryGroups);
+   TD_32BIT(summaryCountInGroup);
+   TD_64BIT(summaryMinInGroup);
+   TD_64BIT(summaryMaxInGroup);
+   TD_32BIT(summaryTested);
+   TD_IF_DC(summaryDoubleChecked);
+   TD_32BIT(summaryUntested);
+   TD_32BIT(summaryCountInProgress);
+   TD_64BIT(summaryCompletedThru);
+   TD_64BIT(summaryLeadingEdge);
+   TD_32BIT(summaryPRPsAndPrimesFound);
+
+   ip_Socket->Send("</tr></tfoot></table></article>");
 
    delete sqlStatement;
 }

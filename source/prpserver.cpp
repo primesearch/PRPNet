@@ -180,7 +180,7 @@ int   main(int argc, char *argv[])
    SetConsoleCtrlHandler(HandlerRoutine, TRUE);
 
    // prevent multiple copies from running
-   sprintf(processName, "PRPNetServer_Port%d", gp_Globals->i_PortID);
+   snprintf(processName, 200, "PRPNetServer_Port%d", gp_Globals->i_PortID);
    void *mutex = CreateMutex(NULL, FALSE, processName);
    if (!mutex || ERROR_ALREADY_EXISTS == GetLastError())
    {
@@ -209,7 +209,7 @@ int   main(int argc, char *argv[])
    // If unhideprimehours is set to 0, then show primes immediately
    gp_Globals->b_ShowOnWebPage = (gp_Globals->i_UnhidePrimeHours == 0);
 
-   sprintf(name, "prpnet_port_%d", gp_Globals->i_PortID);
+   snprintf(name, 50, "prpnet_port_%d", gp_Globals->i_PortID);
    gp_Globals->p_Locker = new SharedMemoryItem(name);
 
    serverThread = new ServerThread();

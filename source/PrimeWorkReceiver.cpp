@@ -408,7 +408,7 @@ bool     PrimeWorkReceiver::CheckDoubleCheck(string candidateName, string residu
    // Versions of the client prior to 5.2.6 sent a period at the end of the residue
    // when llr was used.  This will allow a match if someone is using a new client
    // to do a double-check.
-   sprintf(withPeriod, "%s.", residue.c_str());
+   snprintf(withPeriod, 50, "%s.", residue.c_str());
 
    selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    selectStatement->BindInputParameter(candidateName, NAME_LENGTH);

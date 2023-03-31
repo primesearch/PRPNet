@@ -50,7 +50,7 @@ testresult_t   CycloProgram::Execute(testtype_t testType)
 
    // -t will use "terse" output
    // -o will write the results to results.out
-   sprintf(command, "%s %s", is_ExeName.c_str(), is_InFileName.c_str());
+   snprintf(command, 200, "%s %s", is_ExeName.c_str(), is_InFileName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
@@ -162,7 +162,7 @@ void  CycloProgram::DetermineVersion(void)
    char version[20], *ptr;
    FILE *fp;
 
-   sprintf(command, "%s -v > a.out", is_ExeName.c_str());
+   snprintf(command, 200, "%s -v > a.out", is_ExeName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 

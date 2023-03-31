@@ -394,7 +394,7 @@ void     PrimeWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
    if (!hasGFNs)
       return;
 
-   sprintf(temp, "%s GFN", prefix.c_str());
+   snprintf(temp, 20, "%s GFN", prefix.c_str());
 
    while (fgets(line, BUFFER_SIZE, saveFile) != NULL)
    {

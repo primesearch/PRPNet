@@ -171,6 +171,36 @@ void  HelperThread::HandleClient(void)
    if (!strcmp(teamID, NO_TEAM))
       teamID[0] = 0;
 
+   if (strchr(userID, '?') != NULL)
+   {
+      ip_Socket->Send("ERROR: userid contains an invalid character.  The connection was dropped.");
+      return;
+   }
+
+   if (strchr(teamID, '?') != NULL)
+   {
+      ip_Socket->Send("ERROR: teamid contains an invalid character.  The connection was dropped.");
+      return;
+   }
+
+   if (strchr(emailID, '?') != NULL)
+   {
+      ip_Socket->Send("ERROR: emailid contains an invalid character.  The connection was dropped.");
+      return;
+   }
+
+   if (strchr(machineID, '?') != NULL)
+   {
+      ip_Socket->Send("ERROR: machineid contains an invalid character.  The connection was dropped.");
+      return;
+   }
+
+   if (strchr(instanceID, '?') != NULL)
+   {
+      ip_Socket->Send("ERROR: instanceid contains an invalid character.  The connection was dropped.");
+      return;
+   }
+
    is_UserID = userID;
    is_TeamID = teamID;
    is_EmailID = emailID;

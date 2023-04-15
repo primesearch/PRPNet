@@ -12,6 +12,7 @@
 // Cullen/Woodall form from gcwsieve (fixed base)
 static const char *cwfb_string = "$a*%d^$a%d";
 static const char *cwfbastring = "$a*%d^$a$%c";
+static const char *cwfbcstring = "$a*%d^$a$b";
 
 // Cullen/Woodall form from gcwsieve (variable base)
 static const char *cwvb_string = "$a*$b^$a%d";
@@ -58,6 +59,7 @@ static const char *fkabcdstring = "%" PRId64"*%d^$a%d [%d]";
 static const char *fnabcdstring = "$a*%d^%d%d [%" PRId64"]";
 
 #define ABC_UNKNOWN      0
+#define ABC_CW_FB       10
 #define ABC_CW_FBP      11
 #define ABC_CW_FBM      12
 #define ABC_CW_FBA      13
@@ -167,7 +169,8 @@ int32_t  ABCParser::IsValidFormat(void)
  
    if (ii_ServerType == ST_CULLENWOODALL)
       if (ii_ABCFormat == ABC_CW_FBP || ii_ABCFormat == ABC_CW_FBM || ii_ABCFormat == ABC_CW_FBA ||
-          ii_ABCFormat == ABC_CW_VBP || ii_ABCFormat == ABC_CW_VBM || ii_ABCFormat == ABC_CW_VBA)
+          ii_ABCFormat == ABC_CW_VBP || ii_ABCFormat == ABC_CW_VBM || ii_ABCFormat == ABC_CW_VBA ||
+          ii_ABCFormat == ABC_CW_FB)
          return true;
     
    if (ii_ServerType == ST_PRIMORIAL) 
@@ -293,6 +296,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
      if (ch == 'c')
        return ABC_CW_FBA;
    }
+
+   if (sscanf(tempHeader, cwfbcstring, &ii_theB) == 1)
+       return ABC_CW_FB;
 
    // Cullen/Woodall form (variable base)
    if (sscanf(tempHeader, cwvb_string, &ii_theC) == 1)
@@ -580,6 +586,11 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
       case ABCD_FN:
          if (sscanf(tempLine, "%lld", &value64) != 1) return false;
          il_theK += value64;
+         return true;
+
+      case ABC_CW_FB:
+         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
+         il_theK = ii_theN;
          return true;
 
       case ABC_CW_FBP:

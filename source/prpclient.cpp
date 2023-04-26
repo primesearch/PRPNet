@@ -637,15 +637,15 @@ void  ProcessINIFile(string configFile)
 
    fclose(fp);
 
-   if (gp_Globals->s_UserID.find("?") > 0)
+   if (gp_Globals->s_UserID.find("?") != -1)
       TerminateWithError("userid contains an invalid character");
-   if (gp_Globals->s_EmailID.find("?") > 0)
+   if (gp_Globals->s_EmailID.find("?") != -1)
       TerminateWithError("email contains an invalid character");
-   if (gp_Globals->s_InstanceID.find("?") > 0)
+   if (gp_Globals->s_InstanceID.find("?") != -1)
       TerminateWithError("instanceid contains an invalid character");
-   if (gp_Globals->s_TeamID.find("?") > 0)
+   if (gp_Globals->s_TeamID.find("?") != -1)
       TerminateWithError("teamid contains an invalid character");
-   if (gp_Globals->s_MachineID.find("?") > 0)
+   if (gp_Globals->s_MachineID.find("?") != -1)
       TerminateWithError("machineid contains an invalid character");
 
    gp_Globals->p_TestingProgramFactory = new TestingProgramFactory(gp_Globals->p_Log, configFile);

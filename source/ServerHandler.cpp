@@ -103,6 +103,8 @@ bool  ServerHandler::GetWork(void)
 
 void  ServerHandler::ReturnWork(uint32_t quitOption)
 {
+   uint32_t sent = 1;
+
    ip_Log->Debug(DEBUG_WORK, "%s: Returning work.  currentworkunits=%d, completedworkunits=%d, quitOption=%d",
                  is_WorkSuffix.c_str(), ii_CurrentWorkUnits, ii_CompletedWorkUnits, quitOption);
 
@@ -118,14 +120,23 @@ void  ServerHandler::ReturnWork(uint32_t quitOption)
    if (quitOption == RO_IFDONE && (CanDoAnotherTest() || HaveInProgressTest()))
       return;
 
-   if (ip_Socket->Open(is_EmailID, is_UserID, is_MachineID, is_InstanceID, is_TeamID))
+   // For some reason the server can close the connection while receiving completed work units, so if we
+   // were able to send at least one and have more to send, try again.  This seems to be very common
+   // when prpserver is running on Windows, but not common on other OSes.
+   while (ii_CompletedWorkUnits > 0 && sent > 0)
    {
-      ip_Worker->ReturnWork(quitOption);
+      if (ip_Socket->Open(is_EmailID, is_UserID, is_MachineID, is_InstanceID, is_TeamID))
+      {
+         ip_Worker->ReturnWork(quitOption);
 
-      ii_CurrentWorkUnits = ip_Worker->GetCurrentWorkUnits();
-      ii_CompletedWorkUnits = ip_Worker->GetCompletedWorkUnits();
+         sent = ii_CompletedWorkUnits - ip_Worker->GetCompletedWorkUnits();
 
-      ip_Socket->Close();
+         ii_CurrentWorkUnits = ip_Worker->GetCurrentWorkUnits();
+
+         ii_CompletedWorkUnits = ip_Worker->GetCompletedWorkUnits();
+
+         ip_Socket->Close();
+      }
    }
 
    Save();

@@ -306,7 +306,7 @@ uint32_t GeneferProgram::ValidateExe(void)
 void  GeneferProgram::DetermineVersion(void)
 {
    char command[200], line[200];
-   char version[20];
+   char version[24];
    FILE *fp;
 
    snprintf(command, 200, "%s -v > a.out", is_ExeName.c_str());

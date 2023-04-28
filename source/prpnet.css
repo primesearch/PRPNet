@@ -103,6 +103,11 @@ nav > div {
         width: auto;
     }
 
+    nav.six-track {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    }
+
     nav.five-track {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
@@ -117,6 +122,11 @@ nav > div {
 @supports not (display: grid) {
     nav {
         display: table;
+    }
+
+    nav.six-track> div {
+        display: table-cell;
+        width: 20%;
     }
 
     nav.five-track > div {

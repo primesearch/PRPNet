@@ -1,5 +1,12 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.5.1:  April 28, 2023 - New Release
+    prpserver:  Added showteamsonhtml configuration switch to control HTML generation.
+                Fix length calculation for Carol/Kynea servers.
+                Added all_primes.html page which can be sorted per HTML configuration.
+    prpclient:  If connection to server is lost while sending results, retry if any
+                results where successfully submitted.
+
 Version 5.5.0:  March 31, 2023 - New Release
     prpserver:  Added HTML5 support.
                 Updated prpnet.css for HTML5 and provided default URL for it in prpserver.ini.

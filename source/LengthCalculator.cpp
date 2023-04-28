@@ -91,13 +91,15 @@ void    LengthCalculator::InitializePrimeSieve(void)
 double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, int32_t intN)
 {
    double    doubleK, doubleB, doubleN;
+   double    unroundedLength;
 
    switch (ii_ServerType)
    {
       case ST_CULLENWOODALL:
          doubleB = (double) intB;
          doubleN = (double) intN;
-         return floor(log10(doubleB) * doubleN + log10(doubleN) + 1.0);
+         unroundedLength = log10(doubleB) * doubleN + log10(doubleN);
+         break;
 
       case ST_GFN:
          if (intB < intN)
@@ -110,27 +112,32 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
             doubleN = (double) intB;
             doubleB = (double) intN;
          }
-         return floor(log10(doubleB) * doubleN + 1.0);
+         unroundedLength = log10(doubleB) * doubleN;
+         break;
  
       case ST_XYYX:
          doubleB = (double) intB;
          doubleN = (double) intN;
-         return floor(log10(doubleB) * doubleN + 1.0);
+         unroundedLength = log10(doubleB) * doubleN;
+         break;
 
       case ST_CYCLOTOMIC:
          doubleB = (double) abs(intB);
          doubleN = (double) intN;
-         return floor(log10(doubleB) * doubleN + 1.0);
-         
+         unroundedLength = log10(doubleB) * doubleN;
+         break;
+
       case ST_CAROLKYNEA:
          doubleB = (double) (intB);
          doubleN = (double) (intN * 2);
-         return floor((log10(doubleB) * doubleN) / 3.0 + 1.0);
-         
+         unroundedLength = log10(doubleB) * doubleN;
+         break;
+
       case ST_WAGSTAFF:
          doubleB = 2.0;
          doubleN = (double) intN;
-         return floor(log10(doubleB) * doubleN + 1.0);
+         unroundedLength = log10(doubleB) * doubleN - log10(3.0);
+         break;
 
       case ST_SIERPINSKIRIESEL:
       case ST_FIXEDBKC:
@@ -140,10 +147,14 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
          doubleK = (double) intK;
          doubleB = (double) intB;
          doubleN = (double) intN;
-         return floor(log10(doubleB) * doubleN + log10(doubleK) + 1.0);
+         unroundedLength = log10(doubleB) * doubleN + log10(doubleK);
+         break;
+
+      default:
+         return 0.0;
    }
 
-   return 0.0;
+   return floor(unroundedLength + 1.0);
 }
 
 void     LengthCalculator::CalculateDecimalLengths(Socket *theSocket)

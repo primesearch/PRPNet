@@ -22,6 +22,8 @@ public:
 
    void     PrimesByTeam(void);
 
+   void     AllPrimes(void);
+
    void     GFNDivisorsByUser(void);
 
    bool     CanCheckForGFNs(void);

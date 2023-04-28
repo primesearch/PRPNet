@@ -114,10 +114,12 @@ int   main(int argc, char *argv[])
    gp_Globals->p_Delay = 0;
    gp_Globals->p_Log = 0;
    gp_Globals->s_SortSequence = "";
+   gp_Globals->s_AllPrimesSortSequence = "";
    gp_Globals->b_UseLLROverPFGW = false;
    gp_Globals->b_LocalTimeHTML = true;
    gp_Globals->b_BriefTestLog = false;
    gp_Globals->b_ServerStatsSummaryOnly = false;
+   gp_Globals->b_ShowTeamsOnHtml = false;
    gp_Globals->s_EmailID = "";
    gp_Globals->s_EmailPassword = "";
    gp_Globals->i_UnhidePrimeHours = 0;
@@ -410,8 +412,12 @@ void  ProcessINIFile(string configFile, string &smtpServer)
          smtpServer = line+11;
       else if (!memcmp(line, "sortoption=", 11))
          gp_Globals->s_SortSequence = &line[11];
+      else if (!memcmp(line, "allprimessortoption=", 20))
+         gp_Globals->s_AllPrimesSortSequence = &line[20];
       else if (!memcmp(line, "specialthreshhold=", 18))
          gp_Globals->i_SpecialThreshhold = atoi(&line[18]);
+      else if (!memcmp(line, "showteamsonhtml=", 16))
+         gp_Globals->b_ShowTeamsOnHtml = (atol(line + 16) == 0) ? false : true;
       else if (!memcmp(line, "noexpire=", 9))
          gp_Globals->b_NoExpire = (atol(line+9) == 0) ? false : true;
       else if (!memcmp(line, "nonewwork=", 10))
@@ -625,7 +631,7 @@ bool     ValidateConfiguration(string smtpServer)
    else if (!length || length > 15 || !(length & 0x01))
    {
       printf("sortoption is invalid.  Will set it to l,a (by length then age).\n");
-      gp_Globals->s_SortSequence = "DecimalLength,LastUpdateTime";
+      gp_Globals->s_SortSequence = "c.DecimalLength,c.LastUpdateTime";
    }
    else
    {
@@ -670,6 +676,64 @@ bool     ValidateConfiguration(string smtpServer)
 
          if (*ptr != ',')
             printf("sortoption delimiter %c is invalid. It will be ignored.\n", *ptr);
+         ptr++;
+      }
+   }
+
+   length = (int32_t)gp_Globals->s_AllPrimesSortSequence.length();
+   if (!length || length > 15 || !(length & 0x01))
+   {
+      printf("allprimessortoption is invalid.  Will set it to d (by date reported).\n");
+      gp_Globals->s_AllPrimesSortSequence = "up.DateReported";
+   }
+   else
+   {
+      strcpy(sortOption, gp_Globals->s_AllPrimesSortSequence.c_str());
+      gp_Globals->s_AllPrimesSortSequence = "";
+      ptr = sortOption;
+
+
+      first = true;
+      while (*ptr)
+      {
+         if (!first) gp_Globals->s_AllPrimesSortSequence += ",";
+         first = false;
+
+         switch (toupper(*ptr))
+         {
+         case 'M':
+            gp_Globals->s_AllPrimesSortSequence += "up.CandidateName";
+            break;
+         case 'L':
+            gp_Globals->s_AllPrimesSortSequence += "up.DecimalLength";
+            break;
+         case 'B':
+            gp_Globals->s_AllPrimesSortSequence += "abs(c.b)";
+            break;
+         case 'K':
+            gp_Globals->s_AllPrimesSortSequence += "c.k";
+            break;
+         case 'N':
+            gp_Globals->s_AllPrimesSortSequence += "c.n";
+            break;
+         case 'C':
+            gp_Globals->s_AllPrimesSortSequence += "abs(c.c)";
+            break;
+         case 'D':
+            gp_Globals->s_AllPrimesSortSequence += "up.DateReported";
+            break;
+         case 'U':
+            gp_Globals->s_AllPrimesSortSequence += "up.UserId";
+            break;
+         default:
+            printf("allprimessortoption %c is invalid. It will be ignored.\n", *ptr);
+         }
+         ptr++;
+         if (!*ptr)
+            break;
+
+         if (*ptr != ',')
+            printf("allprimessortoption delimiter %c is invalid. It will be ignored.\n", *ptr);
          ptr++;
       }
    }

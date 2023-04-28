@@ -53,12 +53,14 @@ protected:
    string         is_ProjectTitle;
    string         is_CSSLink;
    string         is_SortLink;
+   string         is_AllPrimesSortSequence;
    DBInterface   *ip_DBInterface;
    Log           *ip_Log;
    Socket        *ip_Socket;
 
    bool           ib_UseLocalTime;
    bool           ib_ServerStatsSummaryOnly;
+   bool           ib_ShowTeamsOnHtml;
 
    int32_t        ii_DelayCount;
    delay_t       *ip_Delay;

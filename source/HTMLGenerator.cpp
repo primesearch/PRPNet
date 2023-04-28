@@ -9,7 +9,9 @@ HTMLGenerator::HTMLGenerator(globals_t *theGlobals)
    is_CSSLink = theGlobals->s_CSSLink;
    is_SortLink = theGlobals->s_SortLink;
    ib_ServerStatsSummaryOnly = theGlobals->b_ServerStatsSummaryOnly;
+   is_AllPrimesSortSequence = theGlobals->s_AllPrimesSortSequence;
 
+   ib_ShowTeamsOnHtml = theGlobals->b_ShowTeamsOnHtml;
    ib_NeedsDoubleCheck = theGlobals->b_NeedsDoubleCheck;
    ib_UseLocalTime = theGlobals->b_LocalTimeHTML;
    ii_DelayCount = theGlobals->i_DelayCount;
@@ -150,6 +152,9 @@ bool     HTMLGenerator::HasTeams(void)
    SQLStatement  *sqlStatement;
    int32_t        theCount = 0;
    const char    *selectSQL = "select count(*) from TeamStats";
+
+   if (!ib_ShowTeamsOnHtml)
+      return false;
 
    // This will check no more than once every ten minutes
    if (time(NULL) - lastCheck < 600)

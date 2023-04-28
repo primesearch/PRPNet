@@ -42,6 +42,7 @@ typedef struct
    bool     b_LocalTimeHTML;
    bool     b_BriefTestLog;
    bool     b_ServerStatsSummaryOnly;
+   bool     b_ShowTeamsOnHtml;
    int32_t  i_DelayCount;
    int32_t  i_UnhidePrimeHours;
    int32_t  i_DestIDCount;
@@ -50,6 +51,7 @@ typedef struct
    int32_t  i_MinutesBetweenStatsRefresh;
    delay_t *p_Delay;
    string   s_SortSequence;
+   string   s_AllPrimesSortSequence;
    string   s_HTMLTitle;
    string   s_ProjectTitle;
    string   s_SortLink;

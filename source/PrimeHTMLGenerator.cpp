@@ -25,6 +25,11 @@ bool     PrimeHTMLGenerator::SendSpecificPage(string thePage)
       HeaderPlusLinks("Pending Tests");
       PendingTests();
    }
+   else if (thePage == "all_primes.html")
+   {
+      HeaderPlusLinks("All Primes");
+      AllPrimes();
+   }
    else if (thePage == "all.html")
    {
       HeaderPlusLinks("Status");
@@ -32,6 +37,7 @@ bool     PrimeHTMLGenerator::SendSpecificPage(string thePage)
       PendingTests();
       ServerStats();
       UserStats();
+      AllPrimes();
       if (HasTeams())
       {
          TeamStats();
@@ -193,7 +199,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
          TH_CLMN_HDR("Prime/PRP");
          TH_CLMN_HDR("Machine");
          TH_CLMN_HDR("Instance");
-         TH_CLMN_HDR("Team");
+         if (ib_ShowTeamsOnHtml) TH_CLMN_HDR("Team");
          TH_CLMN_HDR("Date Reported");
          TH_CLMN_HDR("Decimal Length");
          ip_Socket->Send("</tr></thead>");
@@ -215,7 +221,7 @@ void     PrimeHTMLGenerator::PrimesByUser(void)
          TD_CHAR(((testResult == R_PRIME) ? "Prime" : "PRP"));
          TD_CHAR(machineID);
          TD_CHAR(instanceID);
-         TD_CHAR(teamID);
+         if (ib_ShowTeamsOnHtml) TD_CHAR(teamID);
          TD_CHAR(TimeToString(dateReported).c_str());
          TD_32BIT((uint32_t) decimalLength);
 
@@ -339,6 +345,100 @@ void     PrimeHTMLGenerator::PrimesByTeam(void)
    else
       ip_Socket->Send("<tfoot><tr><td colspan=\"7\">Team %s has found %d prime%s and %d PRP%s</td></tr></tfoot>",
                      prevTeamID, primeCount, PLURAL_ENDING(primeCount), prpCount, PLURAL_ENDING(prpCount));
+   ip_Socket->Send("</table></article>");
+
+   ip_Socket->SendBuffer();
+
+   delete sqlStatement;
+}
+
+void     PrimeHTMLGenerator::AllPrimes(void)
+{
+   SQLStatement* sqlStatement;
+   int64_t    dateReported;
+   int32_t    primeCount, prpCount, showOnWebPage, hiddenCount;
+   int32_t    testResult;
+   char       userID[ID_LENGTH + 1];
+   char       candidateName[NAME_LENGTH + 1], machineID[ID_LENGTH + 1];
+   char       instanceID[ID_LENGTH + 1], teamID[ID_LENGTH + 1];
+   double     decimalLength;
+
+   const char* theSelect = "select up.UserID, $null_func$(up.TeamID, '&nbsp;'), up.MachineID, up.InstanceId, up.TestedNumber, up.TestResult, " \
+                           "       up.DateReported, up.DecimalLength, up.ShowOnWebPage, c.b, c.k, c.n, c.c " \
+                           "  from UserPrimes up, Candidate c " \
+                           " where up.CandidateName = c.CandidateName " \
+                           "order by %s";
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect, is_AllPrimesSortSequence.c_str());
+
+   sqlStatement->BindSelectedColumn(userID, ID_LENGTH);
+   sqlStatement->BindSelectedColumn(teamID, ID_LENGTH);
+   sqlStatement->BindSelectedColumn(machineID, ID_LENGTH);
+   sqlStatement->BindSelectedColumn(instanceID, ID_LENGTH);
+   sqlStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+   sqlStatement->BindSelectedColumn(&testResult);
+   sqlStatement->BindSelectedColumn(&dateReported);
+   sqlStatement->BindSelectedColumn(&decimalLength);
+   sqlStatement->BindSelectedColumn(&showOnWebPage);
+
+   ip_Socket->StartBuffering();
+
+   ip_Socket->Send("<article>");
+
+   if (!CheckIfRecordsWereFound(sqlStatement, "No primes found"))
+      return;
+
+   ip_Socket->Send("<h3>All Primes and PRPss</h3>");
+
+   ip_Socket->Send("<table class=\"primes-by-user-table\"><thead><tr>");
+
+   TH_CLMN_HDR("Candidate");
+   TH_CLMN_HDR("Prime/PRP");
+   TH_CLMN_HDR("User");
+   TH_CLMN_HDR("Machine");
+   TH_CLMN_HDR("Instance");
+   if (ib_ShowTeamsOnHtml) TH_CLMN_HDR("Team");
+   TH_CLMN_HDR("Date Reported");
+   TH_CLMN_HDR("Decimal Length");   ip_Socket->Send("</tr></thead><tbody>");
+
+   hiddenCount = primeCount = prpCount = 0;
+   do
+   {
+      if (testResult == R_PRIME)
+         primeCount++;
+      else
+         prpCount++;
+
+      if (showOnWebPage)
+      {
+         ip_Socket->Send("<tr>");
+
+         TD_CHAR(candidateName);
+         TD_CHAR(((testResult == R_PRIME) ? "Prime" : "PRP"));
+         TD_CHAR(userID);
+         TD_CHAR(machineID);
+         TD_CHAR(instanceID);
+         if (ib_ShowTeamsOnHtml) TD_CHAR(teamID);
+         TD_CHAR(TimeToString(dateReported).c_str());
+         TD_32BIT((uint32_t)decimalLength);
+
+         ip_Socket->Send("</tr>");
+      }
+      else
+         hiddenCount++;
+   } while (sqlStatement->FetchRow(false));
+
+   ip_Socket->Send("</tr></tbody>");
+
+   int32_t cols = (ib_ShowTeamsOnHtml ? 8 : 7);
+
+   if (hiddenCount)
+      ip_Socket->Send("<tfoot><tr><td colspan=\"%u\">A total of %d prime%s and %d PRP%s have been found, %d %s hidden</td></tr></tfoot>",
+         cols, primeCount, PLURAL_ENDING(primeCount), prpCount, PLURAL_ENDING(prpCount),
+         hiddenCount, PLURAL_COPULA(hiddenCount));
+   else
+      ip_Socket->Send("<tfoot><tr><td colspan=\"%u\">A total of %d prime%s and %d PRP%s have been founds</td></tr></tfoot>",
+         cols, primeCount, PLURAL_ENDING(primeCount), prpCount, PLURAL_ENDING(prpCount));
    ip_Socket->Send("</table></article>");
 
    ip_Socket->SendBuffer();
@@ -668,16 +768,20 @@ void     PrimeHTMLGenerator::TeamStats(void)
 
 void     PrimeHTMLGenerator::SendLinks()
 {
-   ip_Socket->Send("<nav class=\"%s\">", (CanCheckForGFNs() ? "five-track" : "four-track"));
+   ip_Socket->Send("<nav class=\"%s\">", (CanCheckForGFNs() ? "six-track" : "five-track"));
 
    ip_Socket->Send("<div><a href=\"server_stats.html\">Server Statistics</a></div>");
    ip_Socket->Send("<div><a href=\"pending_tests.html\">Pending Tests</a></div>");
+   ip_Socket->Send("<div><a href=\"all_primes.html\">All Primes</a></div>");
    ip_Socket->Send("<div><a href=\"user_stats.html\">User Statistics</a></div>");
    ip_Socket->Send("<div><a href=\"user_primes.html\">User Primes</a></div>");
+
    if (CanCheckForGFNs())
       ip_Socket->Send("<div><a href=\"user_gfns.html\">User GFNs</a></div>");
+
    if (HasTeams())
    {
+      ip_Socket->Send("<div>&nbsp;</div>");
       ip_Socket->Send("<div><a href=\"userteam_stats.html\">User/Team Statistics</a></div>");
       ip_Socket->Send("<div><a href=\"teamuser_stats.html\">Team/User Statistics</a></div>");
       ip_Socket->Send("<div><a href=\"team_stats.html\">Team Statistics</a></div>");

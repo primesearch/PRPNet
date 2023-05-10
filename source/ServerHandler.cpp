@@ -125,18 +125,18 @@ void  ServerHandler::ReturnWork(uint32_t quitOption)
    // when prpserver is running on Windows, but not common on other OSes.
    while (ii_CompletedWorkUnits > 0 && sent > 0)
    {
-      if (ip_Socket->Open(is_EmailID, is_UserID, is_MachineID, is_InstanceID, is_TeamID))
-      {
-         ip_Worker->ReturnWork(quitOption);
+      if (!ip_Socket->Open(is_EmailID, is_UserID, is_MachineID, is_InstanceID, is_TeamID))
+         break;
 
-         sent = ii_CompletedWorkUnits - ip_Worker->GetCompletedWorkUnits();
+      ip_Worker->ReturnWork(quitOption);
 
-         ii_CurrentWorkUnits = ip_Worker->GetCurrentWorkUnits();
+      sent = ii_CompletedWorkUnits - ip_Worker->GetCompletedWorkUnits();
 
-         ii_CompletedWorkUnits = ip_Worker->GetCompletedWorkUnits();
+      ii_CurrentWorkUnits = ip_Worker->GetCurrentWorkUnits();
 
-         ip_Socket->Close();
-      }
+      ii_CompletedWorkUnits = ip_Worker->GetCompletedWorkUnits();
+
+      ip_Socket->Close();
    }
 
    Save();

@@ -1,5 +1,8 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.5.2:  July 3, 2023 - New Release
+    prpclient:  Avoid infinite loop if unable to connect to server.
+
 Version 5.5.1:  April 28, 2023 - New Release
     prpserver:  Added showteamsonhtml configuration switch to control HTML generation.
                 Fix length calculation for Carol/Kynea servers.

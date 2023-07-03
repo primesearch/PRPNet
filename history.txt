@@ -6,9 +6,16 @@ Version 5.5.2:  July 3, 2023 - New Release
 Version 5.5.1:  April 28, 2023 - New Release
     prpserver:  Added showteamsonhtml configuration switch to control HTML generation.
                 Fix length calculation for Carol/Kynea servers.
-                Added all_primes.html page which can be sorted per HTML configuration.
+                Added all_primes.html page which can be sorted per prpserver.ini configuration.
+                Add support a new gcwsieve output format.
+                Give error if ids have an embedded ? as the ODBC driver on the server
+                doesn't like it.
     prpclient:  If connection to server is lost while sending results, retry if any
                 results where successfully submitted.
+                Change text as roundoff errors with llr2 can put "probable prime" on a
+                line that doesn't have a reside.
+                Fix check for ? in id fields.
+                Reconnect to server if connection was lost.
 
 Version 5.5.0:  March 31, 2023 - New Release
     prpserver:  Added HTML5 support.

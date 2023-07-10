@@ -338,18 +338,27 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
 	                           "   and CountUntested > CountInProgress " \
 	                           "order by CountInProgress, k, b, c ";
 
-   const char *selectSQL = "select CandidateName, n " \
-                           "  from Candidate " \
+   const char *selectSQL1 = "select CandidateName, n " \
+                           "  from Candidate c " \
                            " where CompletedTests = 0 " \
                            "   and HasPendingTest = 0 " \
                            "   and DecimalLength > 0 " \
                            "   and k = %" PRId64" " \
                            "   and b = %d " \
                            "   and c = %d " \
-                           "   and n > ? " \
-                           "   and (n < %d  or %d = 0)" \
+                           "   and n < %d " \
                            "order by %s limit 100";
-   
+
+   const char* selectSQL2 = "select CandidateName, n " \
+                            "  from Candidate c " \
+                            " where CompletedTests = 0 " \
+                            "   and HasPendingTest = 0 " \
+                            "   and DecimalLength > 0 " \
+                            "   and k = %" PRId64" " \
+                            "   and b = %d " \
+                            "   and c = %d " \
+                            "order by %s limit 100";
+
    // Allow only one thread through this method at a time since each thread
    // is locking all Candidates for a single k/b/c.
    ip_Locker->Lock();
@@ -367,7 +376,10 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
    
    if (selectKBCStatement->FetchRow(false))
    {
-	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL, theK, theB, theC, sierpinskiRieselPrimeN, sierpinskiRieselPrimeN, is_OrderBy.c_str());
+      if (sierpinskiRieselPrimeN > 0)
+   	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1, theK, theB, theC, sierpinskiRieselPrimeN, is_OrderBy.c_str());
+      else
+         selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2, theK, theB, theC, is_OrderBy.c_str());
 
 	   selectStatement->BindInputParameter(theN);
 

@@ -127,6 +127,9 @@ uint32_t FindNextServerForWork(void)
    {
       serverHandler = gp_ServerHandler[serverIdx];
 
+      // This would happen if we have work that has not been returned to the server.
+      if (serverHandler->GetCurrentWorkUnits() > 0) continue;
+
       if (gd_TotalTime == 0. && serverHandler->GetWorkPercent() > 0.)
       {
          gp_Globals->p_Log->Debug(DEBUG_WORK, "Work: %s, no work done yet, target pct work done=%.0lf",

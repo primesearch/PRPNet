@@ -282,23 +282,26 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    pos = strchr(tempHeader, ' ');
    if (pos) *pos = 0;
 
-   // Cullen/Woodall form (fixed base), typically from gcwsieve
-   if (sscanf(tempHeader, cwfb_string, &ii_theB, &ii_theC) == 2)
+   if (strstr(tempHeader, "$b") == NULL)
    {
-     if (ii_theC > 0)
-       return ABC_CW_FBP;
-     if (ii_theC < 0)
-       return ABC_CW_FBM;
-   }
+      // Cullen/Woodall form (fixed base), typically from gcwsieve
+      if (sscanf(tempHeader, cwfb_string, &ii_theB, &ii_theC) == 2)
+      {
+         if (ii_theC > 0)
+            return ABC_CW_FBP;
+         if (ii_theC < 0)
+            return ABC_CW_FBM;
+      }
 
-   if (sscanf(tempHeader, cwfbastring, &ii_theB, &ch) == 2)
-   {
-     if (ch == 'c')
-       return ABC_CW_FBA;
-   }
+      if (sscanf(tempHeader, cwfbastring, &ii_theB, &ch) == 2)
+      {
+         if (ch == 'c')
+            return ABC_CW_FBA;
+      }
 
-   if (sscanf(tempHeader, cwfbcstring, &ii_theB) == 1)
-       return ABC_CW_FB;
+      if (sscanf(tempHeader, cwfbcstring, &ii_theB) == 1)
+          return ABC_CW_FB;
+   }
 
    // Cullen/Woodall form (variable base)
    if (sscanf(tempHeader, cwvb_string, &ii_theC) == 1)

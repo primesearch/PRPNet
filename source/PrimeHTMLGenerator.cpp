@@ -388,7 +388,7 @@ void     PrimeHTMLGenerator::AllPrimes(void)
    if (!CheckIfRecordsWereFound(sqlStatement, "No primes found"))
       return;
 
-   ip_Socket->Send("<h3>All Primes and PRPss</h3>");
+   ip_Socket->Send("<h3>All Primes and PRPs</h3>");
 
    ip_Socket->Send("<table class=\"primes-by-user-table\"><thead><tr>");
 

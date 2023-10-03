@@ -210,7 +210,8 @@ void     CandidateTestResult::InsertGeneferROE(string geneferVersion)
 }
 
 void     CandidateTestResult::LogResults(int32_t socketID, int32_t completedTests, bool needsDoubleCheck,
-                                         bool showOnWebPage, double decimalLength)
+                                         bool showOnWebPage, double decimalLength,
+                                         int64_t theK, int32_t theB, int32_t theN, int32_t theC)
 {
    Log     *prpLog, *testLog;
    char     doubleCheck[30], logHeader[200], prover[50], residue[50];
@@ -245,7 +246,7 @@ void     CandidateTestResult::LogResults(int32_t socketID, int32_t completedTest
 
    if (PRP_OR_PRIME(ir_TestResult))
    {
-      InsertUserPrime(decimalLength, showOnWebPage);
+      InsertUserPrime(decimalLength, showOnWebPage, theK, theB, theN, theC);
 
       prpLog = new Log(0, "PRP.log", 0, false);
       prpLog->SetUseLocalTime(ip_Log->GetUseLocalTime());
@@ -333,7 +334,8 @@ void     CandidateTestResult::InsertTestResult(void)
 }
 
 void     CandidateTestResult::LogResults(int32_t socketID, CandidateTestResult *mainTestResult,
-                                         bool showOnWebPage, double decimalLength)
+                                         bool showOnWebPage, double decimalLength,
+                                         int64_t theK, int32_t theB, int32_t theN, int32_t theC)
 {
    Log     *prpLog, *testLog;
 
@@ -348,7 +350,7 @@ void     CandidateTestResult::LogResults(int32_t socketID, CandidateTestResult *
 
    if (PRP_OR_PRIME(ir_TestResult))
    {
-      InsertUserPrime(decimalLength, showOnWebPage);
+      InsertUserPrime(decimalLength, showOnWebPage, theK, theB, theN, theC);
 
       prpLog = new Log(0, "PRP.log", 0, false);
       prpLog->SetUseLocalTime(ip_Log->GetUseLocalTime());
@@ -373,14 +375,15 @@ void     CandidateTestResult::LogResults(int32_t socketID, CandidateTestResult *
       LogSophieGermainResults(socketID, mainTestResult, SG_NP1);
 }
 
-void     CandidateTestResult::InsertUserPrime(double decimalLength, bool showOnWebPage)
+void     CandidateTestResult::InsertUserPrime(double decimalLength, bool showOnWebPage,
+                                              int64_t theK, int32_t theB, int32_t theN, int32_t theC)
 {
    SQLStatement *sqlStatement;
    int64_t theTime;
    const char *insertSQL = "insert into UserPrimes " \
                            "( UserID, CandidateName, TestedNumber, TestResult, MachineID, InstanceID, TeamID, " \
-                           "  DecimalLength, DateReported, ShowOnWebPage ) " \
-                           "values ( ?,?,?,?,?,?,?,?,?,? )";
+                           "  DecimalLength, DateReported, ShowOnWebPage, k, b, n, c ) " \
+                           "values ( ?,?,?,?,?,?,?,?,?,?,?,?,?,? )";
 
    theTime = time(NULL);
 
@@ -397,6 +400,10 @@ void     CandidateTestResult::InsertUserPrime(double decimalLength, bool showOnW
       sqlStatement->BindInputParameter(decimalLength);
       sqlStatement->BindInputParameter(theTime);
       sqlStatement->BindInputParameter(showOnWebPage);
+      sqlStatement->BindInputParameter(theK);
+      sqlStatement->BindInputParameter(theB);
+      sqlStatement->BindInputParameter(theN);
+      sqlStatement->BindInputParameter(theC);
 
       ib_HaveSQLError = !sqlStatement->Execute();
 

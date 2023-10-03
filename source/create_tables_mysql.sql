@@ -54,6 +54,10 @@ create table UserPrimes (
    DecimalLength           double,
    DateReported            bigint            not null,
    ShowOnWebPage           int,
+   k                       bigint,
+   b                       int,
+   n                       int,
+   c                       int,
    primary key (UserID, TestedNumber)
 ) ENGINE=InnoDB;
 

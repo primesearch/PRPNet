@@ -55,7 +55,11 @@ create table UserPrimes (
    TeamID                  varchar(200)      collate latin1_bin,
    DecimalLength           double precision,
    DateReported            bigint            not null,
-   ShowOnWebPage           int
+   ShowOnWebPage           int,
+   k                       bigint,
+   b                       int,
+   n                       int,
+   c                       int
 );
    
 create unique index pk_UserPrimes on UserPrimes (UserID, TestedNumber);

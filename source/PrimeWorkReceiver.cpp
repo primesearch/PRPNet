@@ -222,9 +222,11 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    int32_t   gotTerminator, completedTests;
    result_t  mainTestResult;
    int32_t   ii;
+   int64_t   theK;
+   int32_t   theB, theC, theN;
    double    decimalLength;
    SQLStatement *sqlStatement;
-   const char *selectSQL = "select CompletedTests, DecimalLength " \
+   const char *selectSQL = "select CompletedTests, DecimalLength, k, b, n, c " \
                            "  from Candidate " \
                            " where CandidateName = ?";
    const char *updateSQL = "update Candidate " \
@@ -332,6 +334,10 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
    sqlStatement->BindSelectedColumn(&completedTests);
    sqlStatement->BindSelectedColumn(&decimalLength);
+   sqlStatement->BindSelectedColumn(&theK);
+   sqlStatement->BindSelectedColumn(&theB);
+   sqlStatement->BindSelectedColumn(&theN);
+   sqlStatement->BindSelectedColumn(&theC);
    sqlStatement->FetchRow(true);
    delete sqlStatement;
    completedTests++;
@@ -372,9 +378,9 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    for (ii=0; ii<ii_TestResults; ii++)
    {
       if (ii == 0)
-         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), completedTests, ib_NeedsDoubleCheck, ib_ShowOnWebPage, decimalLength);
+         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), completedTests, ib_NeedsDoubleCheck, ib_ShowOnWebPage, decimalLength, theK, theB, theN, theC);
       else
-         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), ip_TestResult[0], ib_ShowOnWebPage, decimalLength);
+         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), ip_TestResult[0], ib_ShowOnWebPage, decimalLength, theK, theB, theN, theC);
 
       if (ip_TestResult[ii]->HadSQLError())
          return CT_SQL_ERROR;

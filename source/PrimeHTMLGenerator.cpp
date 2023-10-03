@@ -364,9 +364,8 @@ void     PrimeHTMLGenerator::AllPrimes(void)
    double     decimalLength;
 
    const char* theSelect = "select up.UserID, $null_func$(up.TeamID, '&nbsp;'), up.MachineID, up.InstanceId, up.TestedNumber, up.TestResult, " \
-                           "       up.DateReported, up.DecimalLength, up.ShowOnWebPage, c.b, c.k, c.n, c.c " \
-                           "  from UserPrimes up, Candidate c " \
-                           " where up.CandidateName = c.CandidateName " \
+                           "       up.DateReported, up.DecimalLength, up.ShowOnWebPage, up.b, up.k, up.n, up.c " \
+                           "  from UserPrimes up " \
                            "order by %s";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect, is_AllPrimesSortSequence.c_str());
@@ -437,7 +436,7 @@ void     PrimeHTMLGenerator::AllPrimes(void)
          cols, primeCount, PLURAL_ENDING(primeCount), prpCount, PLURAL_ENDING(prpCount),
          hiddenCount, PLURAL_COPULA(hiddenCount));
    else
-      ip_Socket->Send("<tfoot><tr><td colspan=\"%u\">A total of %d prime%s and %d PRP%s have been founds</td></tr></tfoot>",
+      ip_Socket->Send("<tfoot><tr><td colspan=\"%u\">A total of %d prime%s and %d PRP%s have been found</td></tr></tfoot>",
          cols, primeCount, PLURAL_ENDING(primeCount), prpCount, PLURAL_ENDING(prpCount));
    ip_Socket->Send("</table></article>");
 

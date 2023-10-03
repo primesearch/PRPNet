@@ -76,11 +76,11 @@ void SierpinskiRieselHTML::ServerStats(void)
 
             if (ib_ServerStatsSummaryOnly)
                 ip_Socket->Send("<tr><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
-                                (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
+                                (prevC > 0 ? 'S' : 'R'), prevB, conjectureKs);
             else
                 ip_Socket->Send("</tbody><tfoot><tr class=\"%s\"><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
                       (conjectureKs == conjecturePRPsAndPrimesFound ? "conjectureComplete" : "conjectureIncomplete"),
-                      (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
+                      (prevC > 0 ? 'S' : 'R'), prevB, conjectureKs);
 
             TD_32BIT(conjectureNs);
             TD_32BIT(conjectureMinN);
@@ -204,11 +204,11 @@ void SierpinskiRieselHTML::ServerStats(void)
 
    if (ib_ServerStatsSummaryOnly)
       ip_Socket->Send("<tr><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
-                      (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
+                      (prevC > 0 ? 'S' : 'R'), prevB, conjectureKs);
    else
       ip_Socket->Send("</tbody><tfoot><tr class=\"%s\"><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",
                       (conjectureKs == conjecturePRPsAndPrimesFound ? "conjectureComplete" : "conjectureIncomplete"),
-                      (c > 0 ? 'S' : 'R'), prevB, conjectureKs);
+                      (prevC > 0 ? 'S' : 'R'), prevB, conjectureKs);
 
    TD_32BIT(conjectureNs);
    TD_32BIT(conjectureMinN);
@@ -250,7 +250,7 @@ void SierpinskiRieselHTML::ServerStats(void)
       {
          ip_Socket->Send("<table class=\"server-stats\">");
          ip_Socket->Send("<thead><tr><th colspan=\"%d\">Totals Across %d Conjectures</th></tr>",
-                         (ib_NeedsDoubleCheck ? 12 : 11), totalConjectures);
+                         (ib_NeedsDoubleCheck ? 13 : 12), totalConjectures);
          ip_Socket->Send("<tr>");
 
          TH_CLMN_HDR("Total <var>k</var>");

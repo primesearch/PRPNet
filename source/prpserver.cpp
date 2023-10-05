@@ -656,7 +656,7 @@ bool     ValidateConfiguration(string smtpServer)
                gp_Globals->s_SortSequence += "c.LastUpdateTime";
                break;
             case 'B':
-               gp_Globals->s_SortSequence += "abs(c.b)";
+               gp_Globals->s_SortSequence += "c.b";
                break;
             case 'K':
                gp_Globals->s_SortSequence += "c.k";
@@ -708,16 +708,16 @@ bool     ValidateConfiguration(string smtpServer)
             gp_Globals->s_AllPrimesSortSequence += "up.DecimalLength";
             break;
          case 'B':
-            gp_Globals->s_AllPrimesSortSequence += "abs(c.b)";
+            gp_Globals->s_AllPrimesSortSequence += "up.b";
             break;
          case 'K':
-            gp_Globals->s_AllPrimesSortSequence += "c.k";
+            gp_Globals->s_AllPrimesSortSequence += "up.k";
             break;
          case 'N':
-            gp_Globals->s_AllPrimesSortSequence += "c.n";
+            gp_Globals->s_AllPrimesSortSequence += "up.n";
             break;
          case 'C':
-            gp_Globals->s_AllPrimesSortSequence += "abs(c.c)";
+            gp_Globals->s_AllPrimesSortSequence += "abs(up.c)";
             break;
          case 'D':
             gp_Globals->s_AllPrimesSortSequence += "up.DateReported";

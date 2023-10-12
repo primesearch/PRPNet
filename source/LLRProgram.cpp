@@ -221,6 +221,8 @@ void  LLRProgram::DetermineVersion(void)
    char  command[200], line[200], *ptr, *ptr2;
    FILE *fp;
 
+   is_ProgramVersion = "";
+
    snprintf(command, 200, "%s -v > a.out", is_ExeName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
@@ -234,30 +236,29 @@ void  LLRProgram::DetermineVersion(void)
       exit(0);
    }
 
-   if (fgets(line, sizeof(line), fp) == 0)
+   while (fgets(line, sizeof(line), fp) > 0)
    {
-      fclose(fp);
-      unlink("a.out");
+      // We should find a line like this:
+      // LLR Program - Version 4.0.3, using Gwnum Library Version 30.6
+      ptr = strstr(line, "Version");
+      if (ptr)
+      {
+         ptr += 8;
 
-      printf("Could not determine version of LLR being used.  File empty.\n");
-      exit(0);
+         ptr2 = strchr(ptr, ',');
+         if (ptr2) *ptr2 = 0;
+
+         StripCRLF(ptr);
+         is_ProgramVersion = ptr;
+         break;
+      }
    }
 
    fclose(fp);
    unlink("a.out");
 
-   // The first line should look like this:
-   // Primality Testing of k*b^n+/-1 Program - Version 3.8.0
-   ptr = strstr(line, "Version");
-   if (!ptr)
-   {
+   if (is_ProgramVersion.size() == 0) {
       printf("Could not determine version of LLR being used.  Missing version data\n");
       exit(0);
    }
-
-   ptr2 = strchr(ptr+8, ',');
-   if (ptr2) *ptr2 = 0;
-
-   StripCRLF(ptr + 8);
-   is_ProgramVersion = ptr + 8;
 }

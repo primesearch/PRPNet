@@ -42,13 +42,21 @@ void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUn
 bool  TestingProgram::ValidateExe(void)
 {
    struct stat buf;
+   char   exeName[100];
 
    if (is_ExeName == "")
       return false;
 
-   if (stat(is_ExeName.c_str(), &buf) == -1)
+   snprintf(exeName, sizeof(exeName), "%s", is_ExeName.c_str());
+
+   char* ptr = strchr(exeName, ' ');
+
+   if (ptr)
+      *ptr = 0;
+
+   if (stat(exeName, &buf) == -1)
    {
-      printf("Could not find executable '%s'.\n", is_ExeName.c_str());
+      printf("Could not find executable '%s'.\n", exeName);
       return false;
    }
 

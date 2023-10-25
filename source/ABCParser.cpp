@@ -22,6 +22,9 @@ static const char *cwvbastring = "$a*$b^$a$c";
 static const char *fk_string = "%" PRId64"*$a^$b%d";
 static const char *fkastring = "%" PRId64"*$a^$b$%c";
 
+// Fixed k/b forms for k*b^n+/-c
+static const char* fkbstring = "%" PRId64"*%d^$a%d";
+
 // Fixed b forms for k*b^n+/-c
 static const char *fb_string = "$a*%d^$b%d";
 static const char *fbastring = "$a*%d^$b$%c";
@@ -69,6 +72,7 @@ static const char *fnabcdstring = "$a*%d^%d%d [%" PRId64"]";
 #define ABC_FKP         31
 #define ABC_FKM         32
 #define ABC_FKA         33
+#define ABC_FKB         34
 #define ABC_FBP         41
 #define ABC_FBM         42
 #define ABC_FBA         43
@@ -164,7 +168,7 @@ int32_t  ABCParser::IsValidFormat(void)
           ii_ABCFormat == ABC_FBP || ii_ABCFormat == ABC_FBM || ii_ABCFormat == ABC_FBA ||
           ii_ABCFormat == ABC_FNP || ii_ABCFormat == ABC_FNM || ii_ABCFormat == ABC_FNA ||
           ii_ABCFormat == ABC_VP  || ii_ABCFormat == ABC_VM  || ii_ABCFormat == ABC_VA  ||
-          ii_ABCFormat == ABCD_FK || ii_ABCFormat == ABCD_FN)
+          ii_ABCFormat == ABCD_FK || ii_ABCFormat == ABCD_FN || ii_ABCFormat == ABC_FKB)
          return true;
  
    if (ii_ServerType == ST_CULLENWOODALL)
@@ -328,6 +332,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
      if (ch == 'c')
        return ABC_FKA;
    }
+
+   if (sscanf(tempHeader, fkbstring, &il_theK, &ii_theB, &ii_theC) == 3)
+      return ABC_FKB;
 
    // Fixed b forms for k*b^n+/-c
    if (sscanf(tempHeader, fb_string, &ii_theB, &ii_theC) == 2)
@@ -636,6 +643,10 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
 
       case ABC_FKA:
          if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theN, &ii_theC) != 3) return false;
+         return true;
+
+      case ABC_FKB:
+         if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
          return true;
 
       case ABC_FBP:

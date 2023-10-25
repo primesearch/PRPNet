@@ -75,8 +75,8 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
       switch (testType)
       {
          case TT_PRP:
-            snprintf(command, 200, "%s %s -k -f0 %s -a%d -l%s %s",
-                    is_ExeName.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
+            snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -l%s %s",
+                    is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          case TT_PRIMALITY:
@@ -84,16 +84,16 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
             // is necessary for a primality proof.  This is an issue with GFNs which tend to
             // have large bases.
             if (ii_ServerType == ST_CYCLOTOMIC)
-               snprintf(command, 200, "%s %s -k -f0 %s -a%d -t%c -l%s %s",
-                       is_ExeName.c_str(), affinity, normalPriority, aValue, sign, is_OutFileName.c_str(), is_InFileName.c_str());
+               snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -t%c -l%s %s",
+                       is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, sign, is_OutFileName.c_str(), is_InFileName.c_str());
             else
-               snprintf(command, 200, "%s %s -k -f0 %s -a%d -e%d -t%c -l%s %s",
-                       is_ExeName.c_str(), affinity, normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
+               snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -e%d -t%c -l%s %s",
+                       is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          case TT_GFN:
-            snprintf(command, 200, "%s %s -k -f0 %s -a%d -gxo -l%s %s", 
-                    is_ExeName.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
+            snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -gxo -l%s %s", 
+                    is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
             break;
 
          default:

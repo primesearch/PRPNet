@@ -4,6 +4,9 @@ Version 5.6.0:  Add k, b, n, and c to UserPrimes so it doesn't need to join with
                 to display results on all_primes.html.
                 Fix Sierpinski/Riesel pages to correctly use "R"/"S" on summary lines.
                 Fixed verious html formatting and spelling issues.
+    prpserver:  Add support for srsieve2 ABC files.
+    prpadmin:   Fix error handling when sending factors.
+    prpclient:  Support additional command line arguements on exe names in ini file.
 
 Version 5.5.2:  July 3, 2023 - New Release
     prpclient:  Avoid infinite loop if unable to connect to server.

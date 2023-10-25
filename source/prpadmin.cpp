@@ -385,6 +385,7 @@ void  SendFactorFile(const char *factorFileName)
    char        readBuf[BUFFER_SIZE], *theMessage;
    FILE       *fPtr;
    int32_t     endLoop = false, countSent;
+   bool        haveError = false;
 
    if (!VerifyCommand("ADMIN_FACTOR"))
       return;
@@ -407,16 +408,16 @@ void  SendFactorFile(const char *factorFileName)
          g_Socket->StartBuffering();
 
          theMessage = g_Socket->Receive(120);
-         while (theMessage)
-         {
-            if (!memcmp(theMessage, "processed", 9))
-               break;
 
-            theMessage = g_Socket->Receive(120);
+         if (!theMessage) {
+            g_Log->LogMessage("Did not get a response from the server after 120 seconds");
+            g_Log->LogMessage("Verify what the server has processed, then edit the file before sending it again.");
+            break;
          }
 
-         if (!theMessage)
-            break;
+         // If the factor was not processed then print the message from the server
+         if (memcmp(theMessage, "processed", 9)) 
+            g_Log->LogMessage(theMessage);
       }
 
       countSent++;
@@ -426,22 +427,14 @@ void  SendFactorFile(const char *factorFileName)
 
    fclose(fPtr);
 
-   if (!theMessage)
+   if (!haveError)
    {
       g_Socket->Send("sent %d records", countSent);
       g_Socket->Send("End of File");
       g_Socket->SendBuffer();
    }
-   else
-   {
-      if (countSent >= RECORDS_PER_CONFIRM)
-         printf("\n");
-      g_Log->LogMessage("Did not get a response from the server after 120 seconds");
-      g_Log->LogMessage("Verify what the server has processed, then edit the file before sending it again.");
-   }
 
-
-   theMessage = g_Socket->Receive(120);
+   theMessage = g_Socket->Receive(1200);
    while (theMessage && !endLoop)
    {
       if (!memcmp(theMessage, "End of Message", 14))

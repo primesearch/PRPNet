@@ -408,16 +408,17 @@ void  SendFactorFile(const char *factorFileName)
          g_Socket->StartBuffering();
 
          theMessage = g_Socket->Receive(120);
+         while (theMessage)
+         {
+            // If the factor was not processed then print the message from the server
+            if (!memcmp(theMessage, "processed", 9))
+               break;
 
-         if (!theMessage) {
-            g_Log->LogMessage("Did not get a response from the server after 120 seconds");
-            g_Log->LogMessage("Verify what the server has processed, then edit the file before sending it again.");
-            break;
+            if (!memcmp(theMessage, "ERROR", 5))
+               g_Log->LogMessage(theMessage);
+
+            theMessage = g_Socket->Receive(120);
          }
-
-         // If the factor was not processed then print the message from the server
-         if (memcmp(theMessage, "processed", 9)) 
-            g_Log->LogMessage(theMessage);
       }
 
       countSent++;

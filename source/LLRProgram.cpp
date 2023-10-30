@@ -81,7 +81,7 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
       fprintf(fp, "Affinity=%u\n", ii_Affinity);
    fclose(fp);
 
-   snprintf(command, 100, "%s -d", is_ExeName.c_str());
+   snprintf(command, 100, "%s %s -d", is_ExeName.c_str(), is_ExeArguments.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 

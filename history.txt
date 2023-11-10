@@ -1,10 +1,22 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
-Version 5.6.0:  Add k, b, n, and c to UserPrimes so it doesn't need to join with Candidates
+Version 5.6.1:  November 10, 2023 - New Release
+          all:  Address all Visual Studio compiler warnings.
+    prpserver:  Add support for prst.
+                Remove usepfgwoverllr= config option as client will always choose llr
+                if available for the candidate.
+    prpclient:  Add support for prst.
+                Add additional checks to more optimally choose testing exe based
+                upon server type.
+                Start implementing changes to support (k*b^n+c)/d forms.
+
+Version 5.6.0:  September 3, 2023 - Unofficial Release
+
+    prpserver:  Add k, b, n, and c to UserPrimes so it doesn't need to join with Candidates
                 to display results on all_primes.html.
                 Fix Sierpinski/Riesel pages to correctly use "R"/"S" on summary lines.
                 Fixed verious html formatting and spelling issues.
-    prpserver:  Add support for srsieve2 ABC files.
+                Add support for srsieve2 ABC files.
     prpadmin:   Fix error handling when sending factors.
     prpclient:  Support additional command line arguements on exe names in ini file.
 

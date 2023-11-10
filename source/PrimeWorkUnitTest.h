@@ -47,10 +47,11 @@ protected:
    string   is_ProverVersion;
 
    // This represents the number being tested
-   int64_t  il_k;
-   int32_t  ii_b;
-   int32_t  ii_n;
-   int32_t  ii_c;
+   uint64_t il_k;
+   uint32_t ii_b;
+   uint32_t ii_n;
+   int64_t  ii_c;
+   uint32_t ii_d;
 
    bool     ib_HadTestFailure;
    bool     ib_SearchedForGFNDivisors;

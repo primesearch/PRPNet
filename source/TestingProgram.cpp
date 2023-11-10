@@ -20,7 +20,7 @@ TestingProgram::TestingProgram(Log *theLog, string programName)
 }
 
 void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUnitName,
-                                int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+                                uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD)
 {
    is_Suffix = suffix;
    is_InFileName = "work_" + suffix + ".in";
@@ -37,6 +37,7 @@ void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUn
    ii_b = theB;
    ii_n = theN;
    ii_c = theC;
+   ii_d = theD;
 }
 
 bool  TestingProgram::ValidateExe(void)
@@ -47,12 +48,23 @@ bool  TestingProgram::ValidateExe(void)
    if (is_ExeName == "")
       return false;
 
+   is_ExeArguments = "";
    snprintf(exeName, sizeof(exeName), "%s", is_ExeName.c_str());
 
    char* ptr = strchr(exeName, ' ');
 
    if (ptr)
+   {
       *ptr = 0;
+      is_ExeName = exeName;
+
+      if (is_ExeName.find("./") == string::npos)
+         is_InternalProgramName = is_ExeName;
+      else
+         is_InternalProgramName = is_ExeName.substr(2);
+
+      is_ExeArguments = ptr + 1;
+   }
 
    if (stat(exeName, &buf) == -1)
    {

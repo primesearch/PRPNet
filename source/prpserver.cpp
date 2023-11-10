@@ -115,7 +115,6 @@ int   main(int argc, char *argv[])
    gp_Globals->p_Log = 0;
    gp_Globals->s_SortSequence = "";
    gp_Globals->s_AllPrimesSortSequence = "";
-   gp_Globals->b_UseLLROverPFGW = false;
    gp_Globals->b_LocalTimeHTML = true;
    gp_Globals->b_BriefTestLog = false;
    gp_Globals->b_ServerStatsSummaryOnly = false;
@@ -400,8 +399,6 @@ void  ProcessINIFile(string configFile, string &smtpServer)
          gp_Globals->i_MaxClients = atol(line+11);
       else if (!memcmp(line, "unhideprimehours=", 17))
          gp_Globals->i_UnhidePrimeHours = atol(line+17);
-      else if (!memcmp(line, "usellroverpfgw=", 15))
-         gp_Globals->b_UseLLROverPFGW = (atol(line+15) == 0 ? false : true);
       else if (!memcmp(line, "onekperinstance=", 16))
          gp_Globals->b_OneKPerInstance = (atol(line+16) == 0 ? false : true);
       else if (!memcmp(line, "adminpassword=", 14))

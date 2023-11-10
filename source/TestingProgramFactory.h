@@ -8,6 +8,7 @@
 #include "LLRProgram.h"
 #include "PFGWProgram.h"
 #include "PhrotProgram.h"
+#include "PRSTProgram.h"
 #include "GeneferProgram.h"
 #include "CycloProgram.h"
 #include "WWWWProgram.h"
@@ -23,11 +24,10 @@ public:
    void     SendPrograms(Socket *theSocket);
 
    void     SetNumber(int32_t serverType, string suffix, string workUnitName,
-                      int64_t theK, int32_t theB, int32_t theN, int32_t theC);
+                      uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD);
    
-   TestingProgram *GetPRPTestingProgram(void);
    TestingProgram *GetPRPTestingProgram(int32_t serverType,
-                                        int64_t theK, int32_t theB, int32_t theN);
+                                        uint64_t theK, uint32_t theB, uint32_t theN, uint32_t theD);
 
    LLRProgram     *GetLLRProgram(void)     { return ip_LLRProgram;     };
    PFGWProgram    *GetPFGWProgram(void)    { return ip_PFGWProgram;    };
@@ -43,6 +43,7 @@ private:
    PhrotProgram   *ip_PhrotProgram;
    GeneferProgram *ip_GeneferProgram;
    CycloProgram   *ip_CycloProgram;
+   PRSTProgram    *ip_PRSTProgram;
    WWWWProgram    *ip_WWWWProgram;
 };
 

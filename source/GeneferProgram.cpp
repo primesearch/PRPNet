@@ -31,7 +31,7 @@ void     GeneferProgram::SendStandardizedName(Socket *theSocket, uint32_t return
    else
    {
       for (index=0; index<ii_ProgramCount; index++)
-         theSocket->Send(is_StandardizedName[index]);
+         theSocket->Send(is_StandardizedName[index].c_str());
    }
 }
 

@@ -47,7 +47,7 @@ bool     PrimeWorkUnitTest::TestWorkUnit(WorkUnitTest *parentWorkUnit)
          return true;
    }
 
-   ip_TestingProgramFactory->SetNumber(ii_ServerType, is_WorkSuffix, is_ChildName, il_k, ii_b, ii_n, ii_c);
+   ip_TestingProgramFactory->SetNumber(ii_ServerType, is_WorkSuffix, is_ChildName, il_k, ii_b, ii_n, ii_c, ii_d);
 
    ib_HadTestFailure = false;
    iwut_State = WUT_INPROGRESS;
@@ -92,7 +92,7 @@ testresult_t   PrimeWorkUnitTest::DoPRPTest(void)
       return TR_COMPLETED;
    }
 
-   testingProgram = ip_TestingProgramFactory->GetPRPTestingProgram(ii_ServerType, il_k, ii_b, ii_n);
+   testingProgram = ip_TestingProgramFactory->GetPRPTestingProgram(ii_ServerType, il_k, ii_b, ii_n, ii_d);
 
    if (!testingProgram)
    {
@@ -108,22 +108,26 @@ testresult_t   PrimeWorkUnitTest::DoPRPTest(void)
    if (testResult == TR_CANCELLED)
       return TR_CANCELLED;
 
-   // If genefer could not PRP test the number, use one of the other
-   // helpers, if they are configured.
+   // This should only happen if the selected program could not execute the PRP test.
+   // PFGW can handle everything, so use it.
    if (testingProgram->HadTestFailure())
    {
       ib_HadTestFailure = true;
 
-      if (ip_TestingProgramFactory->GetPRPTestingProgram() != NULL)
+      if (ip_TestingProgramFactory->GetPFGWProgram() == NULL)
       {
-         testingProgram = ip_TestingProgramFactory->GetPRPTestingProgram();
-         testResult = testingProgram->Execute(TT_PRP);
-
-         if (testResult == TR_CANCELLED)
-            return TR_CANCELLED;
-
-         ib_HadTestFailure = false;
+         ip_Log->LogMessage("PFGW is required to test %s", is_ChildName.c_str());
+         ip_Log->LogMessage("The client will now shut down due to this error", is_ChildName.c_str());
+         return TR_CANCELLED;
       }
+
+      testingProgram = ip_TestingProgramFactory->GetPFGWProgram();
+      testResult = testingProgram->Execute(TT_PRP);
+
+      if (testResult == TR_CANCELLED)
+         return TR_CANCELLED;
+
+      ib_HadTestFailure = false;
    }
 
    iwut_Result = R_COMPOSITE;

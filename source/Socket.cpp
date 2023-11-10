@@ -293,14 +293,14 @@ char    *Socket::Receive(int32_t maxWaitSeconds)
 }
 
 // Format a string and either send it across the socket or buffer it
-bool     Socket::Send(string fmt, ...)
+bool     Socket::Send(const char* fmt, ...)
 {
    bool     didSend;
    int32_t  messageSize;
    va_list  args;
 
    va_start(args, fmt);
-   vsnprintf(is_TempSendBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
+   vsnprintf(is_TempSendBuffer, TEMP_BUFFER_SIZE, fmt, args);
    va_end(args);
 
    ip_Log->Debug(DEBUG_SOCKET, "%s: sending [%s]", is_SocketDescription.c_str(), is_TempSendBuffer);

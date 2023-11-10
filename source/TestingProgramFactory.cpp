@@ -12,6 +12,7 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
    ip_GeneferProgram = NULL;
    ip_CycloProgram = NULL;
    ip_WWWWProgram = NULL;
+   ip_PRSTProgram = NULL;
 
    fp = fopen(configFile.c_str(), "r");
 
@@ -24,6 +25,8 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
          ip_LLRProgram = new LLRProgram(theLog, line+7);
       else if (!memcmp(line, "phrotexe=", 9) && strlen(line) > 9)
          ip_PhrotProgram = new PhrotProgram(theLog, line+9);
+      else if (!memcmp(line, "prstexe=", 8) && strlen(line) > 8)
+         ip_PRSTProgram = new PRSTProgram(theLog, line + 8);
       else if (!memcmp(line, "pfgwexe=", 8) && strlen(line) > 8)
          ip_PFGWProgram = new PFGWProgram(theLog, line+8);
       else if (!memcmp(line, "wwwwexe=", 8) && strlen(line) > 8)
@@ -49,6 +52,7 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
    if (ip_GeneferProgram)  ip_GeneferProgram->SetAffinity(gpuAffinity);
    if (ip_PFGWProgram)     ip_PFGWProgram->SetAffinity(cpuAffinity);
    if (ip_PFGWProgram)     ip_PFGWProgram->SetNormalPriority(normalPriority);
+   if (ip_PRSTProgram)     ip_PRSTProgram->SetAffinity(cpuAffinity);
 }
 
 TestingProgramFactory::~TestingProgramFactory()
@@ -56,6 +60,7 @@ TestingProgramFactory::~TestingProgramFactory()
    if (ip_LLRProgram)     delete ip_LLRProgram;
    if (ip_PhrotProgram)   delete ip_PhrotProgram;
    if (ip_PFGWProgram)    delete ip_PFGWProgram;
+   if (ip_PRSTProgram)    delete ip_PRSTProgram;
    if (ip_GeneferProgram) delete ip_GeneferProgram;
    if (ip_CycloProgram)   delete ip_CycloProgram;
    if (ip_WWWWProgram)    delete ip_WWWWProgram;
@@ -67,6 +72,12 @@ bool     TestingProgramFactory::ValidatePrograms(void)
    {
       delete ip_LLRProgram;
       ip_LLRProgram = 0;
+   }
+
+   if (ip_PRSTProgram && !ip_PRSTProgram->ValidateExe())
+   {
+      delete ip_PRSTProgram;
+      ip_PRSTProgram = 0;
    }
 
    if (ip_PhrotProgram && !ip_PhrotProgram->ValidateExe())
@@ -99,9 +110,9 @@ bool     TestingProgramFactory::ValidatePrograms(void)
       ip_WWWWProgram = 0;
    }
 
-   if (!ip_LLRProgram && !ip_PhrotProgram && !ip_PFGWProgram && !ip_GeneferProgram && !ip_CycloProgram && !ip_WWWWProgram)
+   if (!ip_LLRProgram && !ip_PhrotProgram && !ip_PFGWProgram && !ip_GeneferProgram && !ip_PRSTProgram && !ip_CycloProgram && !ip_WWWWProgram)
    {
-      printf("At least one valid exe (llrexe, phrotexe, pfgwexe, geneferexe, cycloexe, wwwwexe) must be specified.\n");
+      printf("At least one valid exe (llrexe, phrotexe, pfgwexe, prstexe, geneferexe, cycloexe, wwwwexe) must be specified.\n");
       return false;
    }
 
@@ -111,36 +122,52 @@ bool     TestingProgramFactory::ValidatePrograms(void)
 void     TestingProgramFactory::SendPrograms(Socket *theSocket)
 {
    if (ip_LLRProgram)      ip_LLRProgram->SendStandardizedName(theSocket, false);
-   if (ip_PhrotProgram)    ip_PhrotProgram->SendStandardizedName(theSocket, false);
+   if (ip_PRSTProgram)     ip_PRSTProgram->SendStandardizedName(theSocket, false);
+   if (ip_LLRProgram)      ip_LLRProgram->SendStandardizedName(theSocket, false);
    if (ip_PFGWProgram)     ip_PFGWProgram->SendStandardizedName(theSocket, false);
    if (ip_GeneferProgram)  ip_GeneferProgram->SendStandardizedName(theSocket, false);
-   if (ip_CycloProgram)     ip_CycloProgram->SendStandardizedName(theSocket, false);
+   if (ip_CycloProgram)    ip_CycloProgram->SendStandardizedName(theSocket, false);
    if (ip_WWWWProgram)     ip_WWWWProgram->SendStandardizedName(theSocket, false);
 }
 
 void     TestingProgramFactory::SetNumber(int32_t serverType, string suffix, string workUnitName,
-                                          int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+                                          uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD)
 {
-   if (ip_LLRProgram)      ip_LLRProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC);
-   if (ip_PhrotProgram)    ip_PhrotProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC);
-   if (ip_PFGWProgram)     ip_PFGWProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC);
-   if (ip_GeneferProgram)  ip_GeneferProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC);
-   if (ip_CycloProgram)    ip_CycloProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC);
+   if (ip_LLRProgram)      ip_LLRProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
+   if (ip_PRSTProgram)     ip_PRSTProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
+   if (ip_PhrotProgram)    ip_PhrotProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
+   if (ip_PFGWProgram)     ip_PFGWProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
+   if (ip_GeneferProgram)  ip_GeneferProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
+   if (ip_CycloProgram)    ip_CycloProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
 }
 
 // Return the most appropriate testing program given the server type and base
-TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, int64_t theK, int32_t theB, int32_t theN)
+TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, uint64_t theK, uint32_t theB, uint32_t theN, uint32_t theD)
 {
    bool     powerOf2 = false;
    
-   if (serverType == ST_WAGSTAFF && ip_LLRProgram)
-      return ip_LLRProgram;
+   if (serverType == ST_WAGSTAFF)
+   {
+      if (ip_LLRProgram) return ip_LLRProgram;
 
-   if (serverType == ST_GFN && ip_GeneferProgram)
-      return ip_GeneferProgram;
+      return ip_PFGWProgram;
+   }
 
-   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_XYYX || 
-      serverType == ST_GENERIC || serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL)
+   if (serverType == ST_GFN)
+   {
+      if (ip_GeneferProgram) return ip_GeneferProgram;
+
+      return ip_PFGWProgram;
+   }
+
+   if ((serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL))
+   {
+      if (ip_PRSTProgram) return ip_PRSTProgram;
+
+      return ip_PFGWProgram;
+   }
+
+   if (serverType == ST_XYYX || serverType == ST_GENERIC || serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL)
       return ip_PFGWProgram;
    
    if (serverType == ST_CYCLOTOMIC)
@@ -154,15 +181,21 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
       return ip_PFGWProgram;
    }
 
-   return GetPRPTestingProgram();
-}
+   if (serverType == ST_FIXEDBKC || serverType == ST_FIXEDBNC)
+   {
+      if (theD > 1)
+      {
+         if (ip_LLRProgram)   return ip_LLRProgram;
+         if (ip_PFGWProgram)  return ip_PFGWProgram;
+      }
+   }
 
-// Return the most appropriate testing program, presuming that genefer cannot be used.
-TestingProgram *TestingProgramFactory::GetPRPTestingProgram(void)
-{
+   // We assume that these programs can support whatever fell thru the cracks.
+   if (ip_PRSTProgram)  return ip_PRSTProgram;
    if (ip_LLRProgram)   return ip_LLRProgram;
    if (ip_PFGWProgram)  return ip_PFGWProgram;
    if (ip_PhrotProgram) return ip_PhrotProgram;
 
    return 0;
 }
+

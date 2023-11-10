@@ -4,7 +4,7 @@ void     WWWWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWor
 {
    ip_FirstWWWW = NULL;
 
-   theSocket->Send(GetStandardizedName());
+   theSocket->Send(GetStandardizedName().c_str());
 }
 
 testresult_t   WWWWProgram::Execute(int32_t serverType, int32_t specialThreshhold, int64_t lowerLimit, int64_t upperLimit)

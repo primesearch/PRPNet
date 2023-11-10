@@ -11,13 +11,12 @@ PrimeWorkSender::PrimeWorkSender(DBInterface *dbInterface, Socket *theSocket, gl
 {
    char  *readBuf;
 
-   ib_UseLLROverPFGW = globals->b_UseLLROverPFGW;
    ib_OneKPerInstance = globals->b_OneKPerInstance;
    is_OrderBy = globals->s_SortSequence;
    ii_DelayCount = globals->i_DelayCount;
    ip_Delay = globals->p_Delay;
 
-   ib_HasLLR = ib_HasPhrot = ib_HasPFGW = ib_HasCyclo = false;
+   ib_HasLLR = ib_HasPhrot = ib_HasPFGW = ib_HasCyclo = ib_HasPRST = false;
    ib_HasAnyGenefer = ib_HasGeneferGPU = false; ib_HasGenefx64 = ib_HasGenefer = ib_HasGenefer80bit = false;
    while (true)
    {
@@ -34,6 +33,8 @@ PrimeWorkSender::PrimeWorkSender(DBInterface *dbInterface, Socket *theSocket, gl
          ib_HasPFGW = true;
       if (!memcmp(readBuf, "cyclo", 5))
          ib_HasCyclo = true;
+      if (!memcmp(readBuf, "prst", 4))
+         ib_HasPRST = true;
       if (!strcmp(readBuf, GENEFER_cuda) || !strcmp(readBuf, GENEFER_OpenCL))
          ib_HasAnyGenefer = ib_HasGeneferGPU = true;
       if (!strcmp(readBuf, GENEFER_x64))
@@ -66,9 +67,16 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
 
    is_ClientVersion = clientVersion;
 
-   if ((ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL || ii_ServerType == ST_MULTIFACTORIAL) && !ib_HasPFGW)
+   if ((ii_ServerType == ST_MULTIFACTORIAL) && !ib_HasPFGW)
    {
       ip_Socket->Send("ERROR:  The client must run PFGW to use this server.");
+      ip_Socket->Send("End of Message");
+      return;
+   }
+
+   if ((ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL) && !(ib_HasPFGW || ib_HasPRST))
+   {
+      ip_Socket->Send("ERROR:  The client must run PFGW or PRST to use this server.");
       ip_Socket->Send("End of Message");
       return;
    }
@@ -101,9 +109,9 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
    }
    else
    {
-      if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW)
+      if (!ib_HasLLR && !ib_HasPhrot && !ib_HasPFGW && !ib_HasPRST)
       {
-			ip_Socket->Send("ERROR:  The client must run LLR, PFGW, or Phrot to use this server.");
+			ip_Socket->Send("ERROR:  The client must run LLR, PFGW, PRST, or Phrot to use this server.");
 			ip_Socket->Send("End of Message");
 			return;
 	   }
@@ -115,7 +123,9 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
       ip_Socket->Send("INFO: Server has a limit of %u work units.", ii_MaxWorkUnits);
    }
    
-   ip_Socket->Send("ServerConfig: %d", (ib_UseLLROverPFGW ? 1 : 0));
+   // This is reserved for future use.  One potential use is to limit
+   // the testing programs that the client can use when it has a choice.
+   //ip_Socket->Send("ServerConfig: ");
    
    if (ib_NoNewWork)
       ip_Socket->Send("INACTIVE: New work generation is disabled on this server.");

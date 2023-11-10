@@ -80,7 +80,7 @@ void     RemoveTempFiles(string filter);
 bool     CheckForIncompleteWork(void);
 int32_t  PromptForStartOption(ServerHandler *serverHandler);
 void     CleanUpAndExit(void);
-void     TerminateWithError(string fmt, ...);
+void     TerminateWithError(const char* fmt, ...);
 
 // Since we could not connect to our first choice for work, find any
 // server that we can connect to
@@ -919,7 +919,7 @@ void  RemoveTempFiles(string filter)
       StripCRLF(fileName);
 
       // Strip off the directory portion of the file name
-      for (rc=strlen(fileName); rc>0; rc--)
+      for (rc= (int32_t) strlen(fileName); rc>0; rc--)
         if (fileName[rc] == FILE_DELIMITER)
         {
            fileName[rc] = 0;
@@ -1030,12 +1030,12 @@ int32_t  PromptForStartOption(ServerHandler *serverHandler)
    return option;
 }
 
-void  TerminateWithError(string fmt, ...)
+void  TerminateWithError(const char* fmt, ...)
 {
    va_list  args;
 
    va_start(args, fmt);
-   vfprintf(stderr, fmt.c_str(), args);
+   vfprintf(stderr, fmt, args);
    va_end(args);
 
    Sleep(10000);

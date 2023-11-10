@@ -37,7 +37,6 @@ typedef struct
    int32_t  i_DoubleChecker;
    bool     b_NeedsDoubleCheck;
    bool     b_ShowOnWebPage;
-   bool     b_UseLLROverPFGW;
    bool     b_OneKPerInstance;
    bool     b_LocalTimeHTML;
    bool     b_BriefTestLog;

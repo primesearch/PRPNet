@@ -14,19 +14,19 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
    switch (serverType)
    {
       case ST_PRIMORIAL:
-        snprintf(tempName, sizeof(tempName), "%d#%+d", ii_b, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d#%" PRId64"", ii_b, ii_c);
         break;
 
       case ST_FACTORIAL:
-        snprintf(tempName, sizeof(tempName), "%d!%+d", ii_b, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d!%" PRId64"", ii_b, ii_c);
         break;
 
       case ST_MULTIFACTORIAL:
-        snprintf(tempName, sizeof(tempName), "%d!%d%+d", ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d!%d%" PRId64"", ii_b, ii_n, ii_c);
         break;
 
       case ST_GFN:
-        snprintf(tempName, sizeof(tempName), "%d^%d%+d", ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "%d^%d%" PRId64"", ii_b, ii_n, ii_c);
         break;
 
       case ST_XYYX:
@@ -39,7 +39,7 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
          break;
 
       case ST_CAROLKYNEA:
-        snprintf(tempName, sizeof(tempName), "(%d^%d%+d)^2-2", ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "(%d^%d%" PRId64")^2-2", ii_b, ii_n, ii_c);
         break;
 
       case ST_WAGSTAFF:
@@ -47,7 +47,7 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
         break;
 
       default:
-        snprintf(tempName, sizeof(tempName), "%" PRId64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "%" PRId64"*%d^%d%" PRId64"", il_k, ii_b, ii_n, ii_c);
         break;
    }
 

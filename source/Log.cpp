@@ -25,12 +25,12 @@ Log::~Log()
    delete [] is_TempBuffer;
 }
 
-void  Log::LogMessage(string fmt, ...)
+void  Log::LogMessage(const char *fmt, ...)
 {
    va_list  args;
 
    va_start(args, fmt);
-   vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
+   vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt, args);
    va_end(args);
 
    ip_FileLock->Lock();
@@ -41,12 +41,12 @@ void  Log::LogMessage(string fmt, ...)
    ip_FileLock->Release();
 }
 
-void  Log::TestMessage(string fmt, ...)
+void  Log::TestMessage(const char* fmt, ...)
 {
    va_list  args;
 
    va_start(args, fmt);
-   vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
+   vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt, args);
    va_end(args);
    
    ip_FileLock->Lock();
@@ -57,7 +57,7 @@ void  Log::TestMessage(string fmt, ...)
    ip_FileLock->Release();
 }
 
-void  Log::Debug(int32_t debugLevel, string fmt, ...)
+void  Log::Debug(int32_t debugLevel, const char* fmt, ...)
 {
    va_list  args;
    int32_t  internalDebugLevel = (int32_t) ip_FileLock->GetValueNoLock();
@@ -71,7 +71,7 @@ void  Log::Debug(int32_t debugLevel, string fmt, ...)
       ip_FileLock->Lock();
 
       va_start(args, fmt);
-      vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt.c_str(), args);
+      vsnprintf(is_TempBuffer, TEMP_BUFFER_SIZE, fmt, args);
       va_end(args);
 
       Write(is_LogFileName, is_TempBuffer, true, true);

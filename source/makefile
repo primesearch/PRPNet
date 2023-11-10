@@ -36,7 +36,7 @@ THREADOBJECTS=SharedMemoryItem.o ServerThread.o HelperThread.o WorkSender.o Work
 	PrimeWorkSender.o WWWWWorkSender.o PrimeWorkReceiver.o WWWWWorkReceiver.o \
 	PrimeHelperThread.o WWWWHelperThread.o CandidateTestResult.o KeepAliveThread.o
 PROGRAMOBJECTS=TestingProgram.o TestingProgramFactory.o PFGWProgram.o LLRProgram.o \
-	PhrotProgram.o GeneferProgram.o WWWWProgram.o CycloProgram.o
+	PhrotProgram.o GeneferProgram.o WWWWProgram.o CycloProgram.o PRSTProgram.o
 WORKEROBJECTS=ServerHandler.o Worker.o PrimeWorker.o WWWWWorker.o
 WORKUNITOBJECTS=WorkUnitTestFactory.o WorkUnitTest.o MainWorkUnitTest.o \
 	TwinWorkUnitTest.o SophieGermainWorkUnitTest.o WWWWWorkUnitTest.o PrimeWorkUnitTest.o

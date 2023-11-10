@@ -9,10 +9,11 @@ typedef struct workunit_t
 {
    int64_t     l_TestID;
    char        s_Name[50];
-   int64_t     l_k;
-   int32_t     i_b;
-   int32_t     i_n;
-   int32_t     i_c;
+   uint64_t    l_k;
+   uint32_t    i_b;
+   uint32_t    i_n;
+   int64_t     i_c;
+   uint32_t    i_d;
    int64_t     l_LowerLimit;
    int64_t     l_UpperLimit;
    int32_t     i_DecimalLength;

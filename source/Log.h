@@ -25,13 +25,13 @@ public:
    ~Log();
 
    // Log a message to the log file 
-   void  LogMessage(string fmt, ...);
+   void  LogMessage(const char* fmt, ...);
 
    // Log a message to the log file 
-   void  TestMessage(string fmt, ...);
+   void  TestMessage(const char* fmt, ...);
 
    // Log a message to the log file based upon the debug level
-   void  Debug(int32_t debugLevel, string fmt, ...);
+   void  Debug(int32_t debugLevel, const char* fmt, ...);
 
    void  SetDebugLevel(int32_t debugLevel) { ip_FileLock->SetValueNoLock(debugLevel); };
 

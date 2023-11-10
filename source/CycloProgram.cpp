@@ -44,7 +44,7 @@ testresult_t   CycloProgram::Execute(testtype_t testType)
    if (ii_b > 0)
       fprintf(fp, "%d %d\n", ii_b, ii_n*2);
    else
-      fprintf(fp, "%d %d\n", -ii_b, ii_n*2);
+      fprintf(fp, "-%d %d\n", ii_b, ii_n*2);
 
    fclose(fp);
 

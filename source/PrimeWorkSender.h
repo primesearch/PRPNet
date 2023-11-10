@@ -17,7 +17,6 @@ public:
    void     ProcessMessage(string theMessage);
 
 private:
-   bool     ib_UseLLROverPFGW;
    bool     ib_OneKPerInstance;
    string   is_OrderBy;
    int32_t  ii_DelayCount;
@@ -27,6 +26,7 @@ private:
    bool     ib_HasPhrot;
    bool     ib_HasPFGW;
    bool     ib_HasCyclo;
+   bool     ib_HasPRST;
    bool     ib_HasAnyGenefer;
    bool     ib_HasGeneferGPU;
    bool     ib_HasGenefx64;

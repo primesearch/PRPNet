@@ -36,7 +36,7 @@ public:
    bool     HadTestFailure(void) { return ib_TestFailure; };
 
    void     SetNumber(int32_t serverType, string suffix, string workUnitName,
-                      int64_t theK, int32_t theB, int32_t theN, int32_t theC);
+                      uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD);
 
    virtual testresult_t   Execute(testtype_t testType) { return TR_CANCELLED; };
 
@@ -70,6 +70,7 @@ protected:
    Log        *ip_Log;
 
    string      is_ExeName;
+   string      is_ExeArguments;
 
    string      is_Suffix;
    string      is_InFileName;
@@ -79,11 +80,12 @@ protected:
    int32_t     ii_ServerType;
    string      is_WorkUnitName;
 
-   // The k, b, n, and c values for the number
-   int64_t     il_k;
-   int32_t     ii_b;
-   int32_t     ii_n;
-   int32_t     ii_c;
+   // The k, b, n, c, and d values for the number to be tested
+   uint64_t    il_k;
+   uint32_t    ii_b;
+   uint32_t    ii_n;
+   int64_t     ii_c;
+   uint32_t    ii_d;
 
    // Only computed for generic servers
    int32_t     ii_DecimalLength;

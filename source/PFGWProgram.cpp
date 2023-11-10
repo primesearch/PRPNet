@@ -4,7 +4,7 @@ void     PFGWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWor
 {
    ip_FirstGFN = NULL;
 
-   theSocket->Send(GetStandardizedName());
+   theSocket->Send(GetStandardizedName().c_str());
 }
 
 testresult_t   PFGWProgram::Execute(testtype_t testType)
@@ -399,7 +399,7 @@ void  PFGWProgram::DetermineDecimalLength(void)
    }
 
    ii_DecimalLength = 0;
-   while ((bytes = fread(line, 1, (int32_t)  sizeof(line), fp)) > 0)
+   while ((bytes = (int) fread(line, 1, (int32_t)  sizeof(line), fp)) > 0)
       ii_DecimalLength += bytes;
    
    fclose(fp);

@@ -51,7 +51,7 @@ public:
    bool     GetIsOpen(void) { return ib_IsOpen; };
 
    // Send a string of data to the server
-   bool     Send(string fmt, ...);
+   bool     Send(const char* fmt, ...);
 
    // Send the buffered messages
    bool     SendBuffer(void);

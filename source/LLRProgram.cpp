@@ -39,7 +39,7 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
    if (ii_ServerType == ST_CAROLKYNEA)
    {
       fprintf(fp, "ABC (%d^$a$b)^2-2\n", ii_b);
-      fprintf(fp, "%d %" PRId64"\n", ii_n, ii_c); 
+      fprintf(fp, "%d %+" PRId64"\n", ii_n, ii_c); 
    }
    else if (ii_ServerType == ST_WAGSTAFF)
    {
@@ -48,7 +48,7 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
    }
    else
    {
-      fprintf(fp, "ABC $a*$b^$c%" PRId64"\n", ii_c);
+      fprintf(fp, "ABC $a*$b^$c%+" PRId64"\n", ii_c);
       fprintf(fp, "%" PRId64" %d %d\n", il_k, ii_b, ii_n); 
    }
 

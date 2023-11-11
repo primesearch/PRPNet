@@ -47,7 +47,7 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
         break;
 
       default:
-        snprintf(tempName, sizeof(tempName), "%" PRId64"*%d^%d%" PRId64"", il_k, ii_b, ii_n, ii_c);
+        snprintf(tempName, sizeof(tempName), "%" PRId64"*%d^%d%+" PRId64"", il_k, ii_b, ii_n, ii_c);
         break;
    }
 

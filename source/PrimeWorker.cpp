@@ -361,7 +361,7 @@ void  PrimeWorker::Save(FILE *fPtr)
    ip_FirstWorkUnit = 0;
    while (wu)
    {
-      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %" PRId64" %d %d %" PRId64" %d %d\n",
+      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %+" PRId64" %d %d %" PRId64" %d %d\n",
          wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->i_c, wu->b_SRSkipped, wu->i_DecimalLength);
 
       wuNext = (workunit_t *) wu->m_NextWorkUnit;

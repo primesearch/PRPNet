@@ -32,13 +32,13 @@ create table UserStats (
 create unique index pk_UserStats on UserStats (UserID);
 
 create table UserWWWWs (
-   UserID                  varchar(200)      collate latin1_bin,
+   UserID                  varchar(200),
    Prime                   bigint            not null,
    Remainder               int,
    Quotient                int,
-   MachineID               varchar(200)      collate latin1_bin,
-   InstanceID              varchar(200)      collate latin1_bin,
-   TeamID                  varchar(200)      collate latin1_bin,
+   MachineID               varchar(200),
+   InstanceID              varchar(200),
+   TeamID                  varchar(200),
    DateReported            bigint            not null,
    ShowOnWebPage           int
 );
@@ -50,9 +50,9 @@ create table UserPrimes (
    CandidateName           varchar(50)       not null,
    TestedNumber            varchar(50)       not null,
    TestResult              int               default 1,
-   MachineID               varchar(200)      collate latin1_bin,
-   InstanceID              varchar(200)      collate latin1_bin,
-   TeamID                  varchar(200)      collate latin1_bin,
+   MachineID               varchar(200),
+   InstanceID              varchar(200),
+   TeamID                  varchar(200),
    DecimalLength           double precision,
    DateReported            bigint            not null,
    ShowOnWebPage           int,
@@ -117,9 +117,9 @@ create table CandidateTest (
    IsCompleted             int   default 0   not null,
    EmailID                 varchar(200),
    UserID                  varchar(200),
-   MachineID               varchar(200)      collate latin1_bin,
-   InstanceID              varchar(200)      collate latin1_bin,
-   TeamID                  varchar(200)      collate latin1_bin,
+   MachineID               varchar(200),
+   InstanceID              varchar(200),
+   TeamID                  varchar(200),
    EmailSent               int,
    foreign key (CandidateName) references Candidate (CandidateName) on delete restrict
 );
@@ -155,9 +155,9 @@ create table CandidateGFNDivisor (
    GFN                     varchar(50)       not null,
    EmailID                 varchar(200),
    UserID                  varchar(200),
-   MachineID               varchar(200)      collate latin1_bin,
-   InstanceID              varchar(200)      collate latin1_bin,
-   TeamID                  varchar(200)      collate latin1_bin,
+   MachineID               varchar(200),
+   InstanceID              varchar(200),
+   TeamID                  varchar(200),
    foreign key (CandidateName) references Candidate (CandidateName) on delete restrict
 );
 
@@ -205,15 +205,15 @@ create table WWWWRangeTest (
    UpperLimit              bigint            not null,
    TestID                  bigint            not null,
    IsCompleted             int               default 0 not null,
-   EmailID                 varchar(200)      collate latin1_bin,
-   UserID                  varchar(200)      collate latin1_bin,
-   MachineID               varchar(200)      collate latin1_bin,
-   InstanceID              varchar(200)      collate latin1_bin,
-   TeamID                  varchar(200)      collate latin1_bin,
+   EmailID                 varchar(200),
+   UserID                  varchar(200),
+   MachineID               varchar(200),
+   InstanceID              varchar(200),
+   TeamID                  varchar(200),
    EmailSent               int,
    SecondsToTestRange      double            default 0,
-   SearchingProgram        varchar(50)       collate latin1_bin,
-   SearchingProgramVersion varchar(50)       collate latin1_bin,
+   SearchingProgram        varchar(50) ,
+   SearchingProgramVersion varchar(50) ,
    foreign key (LowerLimit, UpperLimit) references WWWWRange (LowerLimit, UpperLimit) on delete restrict,
    index ix_userid (UserID),
    index ix_teamid (TeamID)

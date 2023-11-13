@@ -236,7 +236,7 @@ void  LLRProgram::DetermineVersion(void)
       exit(0);
    }
 
-   while (fgets(line, sizeof(line), fp) > 0)
+   while (fgets(line, sizeof(line), fp) != 0)
    {
       // We should find a line like this:
       // LLR Program - Version 4.0.3, using Gwnum Library Version 30.6

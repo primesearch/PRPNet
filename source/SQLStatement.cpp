@@ -486,6 +486,16 @@ bool     SQLStatement::GetSQLErrorAndLog(SQLRETURN returnCode)
          canContinue = true;
          break;
 
+         // Operation did not update any rows but otherwise succeeded, ODBC 3.x drivers only
+         // ODBC 2.x drivers should return either SQL_SUCCESS or SQL_SUCCESS_WITH_INFO instead
+#if (ODBCVER >= 0x0300)
+      case SQL_NO_DATA:
+         severityLevel = "WARNING";
+         errorType = "SQL_NO_DATA";
+         canContinue = true;
+         break;
+#endif
+
       case SQL_ERROR:
          severityLevel = "ERROR";
          errorType = "SQL_ERROR";
@@ -516,7 +526,7 @@ bool     SQLStatement::GetSQLErrorAndLog(SQLRETURN returnCode)
          break;
    }
 
-   ip_Log->LogMessage("%d: ODBC Information: %s: %s", ip_DBInterface->GetClientID(), errorType, is_MessageText);
+   ip_Log->LogMessage("%d: ODBC Information: %s (%d): %s", ip_DBInterface->GetClientID(), errorType, returnCode, is_MessageText);
    ip_Log->LogMessage("%d: ODBC Information: SQL Statement: %s", ip_DBInterface->GetClientID(), ExpandStatement());
 
    return canContinue;

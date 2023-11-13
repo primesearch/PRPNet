@@ -72,13 +72,13 @@ HTMLGenerator.o: HTMLGenerator.cpp defs.h
 	$(CC) $(CPPFLAGS) $<
 
 prpadmin: $(ADMINOBJECTS)
-	$(CC) $(LFLAGS_CLIENT) -o $@ $^
+	$(CC) -o $@ $^ $(LFLAGS_CLIENT)
 
 prpclient: $(CLIENTOBJECTS)
-	$(CC) $(LFLAGS_CLIENT) -o $@ $^
+	$(CC) -o $@ $^ $(LFLAGS_CLIENT)
 
 prpserver: $(SERVEROBJECTS) 
-	$(CC) $(LFLAGS_SERVER) -o $@ $^
+	$(CC) -o $@ $^ $(LFLAGS_SERVER)
 
 clean_objs:
 	rm -f $(ADMINOBJECTS) $(CLIENTOBJECTS) $(SERVEROBJECTS) *.log

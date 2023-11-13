@@ -1,5 +1,10 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.6.2:  November 13, 2023 - New Release
+                Adjust makefile for *nix builds.
+    prpserver:  Updates for ODBC 3.0
+    prpclient:  Ensure that workunits have + or - for the c term.
+
 Version 5.6.1:  November 10, 2023 - New Release
           all:  Address all Visual Studio compiler warnings.
     prpserver:  Add support for prst.
@@ -8,6 +13,7 @@ Version 5.6.1:  November 10, 2023 - New Release
     prpclient:  Add support for prst.
                 Add additional checks to more optimally choose testing exe based
                 upon server type.
+                Use PRId64 for c term.
                 Start implementing changes to support (k*b^n+c)/d forms.
 
 Version 5.6.0:  September 3, 2023 - Unofficial Release

@@ -22,7 +22,7 @@ testresult_t   WWWWProgram::Execute(int32_t serverType, int32_t specialThreshhol
    if (serverType == ST_WALLSUNSUN)   searchType = "WallSunSun";
    if (serverType == ST_WOLSTENHOLME) searchType = "Wolstenholme";
 
-   snprintf(command, 200, "%s -%c%s -s%d -p%" PRId64" -P%" PRId64"", is_ExeName.c_str(),
+   snprintf(command, 200, "%s -%c%s -s%d -p%" PRIu64" -P%" PRIu64"", is_ExeName.c_str(),
       (is_ProgramName == "wwww" ? 't' : 'T'), 
       searchType, specialThreshhold, lowerLimit, upperLimit);
 
@@ -102,7 +102,7 @@ testresult_t   WWWWProgram::ParseTestResults(testtype_t testType)
          id_Seconds = 0.0;
          ptr1 = ptr2 = 0;
 
-         sscanf(line, "Primes tested %" PRId64"", &il_PrimesTested);
+         sscanf(line, "Primes tested %" PRIu64"", &il_PrimesTested);
 
          ptr1 = strstr(line, "Checksum");
          if (ptr1) ptr2 = strstr(ptr1, ".");
@@ -142,14 +142,14 @@ void  WWWWProgram::AddWWWWToList(string line)
    if (strstr(tempLine, " is a ") && strstr(tempLine, " prime"))
    {
       wwwwPtr->t_WWWWType = WWWW_PRIME;
-      sscanf(tempLine, "%" PRId64"", &wwwwPtr->l_Prime);
+      sscanf(tempLine, "%" PRIu64"", &wwwwPtr->l_Prime);
       wwwwPtr->i_Remainder = 0;
       wwwwPtr->i_Quotient = 0;
    }
    else
    {
       wwwwPtr->t_WWWWType = WWWW_SPECIAL;
-      sscanf(tempLine, "%" PRId64" is a special instance (%d %d p)",
+      sscanf(tempLine, "%" PRIu64" is a special instance (%d %d p)",
              &wwwwPtr->l_Prime, &wwwwPtr->i_Remainder, &wwwwPtr->i_Quotient);
    }
 

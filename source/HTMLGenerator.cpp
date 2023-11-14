@@ -188,9 +188,9 @@ void     HTMLGenerator::GetDaysLeft(void)
    if (hoursLeft < 0)
       ip_Socket->Send("The server has no work left");
    else if (hoursLeft < 72)
-      ip_Socket->Send("Estimate of %" PRId64" hour%s before the server runs out of work", hoursLeft, PLURAL_ENDING(hoursLeft));
+      ip_Socket->Send("Estimate of %" PRIu64" hour%s before the server runs out of work", hoursLeft, PLURAL_ENDING(hoursLeft));
    else
-      ip_Socket->Send("Estimate of %" PRId64" day%s before the server runs out of work", daysLeft, PLURAL_ENDING(daysLeft));
+      ip_Socket->Send("Estimate of %" PRIu64" day%s before the server runs out of work", daysLeft, PLURAL_ENDING(daysLeft));
 
    ip_Socket->Send("</p>");
 

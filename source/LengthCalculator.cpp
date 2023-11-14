@@ -144,6 +144,7 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
       case ST_FIXEDBNC:
       case ST_TWIN:
       case ST_SOPHIEGERMAIN:
+      case ST_TWINANDSOPHIE:
          doubleK = (double) intK;
          doubleB = (double) intB;
          doubleN = (double) intN;

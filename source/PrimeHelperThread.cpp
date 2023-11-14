@@ -106,7 +106,7 @@ void      PrimeHelperThread::AdminABCFile(void)
 
       totalEntries++;
 
-      if (theC != 1 && theC != -1 && (ii_ServerType == ST_SOPHIEGERMAIN || ii_ServerType == ST_TWIN))
+      if (theC != 1 && theC != -1 && (ii_ServerType == ST_SOPHIEGERMAIN || ii_ServerType == ST_TWIN || ii_ServerType == ST_TWINANDSOPHIE))
          badEntries++;
       else
       {
@@ -236,7 +236,7 @@ void      PrimeHelperThread::AdminFactorFile(void)
       {
          totalFactors++;
 
-         if (sscanf(theMessage, "%" PRId64" | %s", &theFactor, candidateName) != 2)
+         if (sscanf(theMessage, "%" PRIu64" | %s", &theFactor, candidateName) != 2)
          {
             badFactors++;
             ip_Socket->Send("Factor line is not of the correct format", theMessage);

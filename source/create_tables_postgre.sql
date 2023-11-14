@@ -56,9 +56,9 @@ create table UserPrimes (
    DecimalLength           double precision,
    DateReported            bigint            not null,
    ShowOnWebPage           int,
-   k                       bigint,
-   b                       int,
-   n                       int,
+   k                       unsigned bigint,
+   b                       unsigned int,
+   n                       unsigned int,
    c                       int
 );
    
@@ -97,9 +97,9 @@ create table Candidate (
    CompletedTests          int   default 0   not null,
    HasPendingTest          int   default 0   not null,
    doubleChecked           int   default 0   not null,
-   k                       bigint,
-   b                       int,
-   n                       int,
+   k                       unsigned bigint,
+   b                       unsigned int,
+   n                       unsigned int,
    c                       int,
    MainTestResult          int,
    LastUpdateTime          bigint            not null
@@ -172,9 +172,9 @@ create table GeneferROE (
 create unique index pk_GeneferROE on GeneferROE (CandidateName, GeneferVersion);
 
 create table CandidateGroupStats (
-   k                       bigint            default 0,
-   b                       int               default 0,
-   n                       int               default 0,
+   k                       unsigned bigint   default 0,
+   b                       unsigned int      default 0,
+   n                       unsigned int      default 0,
    c                       int               default 0,
    CountInGroup            int               default 0,
    CountInProgress         int               default 0,

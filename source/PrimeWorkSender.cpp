@@ -231,7 +231,7 @@ int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, dou
                            "   and CompletedTests > 0 " \
                            "   and DecimalLength >= %lf " \
                            "   and DecimalLength < %lf " \
-                           "   and LastUpdateTime < %" PRId64" " \
+                           "   and LastUpdateTime < %" PRIu64" " \
                            "   and ((DecimalLength >= ? and LastUpdateTime > ?) or (DecimalLength > ?)) " \
                            "order by DecimalLength, LastUpdateTime limit 100";
 
@@ -353,7 +353,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
                            " where CompletedTests = 0 " \
                            "   and HasPendingTest = 0 " \
                            "   and DecimalLength > 0 " \
-                           "   and k = %" PRId64" " \
+                           "   and k = %" PRIu64" " \
                            "   and b = %d " \
                            "   and c = %d " \
                            "   and n < %d " \
@@ -364,7 +364,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
                             " where CompletedTests = 0 " \
                             "   and HasPendingTest = 0 " \
                             "   and DecimalLength > 0 " \
-                            "   and k = %" PRId64" " \
+                            "   and k = %" PRIu64" " \
                             "   and b = %d " \
                             "   and c = %d " \
                             "order by %s limit 100";
@@ -823,22 +823,22 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
    threadWaiter->Lock();
 
    if (ii_ServerType == ST_GFN)
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theB, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %d %u", candidateName.c_str(), lastUpdateTime, theB, theN);
    else if (ii_ServerType == ST_XYYX)
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %d %d %d", candidateName.c_str(), lastUpdateTime, 
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %d %d %d", candidateName.c_str(), lastUpdateTime, 
          (theC == 1 ? theB : theN), (theC == 1 ? theN : theB), theC);
    else if (ii_ServerType == ST_GENERIC)
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64"", candidateName.c_str(), lastUpdateTime);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64"", candidateName.c_str(), lastUpdateTime);
    else if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %u %d", candidateName.c_str(), lastUpdateTime, theN, theC);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %u %d", candidateName.c_str(), lastUpdateTime, theN, theC);
    else if (ii_ServerType == ST_MULTIFACTORIAL)
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %u %u %d", candidateName.c_str(), lastUpdateTime, theN, theB, theC);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %u %u %d", candidateName.c_str(), lastUpdateTime, theN, theB, theC);
    else if (ii_ServerType == ST_CYCLOTOMIC)
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %" PRId64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %" PRIu64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
    else if (ii_ServerType == ST_WAGSTAFF)
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %d", candidateName.c_str(), lastUpdateTime, theN);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %d", candidateName.c_str(), lastUpdateTime, theN);
    else 
-      sent = ip_Socket->Send("WorkUnit: %s %" PRId64" %" PRId64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
+      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %" PRIu64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
 
    threadWaiter->Release();
 
@@ -871,7 +871,7 @@ bool     PrimeWorkSender::UpdateGroupStats(string candidateName)
                            " where CandidateName = ?";
    const char* updateSQL = "update CandidateGroupStats " \
                            "   set CountInProgress = CountInProgress + 1 " \
-                           " where k = %" PRId64 " " \
+                           " where k = %" PRIu64 " " \
                            "   and b = %d " \
                            "   and c = %d ";
 

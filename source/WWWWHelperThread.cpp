@@ -148,7 +148,7 @@ void      WWWWHelperThread::AdminAddRange(void)
    delete su;
    delete suf;
 
-   ip_Socket->Send("Added %d new ranges from %" PRId64" to %" PRId64" ", ranges, lowestLimit, upperLimit);
+   ip_Socket->Send("Added %d new ranges from %" PRIu64" to %" PRIu64" ", ranges, lowestLimit, upperLimit);
    ip_Socket->Send("End of Message");
 
    ip_Log->LogMessage("ADMIN:  %d new ranges added through the admin process", ranges);

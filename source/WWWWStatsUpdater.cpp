@@ -216,7 +216,7 @@ bool  WWWWStatsUpdater::UpdateGroupStats(void)
    if (nextToTest == 0)
       snprintf(completedSQL, sizeof(completedSQL), "(select max(UpperLimit) from WWWWRange)");
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(UpperLimit) from WWWWRange where UpperLimit < %" PRId64"), %" PRId64")",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(UpperLimit) from WWWWRange where UpperLimit < %" PRIu64"), %" PRIu64")",
               nextToTest, nextToTest);
 
    // Finally, update the group stats

@@ -151,9 +151,9 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(abs(b)) from Candidate where k = %" PRId64" and n = %d)", theK, theN);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(abs(b)) from Candidate where k = %" PRIu64" and n = %d)", theK, theN);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(abs(b)) from Candidate where k = %" PRId64" and n = %d and abs(b) < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(abs(b)) from Candidate where k = %" PRIu64" and n = %d and abs(b) < %d), %d)",
               theK, theN, nextToTest, nextToTest);
 
    // Finally, update the group stats

@@ -15,7 +15,7 @@
 #define  TD_TIME(h, m) ip_Socket->Send("<td class=\"time\">%d:%02d</td>", h, m)
 #define  TD_32BIT(x) ip_Socket->Send("<td class=\"number\">%d</td>", (x))
 #define  TD_IF_DC(x) if (ib_NeedsDoubleCheck) ip_Socket->Send("<td class=\"number\">%d</td>", (x))
-#define  TD_64BIT(x) ip_Socket->Send("<td class=\"number\">%" PRId64"</td>", (x))
+#define  TD_64BIT(x) ip_Socket->Send("<td class=\"number\">%" PRIu64"</td>", (x))
 #define  TD_FLOAT(x) ip_Socket->Send("<td class=\"number\">%.0lf</td>", (x))
 
 #define  TH_CLMN_HDR(x) ip_Socket->Send("<th scope=\"col\">%s</th>", x)

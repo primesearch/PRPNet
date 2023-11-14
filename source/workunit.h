@@ -12,7 +12,7 @@ typedef struct workunit_t
    uint64_t    l_k;
    uint32_t    i_b;
    uint32_t    i_n;
-   int64_t     i_c;
+   int32_t     i_c;
    uint32_t    i_d;
    int64_t     l_LowerLimit;
    int64_t     l_UpperLimit;

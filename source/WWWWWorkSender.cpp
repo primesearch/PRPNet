@@ -113,7 +113,7 @@ int32_t  WWWWWorkSender::SelectWork(int32_t sendWorkUnits)
 
       if (completedTests > 0 && !CheckDoubleCheck(lowerLimit, upperLimit))
       {
-         ip_Log->Debug(DEBUG_WORK, "%d: Cannot double-check %" PRId64":%" PRId64"",
+         ip_Log->Debug(DEBUG_WORK, "%d: Cannot double-check %" PRIu64":%" PRIu64"",
                        ip_Socket->GetSocketID(), lowerLimit, upperLimit);
          continue;
       }
@@ -124,10 +124,10 @@ int32_t  WWWWWorkSender::SelectWork(int32_t sendWorkUnits)
       if (ReserveRange(lowerLimit, upperLimit))
       {
          if (completedTests == 0)
-            ip_Log->Debug(DEBUG_WORK, "%d: First check for %" PRId64":%" PRId64"",
+            ip_Log->Debug(DEBUG_WORK, "%d: First check for %" PRIu64":%" PRIu64"",
                           ip_Socket->GetSocketID(), lowerLimit, upperLimit);
          else
-            ip_Log->Debug(DEBUG_WORK, "%d: Double check for %" PRId64":%" PRId64"",
+            ip_Log->Debug(DEBUG_WORK, "%d: Double check for %" PRIu64":%" PRIu64"",
                           ip_Socket->GetSocketID(), lowerLimit, upperLimit);
 
          if (SendWork(lowerLimit, upperLimit))
@@ -298,7 +298,7 @@ bool     WWWWWorkSender::SendWork(int64_t lowerLimit, int64_t upperLimit)
    threadWaiter = ip_Socket->GetThreadWaiter();
    threadWaiter->Lock();
 
-   sent = ip_Socket->Send("WorkUnit: %" PRId64" %" PRId64" %" PRId64"",
+   sent = ip_Socket->Send("WorkUnit: %" PRIu64" %" PRIu64" %" PRIu64"",
                           lowerLimit, upperLimit, lastUpdateTime);
 
    threadWaiter->Release();
@@ -307,11 +307,11 @@ bool     WWWWWorkSender::SendWork(int64_t lowerLimit, int64_t upperLimit)
       return false;
    
    if (ib_BriefTestLog)
-      ip_Log->TestMessage("%d: %" PRId64":%" PRId64" sent to %s/%s/%s/%s", ip_Socket->GetSocketID(),
+      ip_Log->TestMessage("%d: %" PRIu64":%" PRIu64" sent to %s/%s/%s/%s", ip_Socket->GetSocketID(),
                           ip_Socket->GetSocketID(), lowerLimit, upperLimit,
                           is_EmailID.c_str(), is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
    else
-      ip_Log->TestMessage("%d: %" PRId64":%" PRId64" sent to Email: %s  User: %s  Machine: %s  Instance: %s",
+      ip_Log->TestMessage("%d: %" PRIu64":%" PRIu64" sent to Email: %s  User: %s  Machine: %s  Instance: %s",
                           ip_Socket->GetSocketID(), lowerLimit, upperLimit,
                           is_EmailID.c_str(), is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
 

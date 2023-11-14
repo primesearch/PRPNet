@@ -55,6 +55,7 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
 
       case ST_FIXEDBNC:
       case ST_TWIN:
+      case ST_TWINANDSOPHIE:
          theUpdater = new FixedBNCStatsUpdater();
          break;
 

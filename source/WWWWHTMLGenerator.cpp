@@ -228,7 +228,7 @@ void     WWWWHTMLGenerator::FindsByUser(void)
          ip_Socket->Send("<tr>");
          if (!remainder && !quotient)
          {
-            ip_Socket->Send("<th scope=\"row\">%" PRId64"</th>", prime);
+            ip_Socket->Send("<th scope=\"row\">%" PRIu64"</th>", prime);
 
             TD_CHAR(teamID);
             TD_CHAR(machineID);
@@ -239,7 +239,7 @@ void     WWWWHTMLGenerator::FindsByUser(void)
          {
             if (ii_ServerType == ST_WALLSUNSUN)
             {
-               ip_Socket->Send("<th scope=\"row\">%" PRId64" (0 %+d <var>p</var>)</th>", prime, quotient);
+               ip_Socket->Send("<th scope=\"row\">%" PRIu64" (0 %+d <var>p</var>)</th>", prime, quotient);
 
                TD_CHAR(teamID);
                TD_CHAR(machineID);
@@ -248,7 +248,7 @@ void     WWWWHTMLGenerator::FindsByUser(void)
             }
             else
             {
-               ip_Socket->Send("<th scope=\"row\">%" PRId64" (%+d %+d <var>p</var>)</th>",
+               ip_Socket->Send("<th scope=\"row\">%" PRIu64" (%+d %+d <var>p</var>)</th>",
                                  prime, remainder, quotient);
 
                TD_CHAR(teamID);
@@ -358,7 +358,7 @@ void     WWWWHTMLGenerator::FindsByTeam(void)
          ip_Socket->Send("<tr>");
          if (!remainder && !quotient)
          {
-            ip_Socket->Send("<th scope=\"row\">%" PRId64"</th>", prime);
+            ip_Socket->Send("<th scope=\"row\">%" PRIu64"</th>", prime);
 
             TD_CHAR(userID);
             TD_CHAR(machineID);
@@ -369,7 +369,7 @@ void     WWWWHTMLGenerator::FindsByTeam(void)
          {
             if (ii_ServerType == ST_WALLSUNSUN)
             {
-               ip_Socket->Send("<th scope=\"row\">%" PRId64" (0 %+d <var>p</var>)</th>", prime, quotient);
+               ip_Socket->Send("<th scope=\"row\">%" PRIu64" (0 %+d <var>p</var>)</th>", prime, quotient);
 
                TD_CHAR(userID);
                TD_CHAR(machineID);
@@ -378,7 +378,7 @@ void     WWWWHTMLGenerator::FindsByTeam(void)
             }
             else
             {
-               ip_Socket->Send("<th scope=\"row\">%" PRId64" (%+d %+d <var>p</var>)</th>",
+               ip_Socket->Send("<th scope=\"row\">%" PRIu64" (%+d %+d <var>p</var>)</th>",
                                  prime, remainder, quotient);
 
                TD_CHAR(userID);
@@ -737,7 +737,7 @@ void  WWWWHTMLGenerator::ConvertToScientificNotation(int64_t valueInt, string &v
       valueInt /= 10;
    }
 
-   snprintf(tempValue, 50, "%" PRId64"e%d", valueInt, eValue);
+   snprintf(tempValue, 50, "%" PRIu64"e%d", valueInt, eValue);
    valueStr = tempValue;
 }
 

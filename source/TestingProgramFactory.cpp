@@ -131,7 +131,7 @@ void     TestingProgramFactory::SendPrograms(Socket *theSocket)
 }
 
 void     TestingProgramFactory::SetNumber(int32_t serverType, string suffix, string workUnitName,
-                                          uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD)
+                                          uint64_t theK, uint32_t theB, uint32_t theN, int32_t theC, uint32_t theD)
 {
    if (ip_LLRProgram)      ip_LLRProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
    if (ip_PRSTProgram)     ip_PRSTProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);

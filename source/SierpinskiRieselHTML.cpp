@@ -170,7 +170,7 @@ void SierpinskiRieselHTML::ServerStats(void)
          ip_Socket->Send("<tr class=\"%s\">", ((sierpinskiRieselPrimeN > 0) ? "found" : (kCountUntested ? "untested" : "tested")));
 
          if (k > 1)
-            ip_Socket->Send("<th scope=\"row\">%" PRId64"*%d^<var>n</var>%+d</th>", k, b, c);
+            ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
          else
             ip_Socket->Send("<th scope=\"row\">%d^<var>n</var>%+d</th>", b, c);
 

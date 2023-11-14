@@ -9,5 +9,7 @@ This is a list of future features to be considered for PRPNet.
 
 4)  Add ability to delete by k < or n < from prpadmin.
 
+5)  Add support for 64-bit signed c values.
+
 If you have anything else you would like to see added, please contact me at
 rogue@wi.rr.com.

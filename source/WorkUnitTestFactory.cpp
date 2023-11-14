@@ -23,14 +23,14 @@ WorkUnitTest *WorkUnitTestFactory::BuildWorkUnitTestList(int32_t serverType, wor
 
    wuPrevious = wuFirst;
 
-   if (serverType == ST_TWIN)
+   if (serverType == ST_TWIN || serverType == ST_TWINANDSOPHIE)
    {
       wuNext = new TwinWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory);
       wuPrevious->SetNextWorkUnitTest(wuNext);
       wuPrevious = wuNext;
    }
 
-   if (serverType == ST_SOPHIEGERMAIN)
+   if (serverType == ST_SOPHIEGERMAIN || serverType == ST_TWINANDSOPHIE)
    {
       wuNext = new SophieGermainWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory, SG_NM1);
       wuPrevious->SetNextWorkUnitTest(wuNext);
@@ -53,7 +53,7 @@ void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType,
 
    wu->m_FirstWorkUnitTest = NULL;
    line = new char[BUFFER_SIZE];
-   snprintf(endWorkUnit, 100, "End WorkUnit %" PRId64" %s", wu->l_TestID, wu->s_Name);
+   snprintf(endWorkUnit, 100, "End WorkUnit %" PRIu64" %s", wu->l_TestID, wu->s_Name);
 
    while (fgets(line, BUFFER_SIZE, saveFile) != NULL)
    {

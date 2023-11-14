@@ -23,6 +23,7 @@ ServerHelper  *ServerHelperFactory::GetServerHelper(globals_t *globals, DBInterf
       case ST_CYCLOTOMIC:
       case ST_CAROLKYNEA:
       case ST_WAGSTAFF:
+      case ST_TWINANDSOPHIE:
          serverHelper = new PrimeServerHelper(dbInterface, globals->p_Log);
          break;
 

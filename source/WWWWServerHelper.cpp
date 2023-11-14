@@ -104,7 +104,7 @@ void  WWWWServerHelper::ExpireTests(bool canExpire, int32_t delayCount, delay_t 
 
          if (updateStatement->Execute() && deleteStatement->Execute())
          {
-            ip_Log->LogMessage("Test of %" PRId64" for email %s / machine %s / instance %s has expired.",
+            ip_Log->LogMessage("Test of %" PRIu64" for email %s / machine %s / instance %s has expired.",
                                           lowerLimit, emailID, machineID, instanceID);
             ip_DBInterface->Commit();
          }

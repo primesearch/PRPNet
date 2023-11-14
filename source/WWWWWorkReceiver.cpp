@@ -86,7 +86,7 @@ int32_t  WWWWWorkReceiver::ReceiveWorkUnit(string theMessage)
                               "   and TestID = ? ";
    
    strcpy(tempMessage, theMessage.c_str());
-   if (sscanf(tempMessage, "WorkUnit: %" PRId64" %" PRId64" %" PRId64"",
+   if (sscanf(tempMessage, "WorkUnit: %" PRIu64" %" PRIu64" %" PRIu64"",
                            &lowerLimit, &upperLimit, &testID) != 3)
    {
       ip_Socket->Send("ERROR: Could not parse WorkUnit [%s]", theMessage.c_str());
@@ -101,7 +101,7 @@ int32_t  WWWWWorkReceiver::ReceiveWorkUnit(string theMessage)
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
-   snprintf(name, 60, "range %" PRId64":%" PRId64"", lowerLimit, upperLimit);
+   snprintf(name, 60, "range %" PRIu64":%" PRIu64"", lowerLimit, upperLimit);
 
    // Verify whether or not the test exists.  It might have expired or the client
    // might be trying to send bad results.
@@ -111,7 +111,7 @@ int32_t  WWWWWorkReceiver::ReceiveWorkUnit(string theMessage)
       // the server expired the test or if the client reporting to the wrong server.
       // The client has checks for the latter and SQL errors are extremely unlikely,
       // so this most likely will happen because the test had expired.
-      ip_Socket->Send("INFO: Test was ignored.  Range %" PRId64":%" PRId64" was not found", lowerLimit, upperLimit);
+      ip_Socket->Send("INFO: Test was ignored.  Range %" PRIu64":%" PRIu64" was not found", lowerLimit, upperLimit);
       ip_Log->LogMessage("%s (%s): Test for %s was not found",
                             is_EmailID.c_str(), is_MachineID.c_str(), name);
       return false;
@@ -253,7 +253,7 @@ int32_t  WWWWWorkReceiver::ProcessWorkUnit(int64_t lowerLimit, int64_t upperLimi
          // result for the test.
          if (strstr(theMessage, ":"))
          {
-            if (sscanf(theMessage, "End of WorkUnit: %" PRId64" %" PRId64" %" PRId64"", &endLowerLimit, &endUpperLimit, &endTestID) != 3)
+            if (sscanf(theMessage, "End of WorkUnit: %" PRIu64" %" PRIu64" %" PRIu64"", &endLowerLimit, &endUpperLimit, &endTestID) != 3)
                return CT_BAD_TERMINATOR;
 
             if (endLowerLimit != lowerLimit || endUpperLimit != upperLimit || endTestID != testID)
@@ -268,7 +268,7 @@ int32_t  WWWWWorkReceiver::ProcessWorkUnit(int64_t lowerLimit, int64_t upperLimi
          abandoned = true;
       else if (!memcmp(theMessage, "Stats: ", 7))
       {
-         if (sscanf(theMessage+7, "%s %s %" PRId64" %s %lf", ic_Program, ic_ProgramVersion, &primesTested, checkSum, &secondsToTestRange) != 5)
+         if (sscanf(theMessage+7, "%s %s %" PRIu64" %s %lf", ic_Program, ic_ProgramVersion, &primesTested, checkSum, &secondsToTestRange) != 5)
          {
             ip_Log->LogMessage("%d: Could not parse [%s]", ip_Socket->GetSocketID(), theMessage);
             return CT_PARSE_ERROR;
@@ -282,7 +282,7 @@ int32_t  WWWWWorkReceiver::ProcessWorkUnit(int64_t lowerLimit, int64_t upperLimi
       }
       else if (!memcmp(theMessage, "Found: ", 7))
       {
-         if (sscanf(theMessage+7, "%" PRId64" %d %d", &prime, &remainder, &quotient) != 3)
+         if (sscanf(theMessage+7, "%" PRIu64" %d %d", &prime, &remainder, &quotient) != 3)
          {
             ip_Log->LogMessage("%d: Could not parse [%s]", ip_Socket->GetSocketID(), theMessage);
             return CT_PARSE_ERROR;
@@ -433,12 +433,12 @@ void     WWWWWorkReceiver::LogResults(int64_t lowerLimit, int64_t upperLimit, in
    Log     *testLog;
 
    if (ib_BriefTestLog)
-      ip_Log->TestMessage("%d: %" PRId64":%" PRId64" received by %s/%s/%s/%s/%s",
+      ip_Log->TestMessage("%d: %" PRIu64":%" PRIu64" received by %s/%s/%s/%s/%s",
                           ip_Socket->GetSocketID(), lowerLimit, upperLimit,
                           is_EmailID.c_str(), is_UserID.c_str(),
                           is_MachineID.c_str(), is_InstanceID.c_str(), ic_Program);
    else
-      ip_Log->TestMessage("%d: %" PRId64":%" PRId64" received by Email: %s  User: %s  Machine: %s  Instance: %s  Program: %s",
+      ip_Log->TestMessage("%d: %" PRIu64":%" PRIu64" received by Email: %s  User: %s  Machine: %s  Instance: %s  Program: %s",
                           ip_Socket->GetSocketID(), lowerLimit, upperLimit,
                           is_EmailID.c_str(), is_UserID.c_str(),
                           is_MachineID.c_str(), is_InstanceID.c_str(), ic_Program);
@@ -446,9 +446,9 @@ void     WWWWWorkReceiver::LogResults(int64_t lowerLimit, int64_t upperLimit, in
    testLog = new Log(0, "completed_tests.log", 0, false);
 
    if (finds + nearFinds == 0)
-      testLog->LogMessage("%" PRId64":%" PRId64": Nothing found", lowerLimit, upperLimit);
+      testLog->LogMessage("%" PRIu64":%" PRIu64": Nothing found", lowerLimit, upperLimit);
    else
-      testLog->LogMessage("%" PRId64":%" PRId64": %d finds", lowerLimit, upperLimit, finds + nearFinds);
+      testLog->LogMessage("%" PRIu64":%" PRIu64": %d finds", lowerLimit, upperLimit, finds + nearFinds);
 
    delete testLog;
 }
@@ -514,15 +514,15 @@ bool     WWWWWorkReceiver::ProcessFind(int64_t lowerLimit, int64_t upperLimit, i
    findLog = new Log(0, "wwww_finds.log", 0, false);
 
    if (!remainder && !quotient)
-      findLog->LogMessage("%" PRId64" found by user %s on machine %s, instance %s",
+      findLog->LogMessage("%" PRIu64" found by user %s on machine %s, instance %s",
                           prime, is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
    else
    {
       if (ii_ServerType == ST_WALLSUNSUN)
-         findLog->LogMessage("%" PRId64" (0 %+d p) found by user %s on machine %s, instance %s",
+         findLog->LogMessage("%" PRIu64" (0 %+d p) found by user %s on machine %s, instance %s",
                              prime, quotient, is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
       else
-         findLog->LogMessage("%" PRId64" (%+d %+d p) found by user %s on machine %s, instance %s",
+         findLog->LogMessage("%" PRIu64" (%+d %+d p) found by user %s on machine %s, instance %s",
                              prime, remainder, quotient, is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
    }
 

@@ -133,13 +133,13 @@ bool     PrimeWorker::GetWork(void)
          if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
          {
             toScan = 4;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %" PRId64"",
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %d",
                wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_c);
          }
          if (ii_ServerType == ST_MULTIFACTORIAL)
          {
             toScan = 5;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %" PRId64"",
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %d",
                wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n, &wu->i_c);
          }
          else if (ii_ServerType == ST_GFN)
@@ -147,21 +147,21 @@ bool     PrimeWorker::GetWork(void)
             toScan = 4;
             wu->l_k = 1;
             wu->i_c = 1;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRId64" %u %u",
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u",
                wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n);
          }
          else if (ii_ServerType == ST_CYCLOTOMIC)
          {
             toScan = 5;
             wu->i_c = 1;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRId64" %d %u",
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %d %u",
                wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n);
          }
          else if (ii_ServerType == ST_XYYX)
          {
             toScan = 5;
             wu->l_k = 1;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %" PRId64"",
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %d",
                wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n, &wu->i_c);
          }
          else if (ii_ServerType == ST_WAGSTAFF)
@@ -187,14 +187,14 @@ bool     PrimeWorker::GetWork(void)
          else if (ii_ServerType == ST_FIXEDBKC || ii_ServerType == ST_FIXEDBNC)
          {
             toScan = 7;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %" PRId64" %u",
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %d %u",
                wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, &wu->i_d);
          }
          else
          {
             wu->i_d = 1;
             toScan = 6;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %" PRId64"",
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %d",
                wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c);
          }
          if (toScan == wasScanned)
@@ -361,7 +361,7 @@ void  PrimeWorker::Save(FILE *fPtr)
    ip_FirstWorkUnit = 0;
    while (wu)
    {
-      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %+" PRId64" %d %d %" PRId64" %d %d\n",
+      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %+d %d %d\n",
          wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->i_c, wu->b_SRSkipped, wu->i_DecimalLength);
 
       wuNext = (workunit_t *) wu->m_NextWorkUnit;
@@ -413,7 +413,7 @@ void  PrimeWorker::Load(string saveFileName)
 
          wu = new workunit_t;
          wu->m_FirstWorkUnitTest = 0;
-         countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRId64" %d %d %" PRId64" %d %d",
+         countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %d %d %d",
             &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, (int *) &wu->b_SRSkipped, &wu->i_DecimalLength);
 
          if (countScanned == 7)

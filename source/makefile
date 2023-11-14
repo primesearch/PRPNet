@@ -48,7 +48,7 @@ CLIENTOBJECTS=prpclient.o Log.o Socket.o ClientSocket.o SharedMemoryItem.o \
 SERVEROBJECTS=prpserver.o Log.o ABCParser.o LengthCalculator.o \
    $(DBOBJECTS) $(THREADOBJECTS) $(HTMLOBJECTS) $(STATSOBJECTS) $(SOCKETOBJECTS) $(HELPEROBJECTS) $(MAILOBJECTS)
 
-all:  prpclient prpserver
+all:  prpclient prpserver prpadmin
 
 prpclient.o: prpclient.cpp defs.h Log.h Socket.h Worker.h
 	$(CC) $(CPPFLAGS) prpclient.cpp
@@ -84,4 +84,4 @@ clean_objs:
 	rm -f $(ADMINOBJECTS) $(CLIENTOBJECTS) $(SERVEROBJECTS) *.log
    
 clean:
-	rm *.o prpclient prpserver prpadmin
+	rm -f *.o prpclient prpserver prpadmin

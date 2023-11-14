@@ -47,6 +47,7 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 
       case ST_FIXEDBNC:
       case ST_TWIN:
+      case ST_TWINANDSOPHIE:
          htmlGenerator = new FixedBNCHTML(globals);
          break;
 

@@ -63,7 +63,7 @@ void FixedBKCHTML::ServerStats(void)
       if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<th scope=\"row\">%" PRId64"*%d^<var>n</var>%+d</th>", k, b, c);
+      ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);

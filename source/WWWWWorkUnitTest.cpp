@@ -61,13 +61,13 @@ bool  WWWWWorkUnitTest::TestWorkUnit(WorkUnitTest *masterWorkUnit)
    is_Checksum = testingProgram->GetChecksum();
 
    testLog = new Log(0, "test_results.log", 0, false);
-   testLog->LogMessage("Server: %s, Range: %" PRId64":%" PRId64"  Program: %s  Checksum: %s  Time: %.0lf seconds",
+   testLog->LogMessage("Server: %s, Range: %" PRIu64":%" PRIu64"  Program: %s  Checksum: %s  Time: %.0lf seconds",
                         is_WorkSuffix.c_str(), il_LowerLimit, il_UpperLimit, is_Program.c_str(), is_Checksum.c_str(), id_Seconds);
 
    wwwwPtr = ip_FirstWWWW;
    while (wwwwPtr)
    {
-      testLog->LogMessage("Server: %s, Found: %" PRId64" %d %d",
+      testLog->LogMessage("Server: %s, Found: %" PRIu64" %d %d",
                           is_WorkSuffix.c_str(), wwwwPtr->l_Prime, wwwwPtr->i_Remainder, wwwwPtr->i_Quotient);
       wwwwPtr = (wwww_t *) wwwwPtr->m_NextWWWW;
    }
@@ -83,7 +83,7 @@ void  WWWWWorkUnitTest::SendResults(Socket *theSocket)
    wwwwPtr = ip_FirstWWWW;
    while (wwwwPtr)
    {
-      theSocket->Send("Found: %" PRId64" %d %d", wwwwPtr->l_Prime, wwwwPtr->i_Remainder, wwwwPtr->i_Quotient);
+      theSocket->Send("Found: %" PRIu64" %d %d", wwwwPtr->l_Prime, wwwwPtr->i_Remainder, wwwwPtr->i_Quotient);
       wwwwPtr = (wwww_t *) wwwwPtr->m_NextWWWW;
    }
 }
@@ -92,7 +92,7 @@ void     WWWWWorkUnitTest::Save(FILE *saveFile)
 {
    wwww_t   *wwwwPtr;
 
-   fprintf(saveFile, "%" PRId64" %" PRId64": %s %s %d %lf %" PRId64" %s %d\n",
+   fprintf(saveFile, "%" PRIu64" %" PRIu64": %s %s %d %lf %" PRIu64" %s %d\n",
            il_LowerLimit, il_UpperLimit, is_Program.c_str(), is_ProgramVersion.c_str(),
            iwut_State, id_Seconds, il_PrimesTested, is_Checksum.c_str(), (ip_FirstWWWW ? 1 : 0));
 
@@ -102,7 +102,7 @@ void     WWWWWorkUnitTest::Save(FILE *saveFile)
    wwwwPtr = ip_FirstWWWW;
    while (wwwwPtr)
    {
-      fprintf(saveFile, "WWWW: %" PRId64" %+d %+d\n", wwwwPtr->l_Prime, wwwwPtr->i_Remainder, wwwwPtr->i_Quotient);
+      fprintf(saveFile, "WWWW: %" PRIu64" %+d %+d\n", wwwwPtr->l_Prime, wwwwPtr->i_Remainder, wwwwPtr->i_Quotient);
       wwwwPtr = (wwww_t *) wwwwPtr->m_NextWWWW;
    }
 
@@ -121,7 +121,7 @@ void     WWWWWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
    strcpy(tempLine, lineIn.c_str());
    ptr = strstr(tempLine, ": ");
 
-   countScanned = sscanf(ptr+2, "%s %s %d %lf %" PRId64" %s %d",
+   countScanned = sscanf(ptr+2, "%s %s %d %lf %" PRIu64" %s %d",
               program, programVersion, (int *) &iwut_State, &id_Seconds, &il_PrimesTested, Checksum, &hasWWWWs);
 
    if (countScanned != 7)
@@ -154,7 +154,7 @@ void     WWWWWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
       else
          wwwwPrevious->m_NextWWWW = wwwwNext;
     
-      if (sscanf(line+6, "%" PRId64" %d %d", &wwwwNext->l_Prime, &wwwwNext->i_Remainder, &wwwwNext->i_Quotient) != 3)
+      if (sscanf(line+6, "%" PRIu64" %d %d", &wwwwNext->l_Prime, &wwwwNext->i_Remainder, &wwwwNext->i_Quotient) != 3)
       {
          printf("Unable to scan line [%s] from save file.  Exiting\n", line);
          exit(-1);
@@ -173,5 +173,5 @@ void     WWWWWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
 void     WWWWWorkUnitTest::LogMessage(WorkUnitTest *masterWorkUnit)
 {
    if (iwut_State == WUT_COMPLETED)
-      ip_Log->LogMessage("%s: Range %" PRId64" to %" PRId64" completed", is_WorkSuffix.c_str(), il_LowerLimit, il_UpperLimit);
+      ip_Log->LogMessage("%s: Range %" PRIu64" to %" PRIu64" completed", is_WorkSuffix.c_str(), il_LowerLimit, il_UpperLimit);
 }

@@ -11,9 +11,9 @@ SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t server
    ii_b = wu->i_b;
 
    if (sgType == SG_NM1)
-      ii_n = wu->i_n + 1;
-   else
       ii_n = wu->i_n - 1;
+   else
+      ii_n = wu->i_n + 1;
 
    ii_c = wu->i_c;
    isg_Type = sgType;
@@ -25,7 +25,7 @@ SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t server
       exit(0);
    }
 
-   snprintf(tempName, 200, "%" PRId64"*%d^%d%+" PRId64"", il_k, ii_b, ii_n, ii_c);
+   snprintf(tempName, 200, "%" PRIu64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
    is_ChildName = tempName;
 }
 

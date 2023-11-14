@@ -18,7 +18,7 @@ TwinWorkUnitTest::TwinWorkUnitTest(Log *theLog, int32_t serverType, string workS
       exit(0);
    }
 
-   snprintf(tempName, 200, "%" PRId64"*%d^%d%+" PRId64"", il_k, ii_b, ii_n, ii_c);
+   snprintf(tempName, 200, "%" PRIu64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
    is_ChildName = tempName;
 }
 

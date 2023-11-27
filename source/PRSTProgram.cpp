@@ -14,7 +14,7 @@ testresult_t   PRSTProgram::Execute(testtype_t testType)
 
    unlink("result.txt");
 
-   if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
+   if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL || (testType == TT_PRP && !IsPerformingProthTest()))
       snprintf(command, 100, "%s %s -d -fermat %s", is_ExeName.c_str(), is_ExeArguments.c_str(), is_WorkUnitName.c_str());
    else
       snprintf(command, 100, "%s %s -d \"%s\"", is_ExeName.c_str(), is_ExeArguments.c_str(), is_WorkUnitName.c_str());
@@ -177,5 +177,22 @@ void  PRSTProgram::DetermineVersion(void)
    if (is_ProgramVersion.size() == 0) {
       printf("Could not determine version of PRST being used.  Missing version data\n");
       exit(0);
+   }
+}
+
+bool  PRSTProgram::IsPerformingProthTest(void)
+{
+   switch (ii_ServerType) {
+      case ST_SIERPINSKIRIESEL:
+      case ST_CULLENWOODALL:
+      case ST_FIXEDBKC:
+      case ST_FIXEDBNC:
+      case ST_TWIN:
+      case ST_TWINANDSOPHIE:
+         return (ii_b == 2 && ii_c == 1);
+
+      default:
+       return false;
+
    }
 }

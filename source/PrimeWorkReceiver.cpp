@@ -225,6 +225,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    int64_t   theK;
    int32_t   theB, theC, theN;
    double    decimalLength;
+   int32_t   numberOfPRPs = 0, numberOfPrimes = 0;
    SQLStatement *sqlStatement;
    const char *selectSQL = "select CompletedTests, DecimalLength, k, b, n, c " \
                            "  from Candidate " \
@@ -291,7 +292,8 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
             wasParsed = ip_TestResult[ii_TestResults-1]->ProcessChildMessage(theMessage);
             if (BadProgramVersion(ip_TestResult[ii_TestResults-1]->GetProgramVersion()))
             {
-               ip_Log->LogMessage("%d: Obsolete version (%s) of program (%s) used: [%s]", ip_Socket->GetSocketID(), ip_TestResult[ii_TestResults-1]->GetProgramVersion().c_str(), ip_TestResult[ii_TestResults-1]->GetProgram().c_str(), theMessage);
+               ip_Log->LogMessage("%d: Obsolete version (%s) of program (%s) used: [%s]", ip_Socket->GetSocketID(), 
+                  ip_TestResult[ii_TestResults-1]->GetProgramVersion().c_str(), ip_TestResult[ii_TestResults-1]->GetProgram().c_str(), theMessage);
                obsolete = true;
             }
          }
@@ -363,6 +365,14 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
 
    if (!success) return CT_SQL_ERROR;
 
+   for (ii = 0; ii < ii_TestResults; ii++)
+   {
+      if (ip_TestResult[ii]->GetTestResult() == R_PRP)
+         numberOfPRPs++;
+      else if (ip_TestResult[ii]->GetTestResult() == R_PRIME)
+         numberOfPrimes++;
+   }
+
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateTestSQL);
    sqlStatement->BindInputParameter(is_TeamID, ID_LENGTH);
    sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
@@ -392,7 +402,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
 
    if (!success) return CT_SQL_ERROR;
 
-   success = ((PrimeStatsUpdater *) ip_StatsUpdater)->UpdateStats(is_UserID, is_TeamID, candidateName, decimalLength, mainTestResult, gfnDivisorCount);
+   success = ((PrimeStatsUpdater *) ip_StatsUpdater)->UpdateStats(is_UserID, is_TeamID, candidateName, decimalLength, mainTestResult, gfnDivisorCount, numberOfPRPs, numberOfPrimes);
 
    if (!success) return CT_SQL_ERROR;
 

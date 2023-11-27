@@ -58,7 +58,7 @@ create table UserPrimes (
    b                       unsigned int,
    n                       unsigned int,
    c                       int,
-   primary key (UserID, TestedNumber)
+   primary key (UserID, CandidateName, TestedNumber)
 ) ENGINE=InnoDB;
 
 create table UserTeamStats (

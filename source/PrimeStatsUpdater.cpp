@@ -10,8 +10,10 @@ bool  PrimeStatsUpdater::RollupUserStats(void)
    const char *deleteSQL = "delete from UserStats";
    const char *insertSQL = "insert into UserStats (UserID) (select distinct UserID from CandidateTest);";
    const char *updateSQL = "update UserStats " \
-                           "   set TestsPerformed = (select count(*) from CandidateTest " \
-                           "                          where UserID = UserStats.UserID), " \
+                           "   set TestsPerformed = (select count(*) from CandidateTest, CandidateTestResult " \
+                           "                          where CandidateTest.UserID = UserStats.UserID " \
+                           "                            and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
+                           "                            and CandidateTest.TestID = CandidateTestResult.TestID), " \
                            "       PRPsFound = (select count(*) from UserPrimes " \
                            "                     where UserPrimes.UserID = UserStats.UserID " \
                            "                       and TestResult = 1), " \
@@ -53,8 +55,10 @@ bool  PrimeStatsUpdater::RollupTeamStats(void)
    const char *deleteSQL = "delete from TeamStats";
    const char *insertSQL = "insert into TeamStats (TeamID) (select distinct TeamID from CandidateTest)";
    const char *updateSQL = "update TeamStats " \
-                           "   set TestsPerformed = (select count(*) from CandidateTest " \
-                           "                          where TeamID = TeamStats.TeamID), " \
+                           "   set TestsPerformed = (select count(*) from CandidateTest, CandidateTestResult " \
+                           "                          where CandidateTest.TeamID = TeamStats.TeamID " \
+                           "                            and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
+                           "                            and CandidateTest.TestID = CandidateTestResult.TestID), " \
                            "       PRPsFound = (select count(*) from UserPrimes " \
                            "                     where UserPrimes.TeamID = TeamStats.TeamID " \
                            "                       and TestResult = 1), " \
@@ -64,9 +68,12 @@ bool  PrimeStatsUpdater::RollupTeamStats(void)
                            "       GFNDivisorsFound = (select count(*) from CandidateGFNDivisor " \
                            "                            where TeamID = TeamStats.TeamID), " \
                            "       TotalScore = (select SUM((DecimalLength / 10000.0)* (DecimalLength / 10000.0)) " \
-                           "                       from Candidate, CandidateTest " \
+                           "                       from Candidate, CandidateTest, CandidateTestResult " \
                            "                      where CandidateTest.TeamID = TeamStats.TeamID " \
-                           "                        and CandidateTest.CandidateName = Candidate.CandidateName)";
+                           "                        and CandidateTest.CandidateName = Candidate.CandidateName " \
+                           "                        and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
+                           "                        and CandidateTest.TestID = CandidateTestResult.TestID)";
+
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteSQL);
    success = sqlStatement->Execute();
@@ -96,9 +103,10 @@ bool  PrimeStatsUpdater::RollupUserTeamStats(void)
    const char *deleteSQL = "delete from UserTeamStats";
    const char *insertSQL = "insert into UserTeamStats (UserID, TeamID) (select distinct UserID, TeamID from CandidateTest)";
    const char *updateSQL = "update UserTeamStats " \
-                           "   set TestsPerformed = (select count(*) from CandidateTest " \
-                           "                          where UserID = UserTeamStats.UserID " \
-		                     "                            and TeamID = UserTeamStats.TeamID), " \
+                           "   set TestsPerformed = (select count(*) from CandidateTest, CandidateTestResult " \
+                           "                          where CandidateTest.TeamID = TeamStats.TeamID " \
+                           "                            and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
+                           "                            and CandidateTest.TestID = CandidateTestResult.TestID), " \
                            "       PRPsFound = (select count(*) from UserPrimes " \
                            "                     where UserPrimes.TeamID = UserTeamStats.TeamID " \
                            "                       and UserPrimes.UserID = UserTeamStats.UserID " \
@@ -111,10 +119,11 @@ bool  PrimeStatsUpdater::RollupUserTeamStats(void)
                            "                            where UserID = UserTeamStats.UserID " \
                            "                              and TeamID = UserTeamStats.TeamID), " \
                            "       TotalScore = (select SUM((DecimalLength / 10000.0)* (DecimalLength / 10000.0)) " \
-                           "                       from Candidate, CandidateTest " \
-                           "                      where CandidateTest.TeamID = UserTeamStats.TeamID " \
-                           "                        and CandidateTest.UserID = UserTeamStats.UserID " \
-                           "                        and CandidateTest.CandidateName = Candidate.CandidateName)";
+                           "                       from Candidate, CandidateTest, CandidateTestResult " \
+                           "                      where CandidateTest.TeamID = TeamStats.TeamID " \
+                           "                        and CandidateTest.CandidateName = Candidate.CandidateName " \
+                           "                        and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
+                           "                        and CandidateTest.TestID = CandidateTestResult.TestID)";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteSQL);
    success = sqlStatement->Execute();
@@ -140,22 +149,24 @@ bool  PrimeStatsUpdater::UpdateStats(string   userID,
                                      string   teamID,
                                      string   candidateName,
                                      double   decimalLength,
-                                     result_t testResult,
-                                     int32_t  gfnDivisors)
+                                     int32_t  gfnDivisors,
+                                     int32_t  numberOfTests,
+                                     int32_t  numberOfPRPs,
+                                     int32_t  numberOfPrimes)
 {
    bool  success;
 
-   success = UpdateUserStats(userID, decimalLength, testResult, gfnDivisors);
+   success = UpdateUserStats(userID, decimalLength, gfnDivisors, numberOfTests, numberOfPRPs, numberOfPrimes);
 
    if (!success) return false;
 
    if (teamID != NO_TEAM)
    {
-      success = UpdateUserTeamStats(userID, teamID, decimalLength, testResult, gfnDivisors);
+      success = UpdateUserTeamStats(userID, teamID, decimalLength, gfnDivisors, numberOfTests, numberOfPRPs, numberOfPrimes);
 
       if (!success) return false;
 
-      success = UpdateTeamStats(teamID, decimalLength, testResult, gfnDivisors);
+      success = UpdateTeamStats(teamID, decimalLength, gfnDivisors, numberOfTests, numberOfPRPs, numberOfPrimes);
 
       if (!success) return false;
    }
@@ -167,8 +178,10 @@ bool  PrimeStatsUpdater::UpdateStats(string   userID,
 // that all other updates have been committed before calling this function.
 bool  PrimeStatsUpdater::UpdateUserStats(string   userID,
                                          double   decimalLength,
-                                         result_t testResult,
-                                         int32_t  gfnDivisors)
+                                         int32_t  gfnDivisors,
+                                         int32_t  numberOfTests,
+                                         int32_t  numberOfPRPs,
+                                         int32_t  numberOfPrimes)
 {
    SQLStatement *sqlStatement;
    double      testScore;
@@ -178,9 +191,9 @@ bool  PrimeStatsUpdater::UpdateUserStats(string   userID,
                              " where UserID = ?";
    const char *insertSQL = "insert into UserStats " \
                            "( UserId, TestsPerformed, PRPsFound, PrimesFound, GFNDivisorsFound, TotalScore ) " \
-                           "values ( ?,1,?,?,?,? )";
+                           "values ( ?,?,?,?,?,? )";
    const char *updateSQL = "update UserStats " \
-                           "   set TestsPerformed     = TestsPerformed + 1, " \
+                           "   set TestsPerformed     = TestsPerformed + ?, " \
                            "       PRPsFound          = PRPsFound + ?, " \
                            "       PrimesFound        = PrimesFound + ?, " \
                            "       GFNDivisorsFound   = GFNDivisorsFound + ?, " \
@@ -200,21 +213,24 @@ bool  PrimeStatsUpdater::UpdateUserStats(string   userID,
    testScore = (double) decimalLength;
    testScore /= 10000.0;
    testScore *= testScore;
+   testScore *= numberOfTests;
 
    if (rowCount == 0)
    {
       sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, insertSQL);
       sqlStatement->BindInputParameter(userID, ID_LENGTH);
-      sqlStatement->BindInputParameter((testResult == R_PRP));
-      sqlStatement->BindInputParameter((testResult == R_PRIME));
+      sqlStatement->BindInputParameter(numberOfTests);
+      sqlStatement->BindInputParameter(numberOfPRPs);
+      sqlStatement->BindInputParameter(numberOfPrimes);
       sqlStatement->BindInputParameter(gfnDivisors);
       sqlStatement->BindInputParameter(testScore);
    }
    else
    {
       sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL);
-      sqlStatement->BindInputParameter((testResult == R_PRP));
-      sqlStatement->BindInputParameter((testResult == R_PRIME));
+      sqlStatement->BindInputParameter(numberOfTests);
+      sqlStatement->BindInputParameter(numberOfPRPs);
+      sqlStatement->BindInputParameter(numberOfPrimes);
       sqlStatement->BindInputParameter(gfnDivisors);
       sqlStatement->BindInputParameter(testScore);
       sqlStatement->BindInputParameter(userID, ID_LENGTH);
@@ -232,8 +248,10 @@ bool  PrimeStatsUpdater::UpdateUserStats(string   userID,
 bool  PrimeStatsUpdater::UpdateUserTeamStats(string   userID,
                                              string   teamID,
                                              double   decimalLength,
-                                             result_t testResult,
-                                             int32_t  gfnDivisors)
+                                             int32_t  gfnDivisors,
+                                             int32_t  numberOfTests,
+                                             int32_t  numberOfPRPs,
+                                             int32_t  numberOfPrimes)
 {
    SQLStatement *sqlStatement;
    double      testScore;
@@ -244,9 +262,9 @@ bool  PrimeStatsUpdater::UpdateUserTeamStats(string   userID,
 		                       "   and TeamID = ?";
    const char *insertSQL = "insert into UserTeamStats " \
                            "( UserId, TeamID, TestsPerformed,PRPsFound, PrimesFound, GFNDivisorsFound, TotalScore ) " \
-                           "values ( ?,?,1,?,?,?,? )";
+                           "values ( ?,?,?,?,?,?,? )";
    const char *updateSQL = "update UserTeamStats " \
-                           "   set TestsPerformed     = TestsPerformed + 1, " \
+                           "   set TestsPerformed     = TestsPerformed + ?, " \
                            "       PRPsFound          = PRPsFound + ?, " \
                            "       PrimesFound        = PrimesFound + ?, " \
                            "       GFNDivisorsFound   = GFNDivisorsFound + ?, " \
@@ -270,22 +288,25 @@ bool  PrimeStatsUpdater::UpdateUserTeamStats(string   userID,
    testScore = (double) decimalLength;
    testScore /= 10000.0;
    testScore *= testScore;
+   testScore *= numberOfTests;
 
    if (rowCount == 0)
    {
       sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, insertSQL);
       sqlStatement->BindInputParameter(userID, ID_LENGTH);
       sqlStatement->BindInputParameter(teamID, ID_LENGTH);
-      sqlStatement->BindInputParameter((testResult == R_PRP));
-      sqlStatement->BindInputParameter((testResult == R_PRIME));
+      sqlStatement->BindInputParameter(numberOfTests);
+      sqlStatement->BindInputParameter(numberOfPRPs);
+      sqlStatement->BindInputParameter(numberOfPrimes);
       sqlStatement->BindInputParameter(gfnDivisors);
       sqlStatement->BindInputParameter(testScore);
    }
    else
    {
       sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL);
-      sqlStatement->BindInputParameter((testResult == R_PRP));
-      sqlStatement->BindInputParameter((testResult == R_PRIME));
+      sqlStatement->BindInputParameter(numberOfTests);
+      sqlStatement->BindInputParameter(numberOfPRPs);
+      sqlStatement->BindInputParameter(numberOfPrimes);
       sqlStatement->BindInputParameter(gfnDivisors);
       sqlStatement->BindInputParameter(testScore);
       sqlStatement->BindInputParameter(userID, ID_LENGTH);
@@ -303,8 +324,10 @@ bool  PrimeStatsUpdater::UpdateUserTeamStats(string   userID,
 // that all other updates have been committed before calling this function.
 bool  PrimeStatsUpdater::UpdateTeamStats(string   teamID,
                                          double   decimalLength,
-                                         result_t testResult,
-                                         int32_t  gfnDivisors)
+                                         int32_t  gfnDivisors,
+                                         int32_t  numberOfTests,
+                                         int32_t  numberOfPRPs,
+                                         int32_t  numberOfPrimes)
 {
    SQLStatement *sqlStatement;
    double      testScore;
@@ -314,9 +337,9 @@ bool  PrimeStatsUpdater::UpdateTeamStats(string   teamID,
                              " where TeamID = ?";
    const char *insertSQL = "insert into TeamStats " \
                            "( TeamID, TestsPerformed, PRPsFound, PrimesFound, GFNDivisorsFound, TotalScore ) " \
-                           "values ( ?,1,?,?,?,? )";
+                           "values ( ?,?,?,?,?,? )";
    const char *updateSQL = "update TeamStats " \
-                           "   set TestsPerformed     = TestsPerformed + 1, " \
+                           "   set TestsPerformed     = TestsPerformed + ?, " \
                            "       PRPsFound          = PRPsFound + ?, " \
                            "       PrimesFound        = PrimesFound + ?, " \
                            "       GFNDivisorsFound   = GFNDivisorsFound + ?, " \
@@ -338,21 +361,24 @@ bool  PrimeStatsUpdater::UpdateTeamStats(string   teamID,
    testScore = (double) decimalLength;
    testScore /= 10000.0;
    testScore *= testScore;
+   testScore *= numberOfTests;
 
    if (rowCount == 0)
    {
       sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, insertSQL);
       sqlStatement->BindInputParameter(teamID, ID_LENGTH);
-      sqlStatement->BindInputParameter((testResult == R_PRP));
-      sqlStatement->BindInputParameter((testResult == R_PRIME));
+      sqlStatement->BindInputParameter(numberOfTests);
+      sqlStatement->BindInputParameter(numberOfPRPs);
+      sqlStatement->BindInputParameter(numberOfPrimes);
       sqlStatement->BindInputParameter(gfnDivisors);
       sqlStatement->BindInputParameter(testScore);
    }
    else
    {
       sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL);
-      sqlStatement->BindInputParameter((testResult == R_PRP));
-      sqlStatement->BindInputParameter((testResult == R_PRIME));
+      sqlStatement->BindInputParameter(numberOfTests);
+      sqlStatement->BindInputParameter(numberOfPRPs);
+      sqlStatement->BindInputParameter(numberOfPrimes);
       sqlStatement->BindInputParameter(gfnDivisors);
       sqlStatement->BindInputParameter(testScore);
       sqlStatement->BindInputParameter(teamID, ID_LENGTH);

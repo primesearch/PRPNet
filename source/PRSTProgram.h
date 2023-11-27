@@ -20,6 +20,8 @@ public:
 
 private:
    testresult_t   ParseTestResults(testtype_t testType);
+
+   bool        IsPerformingProthTest(void);
 };
 
 #endif // #ifndef _PRSTProgram_

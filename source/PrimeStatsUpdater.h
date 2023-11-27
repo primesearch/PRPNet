@@ -20,8 +20,10 @@ public:
                         string   teamID,
                         string   candidateName,
                         double   decimalLength,
-                        result_t testResult,
-                        int32_t  gfnDivisors);
+                        int32_t  gfnDivisors,
+                        int32_t  numberOfTests,
+                        int32_t  numberOfPRPs,
+                        int32_t  numberOfPrimes);
 
 protected:
    bool     RollupUserStats(void);
@@ -30,20 +32,25 @@ protected:
 
    bool     UpdateUserStats(string   userID,
                             double   decimalLength,
-                            result_t testResult,
-                            int32_t  gfnDivisors);
+                            int32_t  gfnDivisors,
+                            int32_t  numberOfTests,
+                            int32_t  numberOfPRPs,
+                            int32_t  numberOfPrimes);
 
    bool     UpdateTeamStats(string   teamID,
                             double   decimalLength,
-                            result_t testResult,
-                            int32_t  gfnDivisors);
+                            int32_t  gfnDivisors,
+                            int32_t  numberOfTests,
+                            int32_t  numberOfPRPs,
+                            int32_t  numberOfPrimes);
 
    bool     UpdateUserTeamStats(string   userID,
                                 string   teamID,
                                 double   decimalLength,
-                                result_t testResult,
-                                int32_t  gfnDivisors);
-
+                                int32_t  gfnDivisors,
+                                int32_t  numberOfTests,
+                                int32_t  numberOfPRPs,
+                                int32_t  numberOfPrimes);
 };
 
 #endif // #ifndef _PrimeStatsUpdater_

@@ -1,10 +1,14 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.6.4:  November 27, 2023 - New Release
+    prpserver:  Change the stats update to account for all tests that are run for a Candidate.
+    prpclient:  Fix issue receiving workunits from the server for Fixed BKC and Fixed BNC.
+
 Version 5.6.3:  November 14, 2023 - New Release
           all:  Change table creation scripts to ensure that k, b, and n are unsigned.
                 Since k is unsigned 64-bit in the server, ensure that all uses are consistent.
                 Since b is unsigned 32-bit in the server, ensure that all uses are consistent.
-                Since b is unsigned 32-bit in the server, ensure that all uses are consistent.
+                Since n is unsigned 32-bit in the server, ensure that all uses are consistent.
                 Since c is signed 32-bit in the server, ensure that all uses are consistent.
                 Added combined Twin/Sophie-Germain server type.
                 

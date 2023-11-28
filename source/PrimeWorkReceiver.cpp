@@ -402,7 +402,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
 
    if (!success) return CT_SQL_ERROR;
 
-   success = ((PrimeStatsUpdater *) ip_StatsUpdater)->UpdateStats(is_UserID, is_TeamID, candidateName, decimalLength, mainTestResult, gfnDivisorCount, numberOfPRPs, numberOfPrimes);
+   success = ((PrimeStatsUpdater *) ip_StatsUpdater)->UpdateStats(is_UserID, is_TeamID, candidateName, decimalLength, gfnDivisorCount, ii_TestResults, numberOfPRPs, numberOfPrimes);
 
    if (!success) return CT_SQL_ERROR;
 

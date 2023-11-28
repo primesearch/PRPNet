@@ -23,9 +23,10 @@ bool  PrimeStatsUpdater::RollupUserStats(void)
                            "       GFNDivisorsFound = (select count(*) from CandidateGFNDivisor " \
                            "                            where UserID = UserStats.UserID), " \
                            "       TotalScore = (select SUM((DecimalLength / 10000.0)* (DecimalLength / 10000.0)) " \
-                           "                       from Candidate, CandidateTest " \
+                           "                       from Candidate, CandidateTest, CandidateTestResult " \
                            "                      where CandidateTest.UserID = UserStats.UserID " \
-                           "                        and CandidateTest.CandidateName = Candidate.CandidateName)";
+                           "                        and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
+                           "                        and CandidateTest.TestID = CandidateTestResult.TestID)";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteSQL);
    success = sqlStatement->Execute();
@@ -104,7 +105,7 @@ bool  PrimeStatsUpdater::RollupUserTeamStats(void)
    const char *insertSQL = "insert into UserTeamStats (UserID, TeamID) (select distinct UserID, TeamID from CandidateTest)";
    const char *updateSQL = "update UserTeamStats " \
                            "   set TestsPerformed = (select count(*) from CandidateTest, CandidateTestResult " \
-                           "                          where CandidateTest.TeamID = TeamStats.TeamID " \
+                           "                          where CandidateTest.TeamID = UserTeamStats.TeamID " \
                            "                            and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
                            "                            and CandidateTest.TestID = CandidateTestResult.TestID), " \
                            "       PRPsFound = (select count(*) from UserPrimes " \
@@ -120,7 +121,7 @@ bool  PrimeStatsUpdater::RollupUserTeamStats(void)
                            "                              and TeamID = UserTeamStats.TeamID), " \
                            "       TotalScore = (select SUM((DecimalLength / 10000.0)* (DecimalLength / 10000.0)) " \
                            "                       from Candidate, CandidateTest, CandidateTestResult " \
-                           "                      where CandidateTest.TeamID = TeamStats.TeamID " \
+                           "                      where CandidateTest.TeamID = UserTeamStats.TeamID " \
                            "                        and CandidateTest.CandidateName = Candidate.CandidateName " \
                            "                        and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
                            "                        and CandidateTest.TestID = CandidateTestResult.TestID)";

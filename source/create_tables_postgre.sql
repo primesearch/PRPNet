@@ -43,7 +43,7 @@ create table UserWWWWs (
    ShowOnWebPage           int
 );
 
-create unique index pk_UserWWWWs on UserStats (UserWWWWs, Prime);
+create unique index pk_UserWWWWs on UserWWWWs (UserID, Prime);
 
 create table UserPrimes (
    UserID                  varchar(200)      not null,
@@ -96,7 +96,7 @@ create table Candidate (
    DecimalLength           double precision,
    CompletedTests          int   default 0   not null,
    HasPendingTest          int   default 0   not null,
-   doubleChecked           int   default 0   not null,
+   DoubleChecked           int   default 0   not null,
    k                       bigint,
    b                       int,
    n                       int,
@@ -161,6 +161,7 @@ create table CandidateGFNDivisor (
    foreign key (CandidateName) references Candidate (CandidateName) on delete restrict
 );
 
+create unique index pk_CandidateGFNDivisor on CandidateGFNDivisor (CandidateName, GFN);
 create index ix_UserID on CandidateGFNDivisor (UserID);
 
 create table GeneferROE (
@@ -194,35 +195,34 @@ create table WWWWRange (
    UpperLimit              bigint            not null,
    CompletedTests          int               default 0 not null,
    HasPendingTest          int               default 0 not null,
-   DoubleChecked           int               default 0 not null
+   DoubleChecked           int               default 0 not null,
+   LastUpdateTime          bigint
 );
 
-create unique index pk_WWWWRange on WWWWRange (LowPrime, HighPrime);
+create unique index pk_WWWWRange on WWWWRange (LowerLimit, UpperLimit);
+create index ix_processed on WWWWRange (CompletedTests, HasPendingTest, DoubleChecked);
 create unique index ix_pendging_range on WWWWRange (HasPendingTest, LowerLimit, UpperLimit);
 
 create table WWWWRangeTest (
    LowerLimit              bigint            not null,
    UpperLimit              bigint            not null,
    TestID                  bigint            not null,
-   IsCompleted             int               default 0 not null,
    EmailID                 varchar(200),
    UserID                  varchar(200),
    MachineID               varchar(200),
    InstanceID              varchar(200),
    TeamID                  varchar(200),
-   EmailSent               int,
-   SecondsToTestRange      double            default 0,
-   SearchingProgram        varchar(50) ,
-   SearchingProgramVersion varchar(50) ,
-   foreign key (LowerLimit, UpperLimit) references WWWWRange (LowerLimit, UpperLimit) on delete restrict,
-   index ix_userid (UserID),
-   index ix_teamid (TeamID)
+   SecondsToTestRange      double precision  default 0,
+   SearchingProgram        varchar(50),
+   SearchingProgramVersion varchar(50),
+   PrimesTested            bigint,
+   CheckSum                varchar(30),
+   foreign key (LowerLimit, UpperLimit) references WWWWRange (LowerLimit, UpperLimit) on delete restrict
 );
 
 create unique index pk_WWWWRangeTest on WWWWRangeTest (LowerLimit, UpperLimit, TestID);
-create index ix_userid on WWWWRangeTest (UserID);
-create index ix_teamid on WWWWRangeTest (TeamID);
-alter table WWWWRange add key ix_pendging_range (HasPendingTest,LowerLimit,UpperLimit);
+create index ix_WWWWRTuserid on WWWWRangeTest (UserID);
+create index ix_WWWWRTteamid on WWWWRangeTest (TeamID);
 
 create table WWWWRangeTestResult (
    LowerLimit              bigint            not null,
@@ -232,10 +232,11 @@ create table WWWWRangeTestResult (
    Remainder               int               not null,
    Quotient                int,
    Duplicate               int               not null,
-   foreign key (LowerLimit, UpperLimit, TestID) references WWWWRangeTest (LowerLimit, UpperLimit, TestID) on delete restrict,
+   EmailSent               int,
+   foreign key (LowerLimit, UpperLimit, TestID) references WWWWRangeTest (LowerLimit, UpperLimit, TestID) on delete restrict
 );
 
-create unique index pk_WWWWTestResult on WWWWTestResult (LowerLimit, UpperLimit, TestID, Prime);
+create unique index pk_WWWWRangeTestResult on WWWWRangeTestResult (LowerLimit, UpperLimit, TestID, Prime);
 
 create table WWWWGroupStats (
    CountInGroup            int               default 0,

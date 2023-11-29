@@ -25,6 +25,7 @@ bool  PrimeStatsUpdater::RollupUserStats(void)
                            "       TotalScore = (select SUM((DecimalLength / 10000.0)* (DecimalLength / 10000.0)) " \
                            "                       from Candidate, CandidateTest, CandidateTestResult " \
                            "                      where CandidateTest.UserID = UserStats.UserID " \
+                           "                        and CandidateTest.CandidateName = Candidate.CandidateName " \
                            "                        and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
                            "                        and CandidateTest.TestID = CandidateTestResult.TestID)";
 

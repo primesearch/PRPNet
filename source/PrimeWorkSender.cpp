@@ -391,48 +391,38 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
       else
          selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2, theK, theB, theC, is_OrderBy.c_str());
 
-	   selectStatement->BindInputParameter(theN);
-
 	   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
 	   selectStatement->BindSelectedColumn(&theN);
 
-	   sentWorkUnits = 0;
-	   theN = 0;
 	   encounteredError = false;
 
-	   while (sentWorkUnits < sendWorkUnits && !encounteredError)
-	   {
-		   // If we haven't sent enough, start over again at the last n for this k/b/c
-		   selectStatement->SetInputParameterValue(theN, true);
+		while (sentWorkUnits < sendWorkUnits && !encounteredError)
+		{
+			// Exit both loops if no rows are selected
+			if (!selectStatement->FetchRow(false)) {
+				encounteredError = true;
+				break;
+			}
 
-		   while (sentWorkUnits < sendWorkUnits && !encounteredError)
-		   {
-			   // Exit both loops if no rows are selected
-			   if (!selectStatement->FetchRow(false)) {
-				   encounteredError = true;
-				   break;
-			   }
+			// Reserve the candidate and send to the client
+			if (ReserveCandidate(candidateName))
+			{
+				ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
 
-			   // Reserve the candidate and send to the client
-			   if (ReserveCandidate(candidateName))
-			   {
-				   ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
+				if (SendWork(candidateName, theK, theB, theN, theC))
+				{
+					sentWorkUnits++;
+					ip_DBInterface->Commit();
+				}
+				else
+				{
+					ip_DBInterface->Rollback();
+					encounteredError = true;
+				}
+			}
+		}
 
-				   if (SendWork(candidateName, theK, theB, theN, theC))
-				   {
-					   sentWorkUnits++;
-					   ip_DBInterface->Commit();
-				   }
-				   else
-				   {
-					   ip_DBInterface->Rollback();
-					   encounteredError = true;
-				   }
-			   }
-		   }
-
-		   selectStatement->CloseCursor();
-	   }
+		selectStatement->CloseCursor();
        
       delete selectStatement;
    }

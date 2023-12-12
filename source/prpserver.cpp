@@ -23,6 +23,7 @@
 #include "StatsUpdater.h"
 #include "Mail.h"
 #include "MailFactory.h"
+#include "PrimeHelperThread.h"
 
 globals_t  *gp_Globals;
 Mail       *gp_Mail;
@@ -39,7 +40,8 @@ void     SyncGroupStats(DBInterface *dbInterface, bool doubleCheck);
 
 int   main(int argc, char *argv[])
 {
-   char     abcFile[50], name[50];
+   string   abcFile;
+   char     name[50];
    string   s_Mail;
    bool     lowWorkCheckDone = false;
    int32_t  showUsage;
@@ -139,13 +141,14 @@ int   main(int argc, char *argv[])
 
    // Get default values from the configuration file
    ProcessINIFile("prpserver.ini", s_Mail);
+   abcFile = "";
 
    for (ii=1; ii<argc; ii++)
    {
       if (!memcmp(argv[ii], "-d", 2))
          gp_Globals->p_Log->SetDebugLevel(DEBUG_ALL);
       else if (!memcmp(argv[ii], "-l", 2))
-         strcpy(abcFile, &argv[ii][2]);
+         abcFile = &argv[ii][2];
       else
          showUsage = true;
    }
@@ -224,6 +227,9 @@ int   main(int argc, char *argv[])
    if (gp_Mail) gp_Mail->SetDBInterface(timerDBInterface);
    
    serverHelper = ServerHelperFactory::GetServerHelper(gp_Globals, timerDBInterface);
+
+   if (abcFile.length() > 0)
+      serverHelper->LoadABCFile(abcFile);
 
    // A minimum 10 minute wait
    unhideSeconds = gp_Globals->i_UnhidePrimeHours * 3600 + 600;
@@ -816,10 +822,10 @@ void SetQuitting(int sig)
 #endif
 }
 
-void     SyncGroupStats(DBInterface *dbInterface, bool doubleCheck)
+void     SyncGroupStats(DBInterface* dbInterface, bool doubleCheck)
 {
-   StatsUpdater *statsUpdater;
-   StatsUpdaterFactory *suf;
+   StatsUpdater* statsUpdater;
+   StatsUpdaterFactory* suf;
 
    suf = new StatsUpdaterFactory();
    statsUpdater = suf->GetInstance(dbInterface, gp_Globals->p_Log, gp_Globals->i_ServerType, gp_Globals->b_NeedsDoubleCheck);

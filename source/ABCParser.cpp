@@ -105,8 +105,11 @@ static const char *fnabcdstring = "$a*%d^%d%d [%" PRIu64"]";
 #define ABC_GENERIC    998
 #define NOT_ABC        999
 
-ABCParser::ABCParser(string fileName)
+ABCParser::ABCParser(int32_t serverType, string fileName)
 {
+   ii_ABCFormat = ABC_UNKNOWN;
+   ii_ServerType = serverType;
+
    is_ABCFile = fileName.c_str();
 
    ip_Socket = 0;
@@ -154,7 +157,7 @@ ABCParser::~ABCParser()
       fclose(ip_ABCFile);
 }
 
-int32_t  ABCParser::IsValidFormat(void)
+bool  ABCParser::IsValidFormat(void)
 {
    if (ii_ABCFormat == ABC_UNKNOWN)
       return false;
@@ -235,7 +238,27 @@ int32_t  ABCParser::DetermineABCFormat(void)
       return ABC_UNKNOWN;
    }
 
-   return DetermineABCFormat(abcLine);
+   int32_t serverType = DetermineABCFormat(abcLine);
+
+   if (il_theK < 0)
+   {
+      printf("ABC file [%s] has k > 63 bits\n", is_ABCFile.c_str());
+      return ABC_UNKNOWN;
+   }
+
+   if (ii_theB < 0)
+   {
+      printf("ABC file [%s] has b > 31 bits\n", is_ABCFile.c_str());
+      return ABC_UNKNOWN;
+   }
+
+   if (ii_theN < 0)
+   {
+      printf("ABC file [%s] has n > 31 bits\n", is_ABCFile.c_str());
+      return ABC_UNKNOWN;
+   }
+
+   return serverType;
 }
 
 int32_t  ABCParser::DetermineABCFormat(string abcHeader)
@@ -449,12 +472,20 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
 
          StripCRLF(abcLine);
 
-         if (!ParseCandidateLine(abcLine))
+         if (!memcmp(abcLine, "ABC ", 4) || !memcmp(abcLine, "ABCD ", 5))
          {
-            fclose(ip_ABCFile);
-            ip_ABCFile = 0;
-            printf("Unable to parse line [%s] from ABC file.  Processing stopped\n", abcLine);
-            return false;
+            if (DetermineABCFormat(abcLine) != ii_ABCFormat)
+               return false;
+         }
+         else
+         {
+            if (!ParseCandidateLine(abcLine))
+            {
+               fclose(ip_ABCFile);
+               ip_ABCFile = 0;
+               printf("Unable to parse line [%s] from ABC file.  Processing stopped\n", abcLine);
+               return false;
+            }
          }
       }
       else

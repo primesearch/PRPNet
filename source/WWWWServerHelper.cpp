@@ -164,3 +164,7 @@ void  WWWWServerHelper::UnhideSpecials(int32_t unhideSeconds)
       ip_Log->LogMessage("%d prime%s will no longer be hidden on webpage",
                                     unhideCount, ((unhideCount>1) ? "s" : ""));
 }
+
+void  WWWWServerHelper::LoadABCFile(string abcFile)
+{
+}

@@ -1,5 +1,8 @@
 #include "PrimeServerHelper.h"
 #include "SQLStatement.h"
+#include "ABCParser.h"
+#include "LengthCalculator.h"
+#include "StatsUpdaterFactory.h"
 
 int32_t   PrimeServerHelper::ComputeHoursRemaining(void)
 {
@@ -163,4 +166,110 @@ void  PrimeServerHelper::UnhideSpecials(int32_t unhideSeconds)
    if (unhideCount)
       ip_Log->LogMessage("%d prime%s will no longer be hidden on webpage",
                                     unhideCount, ((unhideCount>1) ? "s" : ""));
+}
+
+void      PrimeServerHelper::LoadABCFile(string abcFile)
+{
+   SQLStatement* selectStatement;
+   LengthCalculator* lengthCalculator;
+   StatsUpdaterFactory* suf;
+   StatsUpdater* su;
+   int32_t    totalEntries, newEntries, badEntries, dupEntries, failedInserts;
+   int32_t    countFound;
+   int64_t    theK;
+   int32_t    theB, theN, theC;
+   double     decimalLength;
+   string     candidateName;
+   const char* selectSQL = "select count(*) from Candidate " \
+      " where CandidateName = ?";
+
+   ip_DBInterface->Connect(3);
+
+   ABCParser* abcParser = new ABCParser(ii_ServerType, abcFile);
+
+   if (!abcParser->IsValidFormat())
+   {
+      delete abcParser;
+      ip_Log->LogMessage("ABC file unknown format", abcFile.c_str());
+      return;
+   }
+
+   suf = new StatsUpdaterFactory();
+   su = suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ib_NeedsDoubleCheck);
+   delete suf;
+
+   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
+   selectStatement->BindInputParameter(candidateName, NAME_LENGTH, false);
+   selectStatement->BindSelectedColumn(&countFound);
+
+   totalEntries = newEntries = badEntries = dupEntries = failedInserts = 0;
+   lengthCalculator = new LengthCalculator(ii_ServerType, ip_DBInterface, ip_Log);
+
+   while (abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC))
+   {
+      totalEntries++;
+
+      if (theC != 1 && theC != -1 && (ii_ServerType == ST_SOPHIEGERMAIN || ii_ServerType == ST_TWIN || ii_ServerType == ST_TWINANDSOPHIE))
+         badEntries++;
+      else
+      {
+         selectStatement->SetInputParameterValue(candidateName, true);
+
+         if (selectStatement->FetchRow(true) && countFound == 0)
+         {
+            if (ii_ServerType == ST_GENERIC)
+               decimalLength = 0.0;
+            else
+               decimalLength = lengthCalculator->CalculateDecimalLength(theK, theB, theN);
+
+            if (!su->InsertCandidate(candidateName, theK, theB, theN, theC, decimalLength))
+               failedInserts++;
+            else
+               newEntries++;
+
+            if (newEntries % 100 == 0)
+               ip_DBInterface->Commit();
+         }
+         else
+         {
+            dupEntries++;
+            ip_Log->LogMessage("ERR: %s is a duplicate and has been rejected", candidateName.c_str());
+         }
+
+         if (totalEntries % 10000 == 0)
+         {
+            printf(" Processed %d entries from the input file\r", totalEntries);
+            fflush(stdout);
+         }
+      }
+   }
+
+   ip_DBInterface->Commit();
+
+   delete selectStatement;
+   delete abcParser;
+
+   if (ii_ServerType == ST_GENERIC || ii_ServerType == ST_FACTORIAL ||
+      ii_ServerType == ST_MULTIFACTORIAL || ii_ServerType == ST_PRIMORIAL)
+      lengthCalculator->CalculateDecimalLengths(0);
+
+   delete lengthCalculator;
+
+   ip_Log->LogMessage("Total candidates received = %6d", totalEntries);
+   ip_Log->LogMessage("           Failed Inserts = %6d", failedInserts);
+   ip_Log->LogMessage("     New candidates added = %6d", newEntries);
+   ip_Log->LogMessage("      Duplicates rejected = %6d", dupEntries);
+   ip_Log->LogMessage("Bad entries from ABC file = %6d", badEntries);
+   ip_Log->LogMessage("End of Message");
+
+   if (!su->RollupGroupStats(true))
+      ip_DBInterface->Rollback();
+   else
+      ip_DBInterface->Commit();
+
+   delete su;
+
+   ip_DBInterface->Disconnect();
+
+   ip_Log->LogMessage("%d new candidates added through the ABC file", newEntries);
 }

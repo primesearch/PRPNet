@@ -24,14 +24,14 @@ ServerHelper  *ServerHelperFactory::GetServerHelper(globals_t *globals, DBInterf
       case ST_CAROLKYNEA:
       case ST_WAGSTAFF:
       case ST_TWINANDSOPHIE:
-         serverHelper = new PrimeServerHelper(dbInterface, globals->p_Log);
+         serverHelper = new PrimeServerHelper(dbInterface, globals);
          break;
 
       case ST_WIEFERICH:
       case ST_WILSON:
       case ST_WALLSUNSUN:
       case ST_WOLSTENHOLME:
-         serverHelper = new WWWWServerHelper(dbInterface, globals->p_Log);
+         serverHelper = new WWWWServerHelper(dbInterface, globals);
          break;
 
       default:

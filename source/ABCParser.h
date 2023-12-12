@@ -9,7 +9,7 @@
 class ABCParser
 {
 public:
-   ABCParser(string fileName);
+   ABCParser(int32_t serverType, string fileName);
 
    ABCParser(Socket *theSocket, int32_t serverType);
 
@@ -17,7 +17,7 @@ public:
 
    // This will indicate if the format of the ABC file can
    // be used with this server
-   int32_t  IsValidFormat(void);
+   bool     IsValidFormat(void);
 
    int32_t  GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC);
 

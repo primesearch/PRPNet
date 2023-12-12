@@ -1,5 +1,12 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Verison 5.6.5:  December 12, 2023 - New Release
+    prpserver:  Finally add code to fully support -l option for loading ABC/ABCD files, which
+                is much faster than doing thru prpadmin.
+                Due to limitations on some db servers, k, b, and n are limited to 63-bits
+                or 31-bits on all db servers upon loading of candidates.
+    prpclient:  Change parameters for prst for more efficient usage. 
+
 Version 5.6.4:  November 27, 2023 - New Release
     prpserver:  Change the stats update to account for all tests that are run for a Candidate.
     prpclient:  Fix issue receiving workunits from the server for Fixed BKC and Fixed BNC.

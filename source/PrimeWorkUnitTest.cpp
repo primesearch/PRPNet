@@ -179,34 +179,9 @@ testresult_t   PrimeWorkUnitTest::DoPrimalityTest(void)
          return TR_COMPLETED;
 
       case R_PRP:
-         // For Wagstaff, pfgw cannot prove primality
-         if (ii_ServerType == ST_WAGSTAFF)
-            return TR_COMPLETED;
 
-         // For XYYX, pfgw cannot prove primality
-         if (ii_ServerType == ST_XYYX)
-            return TR_COMPLETED;
-         
-         // Don't know if pfgw can prove primality, so don't try
-         if (ii_ServerType == ST_GENERIC)
-            return TR_COMPLETED;
+         testingProgram = ip_TestingProgramFactory->GetPrimalityTestingProgram(ii_ServerType, ii_b, ii_n, ii_c, ii_d);
 
-         // For GFN, factorials and primorials, don't do primality tests for larger n because
-         // they can take days and PFGW does not checkpoint during the primality test.  If PFGW
-         // is modified to checkpoint during primality tests, then this could be removed.
-         if (ii_ServerType == ST_GFN && ii_n > 200000)
-            return TR_COMPLETED;
-
-         if (ii_ServerType == ST_FACTORIAL && ii_b > 500000)
-            return TR_COMPLETED;
-
-         if (ii_ServerType == ST_PRIMORIAL && ii_b > 500000)
-            return TR_COMPLETED;
-
-         testingProgram = ip_TestingProgramFactory->GetPFGWProgram();
-         if (!testingProgram && ip_TestingProgramFactory->GetPhrotProgram())
-            testingProgram = ip_TestingProgramFactory->GetLLRProgram();
-         
          if (!testingProgram || ii_c > 1 || ii_c < -1)
          {
             ip_Log->Debug(DEBUG_WORK, "%s is PRP, but no program is available to prove primality", is_ChildName.c_str());

@@ -141,11 +141,11 @@ void     TestingProgramFactory::SetNumber(int32_t serverType, string suffix, str
    if (ip_CycloProgram)    ip_CycloProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
 }
 
-// Return the most appropriate testing program given the server type and base
+// Return the most appropriate PRP testing program given the server type and base
 TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, uint64_t theK, uint32_t theB, uint32_t theN, uint32_t theD)
 {
    bool     powerOf2 = false;
-   
+
    if (serverType == ST_WAGSTAFF)
    {
       if (ip_LLRProgram) return ip_LLRProgram;
@@ -169,7 +169,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
 
    if (serverType == ST_XYYX || serverType == ST_GENERIC || serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL)
       return ip_PFGWProgram;
-   
+
    if (serverType == ST_CYCLOTOMIC)
    {
       while (theN > 2 && !(theN&1)) theN >>= 1;
@@ -177,7 +177,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
 
       if (powerOf2 && ((theK == 3 && theB < 0) || (theK == 6 && theB > 0)) && ip_CycloProgram)
          return ip_CycloProgram;
-       
+
       return ip_PFGWProgram;
    }
 
@@ -195,6 +195,59 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
    if (ip_LLRProgram)   return ip_LLRProgram;
    if (ip_PFGWProgram)  return ip_PFGWProgram;
    if (ip_PhrotProgram) return ip_PhrotProgram;
+
+   return 0;
+}
+
+// Return the most appropriate primality testing program given the server type and base
+TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t serverType, uint32_t theB, uint32_t theN, int32_t theC, uint32_t theD)
+{
+   // For GFN, factorials and primorials, don't do primality tests for larger n because
+   // they can take days and PFGW does not checkpoint during the primality test.  If PFGW
+   // is modified to checkpoint during primality tests, then this could be removed.
+   if (serverType == ST_GFN && theN > 200000)
+      return 0;
+
+   if (serverType == ST_FACTORIAL && theB > 500000)
+      return 0;
+
+   if (serverType == ST_PRIMORIAL && theB > 500000)
+      return 0;
+
+   switch (serverType) {
+   // For Wagstaff, pfgw cannot prove primality
+      case ST_WAGSTAFF:
+   // For XYYX, pfgw cannot prove primality
+      case ST_XYYX:
+   // Don't know if pfgw can prove primality, so don't try
+      case ST_GENERIC:
+         return 0;
+      case ST_FIXEDBKC:
+      case ST_FIXEDBNC:
+         if (theC > 1 || theC < -1) {
+            return 0;
+         } else if (theD > 1) {
+            if (ip_PFGWProgram)  return ip_PFGWProgram;
+         } else {
+            if (ip_PRSTProgram)  return ip_PRSTProgram;
+            if (ip_LLRProgram)   return ip_LLRProgram;
+            if (ip_PFGWProgram)  return ip_PFGWProgram;
+         }
+         break;
+      case ST_SIERPINSKIRIESEL:
+      case ST_CULLENWOODALL:
+      case ST_TWIN:
+      case ST_TWINANDSOPHIE:
+         if (ip_PRSTProgram)  return ip_PRSTProgram;
+         if (ip_LLRProgram)   return ip_LLRProgram;
+         if (ip_PFGWProgram)  return ip_PFGWProgram;
+         break;
+      default:
+         if (theC > 1 || theC < -1)
+            return 0;
+         if (ip_PFGWProgram)
+            return ip_PFGWProgram;
+   }
 
    return 0;
 }

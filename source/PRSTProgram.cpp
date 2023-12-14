@@ -15,7 +15,7 @@ testresult_t   PRSTProgram::Execute(testtype_t testType)
    unlink("result.txt");
 
    if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL || (testType == TT_PRP && !IsPerformingProthTest()))
-      snprintf(command, 100, "%s %s -d -fermat %s", is_ExeName.c_str(), is_ExeArguments.c_str(), is_WorkUnitName.c_str());
+      snprintf(command, 100, "%s %s -d -fermat \"%s\"", is_ExeName.c_str(), is_ExeArguments.c_str(), is_WorkUnitName.c_str());
    else
       snprintf(command, 100, "%s %s -d \"%s\"", is_ExeName.c_str(), is_ExeArguments.c_str(), is_WorkUnitName.c_str());
 

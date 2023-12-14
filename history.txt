@@ -1,5 +1,9 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.6.6:  December 14, 2023 - New Release
+    prpclient:  Fix prst usage error for some PRP tests.
+                Separate out PRP and primality testing program checks.
+                
 Verison 5.6.5:  December 12, 2023 - New Release
     prpserver:  Finally add code to fully support -l option for loading ABC/ABCD files, which
                 is much faster than doing thru prpadmin.

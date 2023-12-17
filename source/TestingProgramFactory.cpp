@@ -224,13 +224,13 @@ TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t server
          return 0;
       case ST_FIXEDBKC:
       case ST_FIXEDBNC:
-         if (theC > 1 || theC < -1) {
+         if (theC > 1 || theC < -1)
             return 0;
-         } else if (theD > 1) {
+
+         if (theD > 1) {
             if (ip_PFGWProgram)  return ip_PFGWProgram;
          } else {
             if (ip_PRSTProgram)  return ip_PRSTProgram;
-            if (ip_LLRProgram)   return ip_LLRProgram;
             if (ip_PFGWProgram)  return ip_PFGWProgram;
          }
          break;
@@ -239,7 +239,6 @@ TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t server
       case ST_TWIN:
       case ST_TWINANDSOPHIE:
          if (ip_PRSTProgram)  return ip_PRSTProgram;
-         if (ip_LLRProgram)   return ip_LLRProgram;
          if (ip_PFGWProgram)  return ip_PFGWProgram;
          break;
       default:

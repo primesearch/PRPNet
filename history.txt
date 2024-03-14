@@ -5,6 +5,8 @@ Version 5.7.0:  March 14, 2024 - New Released
                 The new client should be backward compatible to older servers.
                 The new server should be backward compatible to older clients, except 
                 when d > 1.  It will not send work to those clients.
+                
+                To upgrade older servers, run the upgrade_to_5.7.0.sql script in your db.
 
 Version 5.6.6:  December 14, 2023 - New Release
     prpclient:  Fix prst usage error for some PRP tests.

@@ -4,7 +4,7 @@
 void FixedBNCHTML::ServerStats(void)
 {
    SQLStatement *sqlStatement;
-   int32_t     b, n, c;
+   int32_t     b, n, c, d;
    int32_t     countInGroup, countInProgress;
    int32_t     countedTested, countDoubleChecked, countUntested;
    int32_t     prpsAndPrimesFound;
@@ -15,18 +15,19 @@ void FixedBNCHTML::ServerStats(void)
    int64_t     summaryMinInGroup = 999999999999999999LL, summaryMaxInGroup = 0;
    int64_t     summaryCompletedThru = 999999999999999999LL, summaryLeadingEdge = 999999999999999999LL;
 
-   const char *theSelect = "select b, n, c, CountInGroup, MinInGroup, MaxInGroup, " \
+   const char *theSelect = "select b, n, c, d, CountInGroup, MinInGroup, MaxInGroup, " \
                            "       CountTested, CountDoubleChecked, CountUntested, " \
                            "       CountInProgress, CompletedThru, LeadingEdge, " \
                            "       PRPandPrimesFound " \
                            "  from CandidateGroupStats " \
-                           "order by b, n, c";
+                           "order by b, n, c, d";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect);
 
    sqlStatement->BindSelectedColumn(&b);
    sqlStatement->BindSelectedColumn(&n);
    sqlStatement->BindSelectedColumn(&c);
+   sqlStatement->BindSelectedColumn(&d);
    sqlStatement->BindSelectedColumn(&countInGroup);
    sqlStatement->BindSelectedColumn(&minInGroup);
    sqlStatement->BindSelectedColumn(&maxInGroup);
@@ -64,7 +65,11 @@ void FixedBNCHTML::ServerStats(void)
       if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<th scope=\"row\"><var>k</var>*%d^%d%+d</th>", b, n, c);
+      if (d > 1)
+         ip_Socket->Send("<th scope=\"row\">(<var>k</var>*%d^%d%+d)/%d</th>", b, n, c,d);
+      else
+         ip_Socket->Send("<th scope=\"row\"><var>k</var>*%d^%d%+d</th>", b, n, c);
+
       TD_32BIT(countInGroup);
       TD_64BIT(minInGroup);
       TD_64BIT(maxInGroup);

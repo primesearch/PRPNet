@@ -6,11 +6,11 @@
 bool  FixedBNCStatsUpdater::RollupGroupStats(bool deleteInsert)
 {
    SQLStatement  *sqlStatement;
-   int32_t        theB, theN, theC;
+   int32_t        theB, theN, theC, theD;
    bool           success;
    const char    *deleteSQL = "delete from CandidateGroupStats";
-   const char    *insertSQL = "insert into CandidateGroupStats (b, n, c) (select distinct b, n, c from Candidate)";
-   const char    *selectSQL = "select b, n, c from CandidateGroupStats order by b, n, c";
+   const char    *insertSQL = "insert into CandidateGroupStats (b, n, c, d) (select distinct b, n, c, d from Candidate)";
+   const char    *selectSQL = "select b, n, c, d from CandidateGroupStats order by b, n, c, d";
 
    if (deleteInsert)
    {
@@ -34,10 +34,11 @@ bool  FixedBNCStatsUpdater::RollupGroupStats(bool deleteInsert)
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theN);
    sqlStatement->BindSelectedColumn(&theC);
+   sqlStatement->BindSelectedColumn(&theD);
 
    while (sqlStatement->FetchRow(false))
    {
-      if (!UpdateGroupStats(0, theB, theN, theC))
+      if (!UpdateGroupStats(0, theB, theN, theC, theD))
          return false;
       else
          ip_DBInterface->Commit();
@@ -52,24 +53,25 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(string candidateName)
 {
    SQLStatement  *sqlStatement;
    bool           success;
-   int32_t        theB, theN, theC;
-   const char    *selectSQL = "select b, n, c from Candidate where CandidateName = ?";
+   int32_t        theB, theN, theC, theD;
+   const char    *selectSQL = "select b, n, c, d from Candidate where CandidateName = ?";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theN);
    sqlStatement->BindSelectedColumn(&theC);
+   sqlStatement->BindSelectedColumn(&theD);
 
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
    if (!success) return false;
 
-   return UpdateGroupStats(0, theB, theN, theC);
+   return UpdateGroupStats(0, theB, theN, theC, theD);
 }
 
-bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -79,47 +81,55 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
                              "   set CountInGroup = (select count(*) from Candidate " \
                              "                        where b = CandidateGroupStats.b " \
                              "                          and n = CandidateGroupStats.n " \
-                             "                          and c = CandidateGroupStats.c), " \
+                             "                          and c = CandidateGroupStats.c " \
+                             "                          and d = CandidateGroupStats.d), " \
                              "       CountUntested = (select count(*) from Candidate " \
                              "                         where b = CandidateGroupStats.b " \
                              "                           and n = CandidateGroupStats.n " \
                              "                           and c = CandidateGroupStats.c " \
+                             "                           and d = CandidateGroupStats.d " \
                              "                           and CompletedTests = 0), " \
                              "       CountTested = (select count(*) from Candidate " \
                              "                       where b = CandidateGroupStats.b " \
                              "                         and n = CandidateGroupStats.n " \
                              "                         and c = CandidateGroupStats.c " \
+                             "                         and d = CandidateGroupStats.d " \
                              "                         and CompletedTests > 0), " \
                              "       CountDoubleChecked = (select count(*) from Candidate " \
                              "                             where b = CandidateGroupStats.b " \
                              "                               and n = CandidateGroupStats.n " \
                              "                               and c = CandidateGroupStats.c " \
+                             "                               and d = CandidateGroupStats.d " \
                              "                                and DoubleChecked = 1), " \
                              "       CountInProgress = (select count(*) from Candidate " \
                              "                           where b = CandidateGroupStats.b " \
                              "                             and n = CandidateGroupStats.n " \
                              "                             and c = CandidateGroupStats.c " \
+                             "                             and d = CandidateGroupStats.d " \
                              "                             and HasPendingTest > 0), " \
                              "       MinInGroup = (select min(k) from Candidate " \
                              "                      where b = CandidateGroupStats.b " \
                              "                        and n = CandidateGroupStats.n " \
-                             "                        and c = CandidateGroupStats.c), " \
+                             "                        and c = CandidateGroupStats.c " \
+                             "                        and d = CandidateGroupStats.d), " \
                              "       MaxInGroup = (select max(k) from Candidate " \
                              "                      where b = CandidateGroupStats.b " \
                              "                        and n = CandidateGroupStats.n " \
-                             "                        and c = CandidateGroupStats.c), " \
+                             "                        and c = CandidateGroupStats.c " \
+                             "                        and d = CandidateGroupStats.d), " \
                              "       CompletedThru = %s, " \
                              "       LeadingEdge = ?, " \
                              "       PRPandPrimesFound = (select count(*) from Candidate " \
                              "                             where b = CandidateGroupStats.b " \
                              "                               and n = CandidateGroupStats.n " \
                              "                               and c = CandidateGroupStats.c " \
+                             "                               and d = CandidateGroupStats.d " \
                              "                               and MainTestResult > 0) " \
-                             " where b = ? and n = ? and c = ?";
+                             " where b = ? and n = ? and c = ? and d = ?";
    const char   *selectNTT = "select $null_func$(min(n), 0) from Candidate " \
-                             " where b = ? and n = ? and c = ? and %s";
+                             " where b = ? and n = ? and c = ? and d = ? and %s";
    const char   *selectLE  = "select $null_func$(max(n), 0) from Candidate " \
-                             " where b = ? and n = ? and c = ? " \
+                             " where b = ? and n = ? and c = ? and d = ? " \
                              "   and (CompletedTests > 0 or HasPendingTest = 1)";
 
    if (ib_NeedsDoubleCheck)
@@ -133,6 +143,7 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theN);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
    sqlStatement->BindSelectedColumn(&nextToTest);
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
@@ -144,6 +155,7 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theN);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
    sqlStatement->BindSelectedColumn(&leadingEdge);
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
@@ -161,10 +173,10 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and n = %d and c = %d)", theB, theN, theC);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and n = %d and c = %d and d = %d)", theB, theN, theC, theD);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and n = %d and c = %d and n < %d), %d)",
-              theB, theN, theC, nextToTest, nextToTest);
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and n = %d and c = %d and d = %d and n < %d), %d)",
+              theB, theN, theC, theD, nextToTest, nextToTest);
 
    // Finally, update the group stats
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, completedSQL);
@@ -172,6 +184,7 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theN);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
 
    success = sqlStatement->Execute();
 
@@ -181,11 +194,11 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
 }
 
 bool   FixedBNCStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                             int32_t theC, double decimalLength)
+                                             int32_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
-                           "( CandidateName, DecimalLength, k, b, n, c, LastUpdateTime ) " \
-                           "values ( ?,?,?,?,?,?,? )";
+                           "( CandidateName, DecimalLength, k, b, n, c, d, LastUpdateTime ) " \
+                           "values ( ?,?,?,?,?,?,?,? )";
 
    if (!ip_CandidateLoader)
    {
@@ -196,6 +209,7 @@ bool   FixedBNCStatsUpdater::InsertCandidate(string candidateName, int64_t theK,
       ip_CandidateLoader->BindInputParameter(theB);
       ip_CandidateLoader->BindInputParameter(theN);
       ip_CandidateLoader->BindInputParameter(theC);
+      ip_CandidateLoader->BindInputParameter(theD);
       ip_CandidateLoader->BindInputParameter((int64_t) 1);
    }
 
@@ -205,6 +219,7 @@ bool   FixedBNCStatsUpdater::InsertCandidate(string candidateName, int64_t theK,
    ip_CandidateLoader->SetInputParameterValue(theB);
    ip_CandidateLoader->SetInputParameterValue(theN);
    ip_CandidateLoader->SetInputParameterValue(theC);
+   ip_CandidateLoader->SetInputParameterValue(theD);
    ip_CandidateLoader->SetInputParameterValue((int64_t) time(NULL));
 
    return ip_CandidateLoader->Execute();

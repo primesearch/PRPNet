@@ -5,7 +5,7 @@ void FixedBKCHTML::ServerStats(void)
 {
    SQLStatement *sqlStatement;
    int64_t     k;
-   int32_t     b, c;
+   int32_t     b, c, d;
    int32_t     countInGroup, minInGroup, maxInGroup, countInProgress;
    int32_t     countedTested, countDoubleChecked, countUntested;
    int32_t     completedThru, leadingEdge, prpsAndPrimesFound;
@@ -14,7 +14,7 @@ void FixedBKCHTML::ServerStats(void)
    int32_t     summaryUntested = 0, summaryCompletedThru = 999999999, summaryLeadingEdge = 999999999;
    int32_t     summaryPRPsAndPrimesFound = 0, summaryCountInProgress = 0;
 
-   const char *theSelect = "select k, b, c, CountInGroup, MinInGroup, MaxInGroup, " \
+   const char *theSelect = "select k, b, c, d, CountInGroup, MinInGroup, MaxInGroup, " \
                            "       CountTested, CountDoubleChecked, CountUntested, " \
                            "       CountInProgress, CompletedThru, LeadingEdge, " \
                            "       PRPandPrimesFound " \
@@ -26,6 +26,7 @@ void FixedBKCHTML::ServerStats(void)
    sqlStatement->BindSelectedColumn(&k);
    sqlStatement->BindSelectedColumn(&b);
    sqlStatement->BindSelectedColumn(&c);
+   sqlStatement->BindSelectedColumn(&d);
    sqlStatement->BindSelectedColumn(&countInGroup);
    sqlStatement->BindSelectedColumn(&minInGroup);
    sqlStatement->BindSelectedColumn(&maxInGroup);
@@ -63,7 +64,13 @@ void FixedBKCHTML::ServerStats(void)
       if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
+      if (d > 1 && k > 1)
+         ip_Socket->Send("<th scope=\"row\">(%" PRIu64"*%d^<var>n</var>%+d)/%d</th>", k, b, c, d);
+      else if (d > 1)
+         ip_Socket->Send("<th scope=\"row\">(%d^<var>n</var>%+d)/%d</th>", b, c, d);
+      else
+         ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
+
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);
       TD_32BIT(maxInGroup);

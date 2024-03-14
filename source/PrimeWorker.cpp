@@ -184,27 +184,22 @@ bool     PrimeWorker::GetWork(void)
             wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64"",
                wu->s_Name, &wu->l_TestID);
          }
-         else if (ii_ServerType == ST_FIXEDBKC || ii_ServerType == ST_FIXEDBNC)
+         else
          {
             toScan = 7;
             wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %d %u",
                wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, &wu->i_d);
 
+            // This is for backward compatibility where the client is 5.7.0 and the server is 5.6.6 or older
             if (wasScanned == 6)
             {
-               wu->i_d = 1;
                toScan = 6;
+               wu->i_d = 1;
                wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %d",
                   wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c);
             }
          }
-         else
-         {
-            wu->i_d = 1;
-            toScan = 6;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %d",
-               wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c);
-         }
+
          if (toScan == wasScanned)
          {
             wu->m_FirstWorkUnitTest = ip_WorkUnitTestFactory->BuildWorkUnitTestList(ii_ServerType, wu);
@@ -369,8 +364,8 @@ void  PrimeWorker::Save(FILE *fPtr)
    ip_FirstWorkUnit = 0;
    while (wu)
    {
-      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %+d %d %d\n",
-         wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->i_c, wu->b_SRSkipped, wu->i_DecimalLength);
+      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %+d %d %d %d\n",
+         wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->i_c, wu->i_d, wu->b_SRSkipped, wu->i_DecimalLength);
 
       wuNext = (workunit_t *) wu->m_NextWorkUnit;
       wu->m_NextWorkUnit = 0;
@@ -421,22 +416,22 @@ void  PrimeWorker::Load(string saveFileName)
 
          wu = new workunit_t;
          wu->m_FirstWorkUnitTest = 0;
-         countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %d %d %d",
-            &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, (int *) &wu->b_SRSkipped, &wu->i_DecimalLength);
+         countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %d %d %d %d",
+            &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, &wu->i_d, (int *) &wu->b_SRSkipped, &wu->i_DecimalLength);
 
-         if (countScanned == 7)
+         if (countScanned != 9)
          {
-            countScanned = 8;
-            if (ii_ServerType == ST_GENERIC)
-               wu->i_DecimalLength = (int32_t) strlen(wu->s_Name);
-            else
-               wu->i_DecimalLength = 0;
-         }
+            countScanned = countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %d %d %d",
+               &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, (int*)&wu->b_SRSkipped, &wu->i_DecimalLength);
 
-         if (countScanned != 8)
-         {
-            printf("'Start WorkUnit' was not in the correct format.  Exiting\n");
-            exit(-1);
+            // This is for backward compatibility when reading a save file with prpclient 5.7.0, but it was saved with an older client
+            if (countScanned != 8)
+            {
+               printf("'Start WorkUnit' was not in the correct format.  Exiting\n");
+               exit(-1);
+            }
+
+            wu->i_d = 1;
          }
 
          ip_WorkUnitTestFactory->LoadWorkUnitTest(fPtr, ii_ServerType, wu);

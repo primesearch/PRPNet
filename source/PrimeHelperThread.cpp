@@ -66,7 +66,7 @@ void      PrimeHelperThread::AdminABCFile(void)
    int32_t    totalEntries, newEntries, badEntries, dupEntries, failedInserts;
    int32_t    countFound;
    int64_t    theK;
-   int32_t    theB, theN, theC;
+   int32_t    theB, theN, theC, theD;
    double     decimalLength;
    string     candidateName;
    const char  *selectSQL = "select count(*) from Candidate " \
@@ -91,7 +91,7 @@ void      PrimeHelperThread::AdminABCFile(void)
    totalEntries = newEntries = badEntries = dupEntries = failedInserts = 0;
    lengthCalculator = new LengthCalculator(ii_ServerType, ip_DBInterface, ip_Log);
 
-   while (abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC))
+   while (abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC, theD))
    {
       // Tell the admin tool that we are still here and have processed
       // everything it has sent.  Now the admin tool can send more.
@@ -117,9 +117,9 @@ void      PrimeHelperThread::AdminABCFile(void)
             if (ii_ServerType == ST_GENERIC)
                decimalLength = 0.0;
             else
-               decimalLength = lengthCalculator->CalculateDecimalLength(theK, theB, theN);
+               decimalLength = lengthCalculator->CalculateDecimalLength(theK, theB, theN, theD);
 
-            if (!su->InsertCandidate(candidateName, theK, theB, theN, theC, decimalLength))
+            if (!su->InsertCandidate(candidateName, theK, theB, theN, theC, theD, decimalLength))
                failedInserts++;
             else
                newEntries++;

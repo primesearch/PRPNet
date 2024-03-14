@@ -186,7 +186,10 @@ void     HTMLGenerator::GetDaysLeft(void)
       ip_Socket->Send("<p id=\"work-remaining-notice\">");
 
    if (hoursLeft < 0)
-      ip_Socket->Send("The server has no work left");
+   {
+      if (hoursLeft == -3)
+         ip_Socket->Send("The server has no work left");
+   }
    else if (hoursLeft < 72)
       ip_Socket->Send("Estimate of %" PRIu64" hour%s before the server runs out of work", hoursLeft, PLURAL_ENDING(hoursLeft));
    else

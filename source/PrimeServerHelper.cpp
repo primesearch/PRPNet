@@ -24,7 +24,8 @@ int32_t   PrimeServerHelper::ComputeHoursRemaining(void)
    delete sqlStatement;
 
    if (!success) return -1;
-   if (!countTested || !countUntested) return -2;
+   if (countUntested == 0 && countTested == 0) return -2;
+   if (countTested == 0) return -3;
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, timeSelect);
    sqlStatement->BindSelectedColumn(&startTime);
@@ -177,7 +178,7 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    int32_t    totalEntries, newEntries, badEntries, dupEntries, failedInserts;
    int32_t    countFound;
    int64_t    theK;
-   int32_t    theB, theN, theC;
+   int32_t    theB, theN, theC, theD;
    double     decimalLength;
    string     candidateName;
    const char* selectSQL = "select count(*) from Candidate " \
@@ -190,7 +191,7 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    if (!abcParser->IsValidFormat())
    {
       delete abcParser;
-      ip_Log->LogMessage("ABC file unknown format", abcFile.c_str());
+      ip_Log->LogMessage("ABC file has unknown format or is not supported for the server type", abcFile.c_str());
       return;
    }
 
@@ -205,7 +206,7 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    totalEntries = newEntries = badEntries = dupEntries = failedInserts = 0;
    lengthCalculator = new LengthCalculator(ii_ServerType, ip_DBInterface, ip_Log);
 
-   while (abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC))
+   while (abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC, theD))
    {
       totalEntries++;
 
@@ -220,9 +221,9 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
             if (ii_ServerType == ST_GENERIC)
                decimalLength = 0.0;
             else
-               decimalLength = lengthCalculator->CalculateDecimalLength(theK, theB, theN);
+               decimalLength = lengthCalculator->CalculateDecimalLength(theK, theB, theN, theD);
 
-            if (!su->InsertCandidate(candidateName, theK, theB, theN, theC, decimalLength))
+            if (!su->InsertCandidate(candidateName, theK, theB, theN, theC, theD, decimalLength))
                failedInserts++;
             else
                newEntries++;

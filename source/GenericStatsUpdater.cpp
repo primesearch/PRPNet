@@ -69,7 +69,7 @@ bool  GenericStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t 
 }
 
 bool   GenericStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                              int32_t theC, double decimalLength)
+                                            int32_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, LastUpdateTime ) " \

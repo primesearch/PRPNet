@@ -7,11 +7,11 @@ bool  SierpinskiRieselStatsUpdater::RollupGroupStats(bool deleteInsert)
 {
    SQLStatement  *sqlStatement;
    int64_t        theK;
-   int32_t        theB, theC;
+   int32_t        theB, theC, theD;
    bool           success, foundOne;
    const char    *deleteSQL = "delete from CandidateGroupStats";
-   const char    *insertSQL = "insert into CandidateGroupStats (b, k, c) (select distinct b, k, c from Candidate)";
-   const char    *selectSQL = "select b, k, c from CandidateGroupStats order by b, k, c";
+   const char    *insertSQL = "insert into CandidateGroupStats (b, k, c, d) (select distinct b, k, c, d from Candidate)";
+   const char    *selectSQL = "select b, k, c, d from CandidateGroupStats order by b, k, c, d";
 
    if (deleteInsert)
    {
@@ -33,13 +33,14 @@ bool  SierpinskiRieselStatsUpdater::RollupGroupStats(bool deleteInsert)
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theK);
    sqlStatement->BindSelectedColumn(&theC);
+   sqlStatement->BindSelectedColumn(&theD);
 
    while (sqlStatement->FetchRow(false))
    {
-      if (!SetHasSierspinkiRieselPrime(theK, theB, theC, foundOne))
+      if (!SetHasSierspinkiRieselPrime(theK, theB, theC, theD, foundOne))
          return false;
 
-      if (!UpdateGroupStats(theK, theB, 0, theC))
+      if (!UpdateGroupStats(theK, theB, 0, theC, theD))
          return false;
 
       ip_DBInterface->Commit();
@@ -51,7 +52,7 @@ bool  SierpinskiRieselStatsUpdater::RollupGroupStats(bool deleteInsert)
    return true;
 }
 
-bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int32_t theB, int32_t theC, int32_t theN)
+bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int32_t theB, int32_t theC, int32_t theD, int32_t theN)
 {
    SQLStatement  *sqlStatement;
    int32_t        sierpinskiRieselPrimeN;
@@ -59,14 +60,16 @@ bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int3
    const char    *selectSQL = "select n from CandidateGroupStats " \
                               " where b = ? " \
                               "   and k = ? " \
-                              "   and c = ? ";
+                              "   and c = ? " \
+                              "   and d = ? ";
    const char    *updateSQL  = "update CandidateGroupStats set SierpinskiRieselPrimeN = %d " \
-                               " where b = ? and k = ? and c = ?";
+                               " where b = ? and k = ? and c = ? and d = ?";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
    sqlStatement->BindSelectedColumn(&sierpinskiRieselPrimeN);
 
    success = sqlStatement->FetchRow(true);
@@ -82,6 +85,7 @@ bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int3
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
 
    success = sqlStatement->Execute();
    delete sqlStatement;
@@ -89,7 +93,7 @@ bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int3
    return success;
 }
 
-bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, int32_t theB, int32_t theC, bool &foundOne)
+bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, int32_t theB, int32_t theC, int32_t theD, bool &foundOne)
 {
    SQLStatement  *sqlStatement;
    int32_t        theN;
@@ -98,13 +102,15 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
                               " where b = ? " \
                               "   and k = ? " \
                               "   and c = ? " \
+                              "   and d = ? " \
                               "   and n = (select min(n) from Candidate " \
                                           " where b = ? " \
                                           "   and k = ? " \
                                           "   and c = ? " \
+                                          "   and d = ? " \
                                           "   and MainTestResult > 0)";
    const char    *updateSQL  = "update CandidateGroupStats set SierpinskiRieselPrimeN = %d " \
-                               " where b = ? and k = ? and c = ?";
+                               " where b = ? and k = ? and c = ? and d = ?";
 
    foundOne = false;
 
@@ -112,9 +118,11 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
    sqlStatement->BindSelectedColumn(&theN);
 
    success = sqlStatement->FetchRow(true);
@@ -129,6 +137,7 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
 
    success = sqlStatement->Execute();
    delete sqlStatement;
@@ -136,7 +145,7 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
    return success;
 }
 
-bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -146,35 +155,42 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
                              "   set CountInGroup = (select count(*) from Candidate " \
                              "                        where b = CandidateGroupStats.b " \
                              "                          and k = CandidateGroupStats.k " \
+                             "                          and d = CandidateGroupStats.d " \
                              "                          and c = CandidateGroupStats.c), " \
                              "       CountUntested = (select count(*) from Candidate " \
                              "                         where b = CandidateGroupStats.b " \
                              "                           and k = CandidateGroupStats.k " \
                              "                           and c = CandidateGroupStats.c " \
+                             "                           and d = CandidateGroupStats.d " \
                              "                           and (n < CandidateGroupStats.SierpinskiRieselPrimeN or SierpinskiRieselPrimeN = 0) " \
                              "                           and CompletedTests = 0), " \
                              "       CountTested = (select count(*) from Candidate " \
                              "                       where b = CandidateGroupStats.b " \
                              "                         and k = CandidateGroupStats.k " \
                              "                         and c = CandidateGroupStats.c " \
+                             "                         and d = CandidateGroupStats.d " \
                              "                         and CompletedTests > 0), " \
                              "       CountDoubleChecked = (select count(*) from Candidate " \
                              "                             where b = CandidateGroupStats.b " \
                              "                               and k = CandidateGroupStats.k " \
                              "                               and c = CandidateGroupStats.c " \
-                             "                                and DoubleChecked = 1), " \
+                             "                               and d = CandidateGroupStats.d " \
+                             "                               and DoubleChecked = 1), " \
                              "       CountInProgress = (select count(*) from Candidate " \
                              "                           where b = CandidateGroupStats.b " \
                              "                             and k = CandidateGroupStats.k " \
                              "                             and c = CandidateGroupStats.c " \
+                             "                             and d = CandidateGroupStats.d " \
                              "                             and HasPendingTest > 0), " \
                              "       MinInGroup = (select min(n) from Candidate " \
                              "                      where b = CandidateGroupStats.b " \
                              "                        and k = CandidateGroupStats.k " \
+                             "                        and d = CandidateGroupStats.d " \
                              "                        and c = CandidateGroupStats.c), " \
                              "       MaxInGroup = (select max(n) from Candidate " \
                              "                      where b = CandidateGroupStats.b " \
                              "                        and k = CandidateGroupStats.k " \
+                             "                        and d = CandidateGroupStats.d " \
                              "                        and c = CandidateGroupStats.c), " \
                              "       CompletedThru = %s, " \
                              "       LeadingEdge = ?, " \
@@ -182,12 +198,14 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
                              "                             where b = CandidateGroupStats.b " \
                              "                               and k = CandidateGroupStats.k " \
                              "                               and c = CandidateGroupStats.c " \
+                             "                               and d = CandidateGroupStats.d " \
                              "                               and MainTestResult > 0) " \
-                             " where b = ? and k = ? and c = ?";
+                             "                               and c = CandidateGroupStats.c " \
+                             " where b = ? and k = ? and c = ? and d = ?";
    const char   *selectNTT = "select $null_func$(min(n), 0) from Candidate " \
-                             " where b = ? and k = ? and c = ? and %s";
+                             " where b = ? and k = ? and c = ? and d = ? and %s";
    const char   *selectLE  = "select $null_func$(max(n), 0) from Candidate " \
-                             " where b = ? and k = ? and c = ? " \
+                             " where b = ? and k = ? and c = ? and d = ?" \
                              "   and (CompletedTests > 0 or HasPendingTest = 1)";
 
    if (ib_NeedsDoubleCheck)
@@ -201,6 +219,7 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
    sqlStatement->BindSelectedColumn(&nextToTest);
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
@@ -212,6 +231,7 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
    sqlStatement->BindSelectedColumn(&leadingEdge);
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
@@ -229,10 +249,10 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %d)", theB, theK, theC);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %d and d = %d)", theB, theK, theC, theD);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %d and n < %d), %d)",
-              theB, theK, theC, nextToTest, nextToTest);
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %d and d = %d and n < %d), %d)",
+              theB, theK, theC, theD, nextToTest, nextToTest);
 
    // Finally, update the group stats
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, completedSQL);
@@ -240,6 +260,7 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
    sqlStatement->BindInputParameter(theB);
    sqlStatement->BindInputParameter(theK);
    sqlStatement->BindInputParameter(theC);
+   sqlStatement->BindInputParameter(theD);
 
    success = sqlStatement->Execute();
 
@@ -249,11 +270,11 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
 }
 
 bool   SierpinskiRieselStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                                     int32_t theC, double decimalLength)
+                                                     int32_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
-                           "( CandidateName, DecimalLength, k, b, n, c, LastUpdateTime ) " \
-                           "values ( ?,?,?,?,?,?,? )";
+                           "( CandidateName, DecimalLength, k, b, n, c, d, LastUpdateTime ) " \
+                           "values ( ?,?,?,?,?,?,?,? )";
 
    if (!ip_CandidateLoader)
    {
@@ -264,6 +285,7 @@ bool   SierpinskiRieselStatsUpdater::InsertCandidate(string candidateName, int64
       ip_CandidateLoader->BindInputParameter(theB);
       ip_CandidateLoader->BindInputParameter(theN);
       ip_CandidateLoader->BindInputParameter(theC);
+      ip_CandidateLoader->BindInputParameter(theD);
       ip_CandidateLoader->BindInputParameter((int64_t) 1);
    }
 
@@ -273,6 +295,7 @@ bool   SierpinskiRieselStatsUpdater::InsertCandidate(string candidateName, int64
    ip_CandidateLoader->SetInputParameterValue(theB);
    ip_CandidateLoader->SetInputParameterValue(theN);
    ip_CandidateLoader->SetInputParameterValue(theC);
+   ip_CandidateLoader->SetInputParameterValue(theD);
    ip_CandidateLoader->SetInputParameterValue((int64_t) time(NULL));
 
    return ip_CandidateLoader->Execute();

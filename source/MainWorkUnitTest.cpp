@@ -10,24 +10,25 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
    ii_b = wu->i_b;
    ii_n = wu->i_n;
    ii_c = wu->i_c;
+   ii_d = wu->i_d;
 
    switch (serverType)
    {
       case ST_PRIMORIAL:
-        snprintf(tempName, sizeof(tempName), "%d#%+d", ii_b, ii_c);
-        break;
+         snprintf(tempName, sizeof(tempName), "%d#%+d", ii_b, ii_c);
+         break;
 
       case ST_FACTORIAL:
-        snprintf(tempName, sizeof(tempName), "%d!%+d", ii_b, ii_c);
-        break;
+         snprintf(tempName, sizeof(tempName), "%d!%+d", ii_b, ii_c);
+         break;
 
       case ST_MULTIFACTORIAL:
-        snprintf(tempName, sizeof(tempName), "%d!%d%+d", ii_b, ii_n, ii_c);
-        break;
+         snprintf(tempName, sizeof(tempName), "%d!%d%+d", ii_b, ii_n, ii_c);
+         break;
 
       case ST_GFN:
-        snprintf(tempName, sizeof(tempName), "%d^%d%+d", ii_b, ii_n, ii_c);
-        break;
+         snprintf(tempName, sizeof(tempName), "%d^%d%+d", ii_b, ii_n, ii_c);
+         break;
 
       case ST_XYYX:
          snprintf(tempName, sizeof(tempName), "%d^%d%c%d^%d", ii_b, ii_n, ((ii_c == 1) ? '+' : '-'), ii_n, ii_b);
@@ -39,15 +40,20 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
          break;
 
       case ST_CAROLKYNEA:
-        snprintf(tempName, sizeof(tempName), "(%d^%d%+d)^2-2", ii_b, ii_n, ii_c);
-        break;
+         snprintf(tempName, sizeof(tempName), "(%d^%d%+d)^2-2", ii_b, ii_n, ii_c);
+         break;
 
       case ST_WAGSTAFF:
-        snprintf(tempName, sizeof(tempName), "(2^%d+1)/3", ii_n);
-        break;
+         snprintf(tempName, sizeof(tempName), "(2^%d+1)/3", ii_n);
+         break;
 
       default:
-        snprintf(tempName, sizeof(tempName), "%" PRIu64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
+        if (il_k > 1 && ii_d > 1)
+           snprintf(tempName, sizeof(tempName), "(%" PRIu64"*%d^%d%+d)/%d", il_k, ii_b, ii_n, ii_c, ii_d);
+        else if (ii_d > 1)
+           snprintf(tempName, sizeof(tempName), "(%d^%d%+d)/%d", ii_b, ii_n, ii_c, ii_d);
+        else
+           snprintf(tempName, sizeof(tempName), "%" PRIu64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
         break;
    }
 

@@ -88,9 +88,9 @@ void    LengthCalculator::InitializePrimeSieve(void)
    free(lowPrimes);
 }
 
-double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, int32_t intN)
+double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, int32_t intN, int32_t intD)
 {
-   double    doubleK, doubleB, doubleN;
+   double    doubleK, doubleB, doubleN, doubleD;
    double    unroundedLength;
 
    switch (ii_ServerType)
@@ -142,12 +142,21 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
       case ST_SIERPINSKIRIESEL:
       case ST_FIXEDBKC:
       case ST_FIXEDBNC:
+         doubleK = (double)intK;
+         doubleB = (double)intB;
+         doubleN = (double)intN;
+         doubleD = (double)intD;
+
+         unroundedLength = log10(doubleB) * doubleN + log10(doubleK) - log10(doubleD);
+         break;
+
       case ST_TWIN:
       case ST_SOPHIEGERMAIN:
       case ST_TWINANDSOPHIE:
          doubleK = (double) intK;
          doubleB = (double) intB;
          doubleN = (double) intN;
+
          unroundedLength = log10(doubleB) * doubleN + log10(doubleK);
          break;
 

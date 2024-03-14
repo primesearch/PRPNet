@@ -14,46 +14,9 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
 
    id_Seconds = 0;
 
-   unlink(is_InFileName.c_str());
    unlink(is_OutFileName.c_str());
    unlink("lresults.txt");
    unlink("llr.ini");
-
-   tryCount = 1;
-   while ((fp = fopen(is_InFileName.c_str(), "wt")) == NULL)
-   {
-      // Try up to five times to open the file before bailing
-      if (tryCount < 5)
-      {
-         Sleep(500);
-         tryCount++;
-      }
-      else
-      {
-         ip_Log->LogMessage("%s: Could not open file [%s] for writing.  Exiting program",
-                            is_Suffix.c_str(), is_InFileName.c_str());
-         exit(-1);
-      }
-   }
-   
-   if (ii_ServerType == ST_CAROLKYNEA)
-   {
-      fprintf(fp, "ABC (%d^$a$b)^2-2\n", ii_b);
-      fprintf(fp, "%d %+d\n", ii_n, ii_c); 
-   }
-   else if (ii_ServerType == ST_WAGSTAFF)
-   {
-      fprintf(fp, "ABC (2^$a+1)/3\n");
-      fprintf(fp, "%d\n", ii_n); 
-   }
-   else
-   {
-      fprintf(fp, "ABC $a*$b^$c%+d\n", ii_c);
-      fprintf(fp, "%" PRIu64" %d %d\n", il_k, ii_b, ii_n); 
-   }
-
-   
-   fclose(fp);
 
    tryCount = 1;
    while ((fp = fopen("llr.ini", "wt")) == NULL)
@@ -73,7 +36,6 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
 
    fprintf(fp, "RunOnBattery=0\n");
    fprintf(fp, "Work=0\n");
-   fprintf(fp, "PgenInputFile=%s\n", is_InFileName.c_str());
    fprintf(fp, "PgenOutputFile=%s\n", is_OutFileName.c_str());
    fprintf(fp, "PgenLine=1\n");
    fprintf(fp, "WorkDone=0\n");
@@ -81,7 +43,7 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
       fprintf(fp, "Affinity=%u\n", ii_Affinity);
    fclose(fp);
 
-   snprintf(command, 100, "%s %s -d", is_ExeName.c_str(), is_ExeArguments.c_str());
+   snprintf(command, 100, "%s %s -q%s -d", is_ExeName.c_str(), is_ExeArguments.c_str(), is_WorkUnitName.c_str());
 
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 

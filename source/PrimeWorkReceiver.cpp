@@ -223,11 +223,11 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    result_t  mainTestResult;
    int32_t   ii;
    int64_t   theK;
-   int32_t   theB, theC, theN;
+   int32_t   theB, theC, theN, theD;
    double    decimalLength;
    int32_t   numberOfPRPs = 0, numberOfPrimes = 0;
    SQLStatement *sqlStatement;
-   const char *selectSQL = "select CompletedTests, DecimalLength, k, b, n, c " \
+   const char *selectSQL = "select CompletedTests, DecimalLength, k, b, n, c, d " \
                            "  from Candidate " \
                            " where CandidateName = ?";
    const char *updateSQL = "update Candidate " \
@@ -340,6 +340,7 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theN);
    sqlStatement->BindSelectedColumn(&theC);
+   sqlStatement->BindSelectedColumn(&theD);
    sqlStatement->FetchRow(true);
    delete sqlStatement;
    completedTests++;
@@ -388,9 +389,9 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    for (ii=0; ii<ii_TestResults; ii++)
    {
       if (ii == 0)
-         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), completedTests, ib_NeedsDoubleCheck, ib_ShowOnWebPage, decimalLength, theK, theB, theN, theC);
+         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), completedTests, ib_NeedsDoubleCheck, ib_ShowOnWebPage, decimalLength, theK, theB, theN, theC, theD);
       else
-         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), ip_TestResult[0], ib_ShowOnWebPage, decimalLength, theK, theB, theN, theC);
+         ip_TestResult[ii]->LogResults(ip_Socket->GetSocketID(), ip_TestResult[0], ib_ShowOnWebPage, decimalLength, theK, theB, theN, theC, theD);
 
       if (ip_TestResult[ii]->HadSQLError())
          return CT_SQL_ERROR;
@@ -491,9 +492,9 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t main
 {
    SQLStatement *sqlStatement;
    int64_t     theK;
-   int32_t     theB, theC, theN;
+   int32_t     theB, theC, theN, theD;
    bool        success;
-   const char *selectSQL = "select k, b, c, n " \
+   const char *selectSQL = "select k, b, c, d, n " \
                            "  from Candidate " \
                            " where CandidateName = ?";
    const char *updateSQL = "update CandidateGroupStats " \
@@ -503,6 +504,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t main
                            " where k = %" PRIu64 " " \
                            "   and b = %d " \
                            "   and c = %d " \
+                           "   and d = %d " \
                            "   and CountInProgress > 0 ";
 
 
@@ -511,6 +513,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t main
    sqlStatement->BindSelectedColumn(&theK);
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theC);
+   sqlStatement->BindSelectedColumn(&theD);
    sqlStatement->BindSelectedColumn(&theN);
     
    success = sqlStatement->FetchRow(true);
@@ -520,7 +523,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t main
    if (!success)
       return false;
 
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theK, theB, theC);
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theK, theB, theC, theD);
 
    // It is okay if no rows are updated as we don't want CountInProgress to go negative
    success = sqlStatement->Execute();
@@ -540,7 +543,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t main
       return success;
 
    SierpinskiRieselStatsUpdater *sp = (SierpinskiRieselStatsUpdater *) ip_StatsUpdater;
-   success = sp->SetSierspinkiRieselPrimeN(theK, theB, theC, theN); 
+   success = sp->SetSierspinkiRieselPrimeN(theK, theB, theC, theD, theN); 
 
    if (!success)
       ip_DBInterface->Rollback();

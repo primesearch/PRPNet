@@ -19,7 +19,7 @@ public:
    // be used with this server
    bool     IsValidFormat(void);
 
-   int32_t  GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC);
+   int32_t  GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC, int32_t &theD);
 
 private:
    int32_t  ii_ABCFormat;
@@ -34,6 +34,7 @@ private:
    int32_t  ii_theB;
    int32_t  ii_theN;
    int32_t  ii_theC;
+   int32_t  ii_theD;
 
    string   is_ABCFile;
 

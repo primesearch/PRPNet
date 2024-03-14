@@ -61,6 +61,11 @@ static const char *wagstaffstring = "(2^$a+1)/3";
 static const char *fkabcdstring = "%" PRIu64"*%d^$a%d [%d]";
 static const char *fnabcdstring = "$a*%d^%d%d [%" PRIu64"]";
 
+static const char* dgt1string1 = "(%" PRIu64"*%d^$a%d)/%d [%d]";
+static const char* dgt1string2 = "(%" PRIu64"*%d^$a%d)/%d";
+static const char* dgt1string3 = "(*%d^$a%d)/%d [%d]";
+static const char* dgt1string4 = "(*%d^$a%d)/%d";
+
 #define ABC_UNKNOWN      0
 #define ABC_CW_FB       10
 #define ABC_CW_FBP      11
@@ -98,6 +103,11 @@ static const char *fnabcdstring = "$a*%d^%d%d [%" PRIu64"]";
 
 #define ABC_CK         121
 #define ABC_WAGSTAFF   122
+
+#define ABC_DGT1A      131
+#define ABC_DGT1B      132
+#define ABC_DGT1C      133
+#define ABC_DGT1D      134
 
 #define ABCD_FK        201
 #define ABCD_FN        202
@@ -174,7 +184,14 @@ bool  ABCParser::IsValidFormat(void)
           ii_ABCFormat == ABC_VP  || ii_ABCFormat == ABC_VM  || ii_ABCFormat == ABC_VA  ||
           ii_ABCFormat == ABCD_FK || ii_ABCFormat == ABCD_FN || ii_ABCFormat == ABC_FKB)
          return true;
- 
+
+   if (ii_ServerType == ST_SIERPINSKIRIESEL ||
+       ii_ServerType == ST_FIXEDBKC ||
+       ii_ServerType == ST_FIXEDBNC)
+      if (ii_ABCFormat == ABC_DGT1A || ii_ABCFormat == ABC_DGT1B ||
+          ii_ABCFormat == ABC_DGT1C|| ii_ABCFormat == ABC_DGT1D)
+         return true;
+
    if (ii_ServerType == ST_CULLENWOODALL)
       if (ii_ABCFormat == ABC_CW_FBP || ii_ABCFormat == ABC_CW_FBM || ii_ABCFormat == ABC_CW_FBA ||
           ii_ABCFormat == ABC_CW_VBP || ii_ABCFormat == ABC_CW_VBM || ii_ABCFormat == ABC_CW_VBA ||
@@ -276,6 +293,12 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
       ib_firstABCDLine = true;
 
+      if (sscanf(tempHeader, dgt1string1, &il_theK, &ii_theB, &ii_theC, &ii_theD, &ii_theN) == 5)
+         return ABC_DGT1A;
+
+      if (sscanf(tempHeader, dgt1string3, &ii_theB, &ii_theC, &ii_theD, &ii_theN) == 4)
+         return ABC_DGT1C;
+
       if (sscanf(tempHeader, fkabcdstring, &il_theK, &ii_theB, &ii_theC, &ii_theN) == 4)
           return ABCD_FK;
 
@@ -309,6 +332,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    strcpy(tempHeader, abcHeader.c_str() + 4);
    pos = strchr(tempHeader, ' ');
    if (pos) *pos = 0;
+
+   if (sscanf(tempHeader, dgt1string2, &il_theK, &ii_theB, &ii_theC, &ii_theD) == 4) return ABC_DGT1B;
+   if (sscanf(tempHeader, dgt1string4, &ii_theB, &ii_theC, &ii_theD) == 3) return ABC_DGT1B;
 
    if (strstr(tempHeader, "$b") == NULL)
    {
@@ -451,7 +477,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    return ABC_UNKNOWN;
 }
 
-int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC)
+int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC, int32_t &theD)
 {
    char     abcLine[200], *theMessage;
    char     tempName[BUFFER_SIZE];
@@ -519,6 +545,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          if (ii_ABCFormat == ABC_UNKNOWN)
          {
             theC = 0;
+            theD = 0;
             return true;
          }
 
@@ -528,6 +555,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          {
             ip_Socket->Send("ERR: Unable to parse line [%s] from ABC file.  Processing stopped\n", theMessage);
             theC = 0;
+            theD = 0;
             return true;
          }
       
@@ -538,6 +566,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
             ii_theB = 0;
             ii_theN = 0;
             ii_theC = 0;
+            ii_theD = 0;
          }
       }
    }
@@ -552,7 +581,15 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       case ST_SOPHIEGERMAIN:
       case ST_TWIN:
       case ST_TWINANDSOPHIE:
-         snprintf(tempName, BUFFER_SIZE, "%" PRIu64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
+         if (ii_theD > 1)
+         {
+            if (il_theK > 1)
+               snprintf(tempName, BUFFER_SIZE, "(%" PRIu64"*%d^%d%+d)/%d", il_theK, ii_theB, ii_theN, ii_theC, ii_theD);
+            else
+               snprintf(tempName, BUFFER_SIZE, "(%d^%d%+d)/%d", ii_theB, ii_theN, ii_theC, ii_theD);
+         }
+         else
+            snprintf(tempName, BUFFER_SIZE, "%" PRIu64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
          break;
 
       case ST_CULLENWOODALL:
@@ -603,6 +640,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
    theB = ii_theB;
    theN = ii_theN;
    theC = ii_theC;
+   theD = ii_theD;
    theName = tempName;
 
    return true;
@@ -619,8 +657,17 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
    if (ii_ABCFormat == NOT_ABC)
       return true;
 
+   // This is only used for Sierpinski/Riesel forms, but numerous ABC/ABCD formats are used for
+   // Sierpinski/Riesel, so we use this for a catch all when we know that d = 1.The 
+   if (ii_ABCFormat != ABC_DGT1A && ii_ABCFormat != ABC_DGT1B &&
+       ii_ABCFormat != ABC_DGT1C && ii_ABCFormat != ABC_DGT1D)
+      ii_theD = 1;
+
    switch (ii_ABCFormat)
    {
+      case ABC_DGT1C:
+         il_theK = 1;
+      case ABC_DGT1A:
       case ABCD_FK:
          if (sscanf(tempLine, "%d", &value32) != 1) return false;
          ii_theN += value32;
@@ -678,7 +725,11 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theN, &ii_theC) != 3) return false;
          return true;
 
+      case ABC_DGT1D:
+         il_theK = 1;
+      case ABC_DGT1B:
       case ABC_FKB:
+         ii_theD = 1;
          if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
          return true;
 

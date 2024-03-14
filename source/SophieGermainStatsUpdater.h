@@ -14,7 +14,7 @@ private:
    bool  UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC);
 
    bool  InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                         int32_t theC, double decimalLength);
+                                               int32_t theC, int32_t theD, double decimalLength);
 };
 
 #endif // #ifndef _SophieGermainStatsUpdater_

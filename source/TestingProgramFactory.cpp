@@ -185,6 +185,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
    {
       if (theD > 1)
       {
+         if (ip_PRSTProgram) return ip_PRSTProgram;
          if (ip_LLRProgram)   return ip_LLRProgram;
          if (ip_PFGWProgram)  return ip_PFGWProgram;
       }
@@ -224,6 +225,9 @@ TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t server
          return 0;
       case ST_FIXEDBKC:
       case ST_FIXEDBNC:
+         if (theD != 1)
+            return 0;
+
          if (theC > 1 || theC < -1)
             return 0;
 
@@ -238,6 +242,9 @@ TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t server
       case ST_CULLENWOODALL:
       case ST_TWIN:
       case ST_TWINANDSOPHIE:
+         if (theD != 1)
+            return 0;
+
          if (ip_PRSTProgram)  return ip_PRSTProgram;
          if (ip_PFGWProgram)  return ip_PFGWProgram;
          break;

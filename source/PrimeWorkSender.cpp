@@ -106,6 +106,11 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
          ip_Socket->Send("End of Message");
          return;
       }
+   } if (!CanHandleDGT1WhenDGT1())
+   {
+      ip_Socket->Send("ERROR:  The client must be updated to at least 5.7.0 to use this server");
+      ip_Socket->Send("End of Message");
+      return;
    }
    else
    {
@@ -216,14 +221,14 @@ int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, dou
    SQLStatement *selectStatement;
    char     candidateName[NAME_LENGTH+1];
    int64_t  theK, lastUpdateTime = 0;
-   int32_t  theB, theC, theN;
+   int32_t  theB, theC, theN, theD;
    double   decimalLength = 0.0;
    bool     encounteredError;
    int32_t  sentWorkUnits;
 
    // This will not double-check primes.  That will be changed in the future.
    const char *selectSQL = "select CandidateName, DecimalLength, LastUpdateTime, " \
-                           "       k, b, c, n " \
+                           "       k, b, c, n, d " \
                            "  from Candidate " \
                            " where HasPendingTest = 0 " \
                            "   and $null_func$(MainTestResult, 0) = 0 " \
@@ -248,6 +253,7 @@ int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, dou
    selectStatement->BindSelectedColumn(&theB);
    selectStatement->BindSelectedColumn(&theC);
    selectStatement->BindSelectedColumn(&theN);
+   selectStatement->BindSelectedColumn(&theD);
 
    sentWorkUnits = 0;
    encounteredError = false;
@@ -286,7 +292,7 @@ int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, dou
          {
             ip_Log->Debug(DEBUG_WORK, "Double check for candidate %s", candidateName);
 
-            if (SendWork(candidateName, theK, theB, theN, theC))
+            if (SendWork(candidateName, theK, theB, theN, theC, theD))
             {
                sentWorkUnits++;
                ip_DBInterface->Commit();
@@ -318,7 +324,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
    SQLStatement *selectStatement;
    char     candidateName[NAME_LENGTH+1];
    int64_t  theK;
-   int32_t  theB, theC, theN = 0;
+   int32_t  theB, theC, theD, theN = 0;
    int32_t  sierpinskiRieselPrimeN;
    int32_t  countInProgress;
    bool     encounteredError;
@@ -329,20 +335,21 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
     
    // This will allow a second client to grab the same k, b, c that another client has
    // but only if no clients have that k, b, c assigned to them.
-   const char* selectKBCSQL1 = "select distinct k, b, c, CountInProgress, SierpinskiRieselPrimeN " \
+   const char* selectKBCSQL1 = "select distinct k, b, c, d, CountInProgress, SierpinskiRieselPrimeN " \
 	                           "  from CandidateGroupStats cgs " \
 	                           " where SierpinskiRieselPrimeN = 0 " \
 	                           "   and CountUntested > CountInProgress " \
-	                           "order by CountInProgress, k, b, c ";
+	                           "order by CountInProgress, k, b, c, d ";
 
    // In the second pass, look for n < SierpinskiRieselPrimeN without a test
-   const char* selectKBCSQL2 = "select distinct k, b, c, CountInProgress, SierpinskiRieselPrimeN " \
+   const char* selectKBCSQL2 = "select distinct k, b, c, d, CountInProgress, SierpinskiRieselPrimeN " \
 	                           "  from CandidateGroupStats cgs " \
 	                           " where SierpinskiRieselPrimeN > (select min(n) " \
                                                               "   from Candidate " \
                                                               "  where b = cgs.b " \
                                                               "    and k = cgs.k " \
                                                               "    and c = cgs.c " \
+                                                              "    and d = cgs.d " \
                                                               "    and CompletedTests = 0 " \
                                                               "    and HasPendingTest = 0) " \
 	                           "   and CountUntested > CountInProgress " \
@@ -356,6 +363,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
                            "   and k = %" PRIu64" " \
                            "   and b = %d " \
                            "   and c = %d " \
+                           "   and d = %d " \
                            "   and n < %d " \
                            "order by %s limit 100";
 
@@ -367,6 +375,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
                             "   and k = %" PRIu64" " \
                             "   and b = %d " \
                             "   and c = %d " \
+                            "   and d = %d " \
                             "order by %s limit 100";
 
    // Allow only one thread through this method at a time since each thread
@@ -381,15 +390,16 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
    selectKBCStatement->BindSelectedColumn(&theK);
    selectKBCStatement->BindSelectedColumn(&theB);
    selectKBCStatement->BindSelectedColumn(&theC);
+   selectKBCStatement->BindSelectedColumn(&theD);
    selectKBCStatement->BindSelectedColumn(&countInProgress);
    selectKBCStatement->BindSelectedColumn(&sierpinskiRieselPrimeN);
    
    if (selectKBCStatement->FetchRow(false))
    {
       if (sierpinskiRieselPrimeN > 0)
-   	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1, theK, theB, theC, sierpinskiRieselPrimeN, is_OrderBy.c_str());
+   	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1, theK, theB, theC, theD, sierpinskiRieselPrimeN, is_OrderBy.c_str());
       else
-         selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2, theK, theB, theC, is_OrderBy.c_str());
+         selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2, theK, theB, theC, theD, is_OrderBy.c_str());
 
 	   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
 	   selectStatement->BindSelectedColumn(&theN);
@@ -409,7 +419,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
 			{
 				ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
 
-				if (SendWork(candidateName, theK, theB, theN, theC))
+				if (SendWork(candidateName, theK, theB, theN, theC, theD))
 				{
 					sentWorkUnits++;
 					ip_DBInterface->Commit();
@@ -497,7 +507,7 @@ int32_t  PrimeWorkSender::SelectGFNCandidates(int32_t sendWorkUnits)
          {
             ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
 
-            if (SendWork(candidateName, 0, theB, theN, 0))
+            if (SendWork(candidateName, 0, theB, theN, 0, 0))
             {
                sentWorkUnits++;
                ip_DBInterface->Commit();
@@ -528,18 +538,18 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
    SQLStatement *selectStatement;
    char     candidateName[NAME_LENGTH+1];
    int64_t  theK;
-   int32_t  theB, theC, theN;
+   int32_t  theB, theC, theN, theD;
    bool     encounteredError;
    int32_t  sentWorkUnits;
 
-   const char *selectSQL1 = "select CandidateName, k, b, c, n " \
+   const char *selectSQL1 = "select CandidateName, k, b, c, n, d " \
                             "  from Candidate c " \
                             " where HasPendingTest = 0 " \
                             "   and CompletedTests = 0 " \
                             "   and DecimalLength > 0 " \
                             "order by %s limit 500";
 
-   const char *selectSQL2 = "select c.CandidateName, c.k, c.b, c.c, c.n " \
+   const char *selectSQL2 = "select c.CandidateName, c.k, c.b, c.c, c.n, c.d " \
                             "  from Candidate c, CandidateGroupStats cgs" \
                             " where c.HasPendingTest = 0 " \
                             "   and c.CompletedTests = 0 " \
@@ -547,6 +557,7 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
                             "   and c.k = cgs.k " \
                             "   and c.b = cgs.b " \
                             "   and c.c = cgs.c " \
+                            "   and c.d = cgs.d " \
                             "   and (c.n < cgs.SierpinskiRieselPrimeN or cgs.SierpinskiRieselPrimeN = 0) " \
                             "order by %s limit 500";
 
@@ -560,6 +571,7 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
    selectStatement->BindSelectedColumn(&theB);
    selectStatement->BindSelectedColumn(&theC);
    selectStatement->BindSelectedColumn(&theN);
+   selectStatement->BindSelectedColumn(&theD);
 
    sentWorkUnits = 0;
    encounteredError = false;
@@ -583,7 +595,7 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
       {
          ip_Log->Debug(DEBUG_WORK, "First check for candidate %s", candidateName);
 
-         if (SendWork(candidateName, theK, theB, theN, theC))
+         if (SendWork(candidateName, theK, theB, theN, theC, theD))
          {
             sentWorkUnits++;
             ip_DBInterface->Commit();
@@ -606,6 +618,33 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
    delete selectStatement;
 
    return sentWorkUnits;
+}
+
+bool     PrimeWorkSender::CanHandleDGT1WhenDGT1(void)
+{
+   // These are the only server types where it is possible for d > 1.
+   if (ii_ServerType != ST_SIERPINSKIRIESEL && ii_ServerType != ST_FIXEDBKC && ii_ServerType != ST_FIXEDBNC)
+      return true;
+
+   // The client is at least 5.7.0, so it can handle d > 1.
+   if (memcmp(is_ClientVersion.c_str(), "5.7", 3) >= 0)
+      return true;
+
+   SQLStatement* sqlStatement;
+   int32_t       theD;
+   const char*   selectSQL = "select max(d) from CandidateGroupStats";
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
+   sqlStatement->BindSelectedColumn(&theD);
+
+   if (sqlStatement->FetchRow(true))
+   {
+      delete sqlStatement;
+      return (theD == 1);
+   }
+
+   delete sqlStatement;
+   return false;
 }
 
 bool     PrimeWorkSender::CheckGenefer(string candidateName)
@@ -780,7 +819,7 @@ bool     PrimeWorkSender::ReserveCandidate(string candidateName)
    return UpdateGroupStats(candidateName);
 }
 
-bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
 {
    int64_t  lastUpdateTime;
    bool     sent;
@@ -827,8 +866,11 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
       sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %" PRIu64" %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN);
    else if (ii_ServerType == ST_WAGSTAFF)
       sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %d", candidateName.c_str(), lastUpdateTime, theN);
-   else 
-      sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %" PRIu64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
+   else
+      if (theD > 1)
+         sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %" PRIu64" %d %u %d %u", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC, theD);
+      else
+         sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %" PRIu64" %d %u %d", candidateName.c_str(), lastUpdateTime, theK, theB, theN, theC);
 
    threadWaiter->Release();
 
@@ -854,9 +896,9 @@ bool     PrimeWorkSender::UpdateGroupStats(string candidateName)
 {
    SQLStatement* sqlStatement;
    int64_t     theK;
-   int32_t     theB, theC;
+   int32_t     theB, theC, theD;
    bool        success;
-   const char* selectSQL = "select k, b, c " \
+   const char* selectSQL = "select k, b, c, d " \
                            "  from Candidate " \
                            " where CandidateName = ?";
    const char* updateSQL = "update CandidateGroupStats " \
@@ -864,6 +906,7 @@ bool     PrimeWorkSender::UpdateGroupStats(string candidateName)
                            " where k = %" PRIu64 " " \
                            "   and b = %d " \
                            "   and c = %d ";
+                           "   and d = %d ";
 
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
@@ -871,6 +914,7 @@ bool     PrimeWorkSender::UpdateGroupStats(string candidateName)
    sqlStatement->BindSelectedColumn(&theK);
    sqlStatement->BindSelectedColumn(&theB);
    sqlStatement->BindSelectedColumn(&theC);
+   sqlStatement->BindSelectedColumn(&theD);
 
    success = sqlStatement->FetchRow(true);
 

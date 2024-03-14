@@ -5,7 +5,7 @@ void SierpinskiRieselHTML::ServerStats(void)
 {
    SQLStatement *sqlStatement;
    int64_t     k;
-   int32_t     b, c, prevB, prevC;
+   int32_t     b, c, d, prevB, prevC, prevD;
    int32_t     kCountInGroup, kMinN, kMaxN, kCountInProgress;
    int32_t     kCountedTested, kCountDoubleChecked, kCountUntested;
    int32_t     kCompletedThru, kLeadingEdge, kPRPsAndPrimesFound, sierpinskiRieselPrimeN;
@@ -18,18 +18,19 @@ void SierpinskiRieselHTML::ServerStats(void)
    int32_t     totalUntested = 0, totalCompletedThru = 999999999, totalLeadingEdge = 999999999;
    int32_t     totalPRPsAndPrimesFound = 0, totalCountInProgress = 0, totalTestsSkipped = 0;
 
-   const char *theSelect = "select k, b, c, CountInGroup, MinInGroup, MaxInGroup, " \
+   const char *theSelect = "select k, b, c, d, CountInGroup, MinInGroup, MaxInGroup, " \
                            "       CountTested, CountDoubleChecked, CountUntested, " \
                            "       CountInProgress, CompletedThru, LeadingEdge, PRPandPrimesFound, " \
                            "       SierpinskiRieselPrimeN " \
                            "  from CandidateGroupStats " \
-                           "order by b, c, k";
+                           "order by b, c, k, d";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect);
 
    sqlStatement->BindSelectedColumn(&k);
    sqlStatement->BindSelectedColumn(&b);
    sqlStatement->BindSelectedColumn(&c);
+   sqlStatement->BindSelectedColumn(&d);
    sqlStatement->BindSelectedColumn(&kCountInGroup);
    sqlStatement->BindSelectedColumn(&kMinN);
    sqlStatement->BindSelectedColumn(&kMaxN);
@@ -126,6 +127,7 @@ void SierpinskiRieselHTML::ServerStats(void)
 
          prevB = b;
          prevC = c;
+         prevD = d;
 
          totalKs += conjectureKs;
          totalPRPsAndPrimesFound += conjecturePRPsAndPrimesFound;
@@ -169,10 +171,20 @@ void SierpinskiRieselHTML::ServerStats(void)
       {
          ip_Socket->Send("<tr class=\"%s\">", ((sierpinskiRieselPrimeN > 0) ? "found" : (kCountUntested ? "untested" : "tested")));
 
-         if (k > 1)
-            ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
+         if (d > 1)
+         {
+            if (k > 1)
+               ip_Socket->Send("<th scope=\"row\">(%" PRIu64"*%d^<var>n</var>%+d)/%d</th>", k, b, c, d);
+            else
+               ip_Socket->Send("<th scope=\"row\">(%d^<var>n</var>%+d)/%d</th>", b, c, d);
+         }
          else
-            ip_Socket->Send("<th scope=\"row\">%d^<var>n</var>%+d</th>", b, c);
+         {
+            if (k > 1)
+               ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
+            else
+               ip_Socket->Send("<th scope=\"row\">%d^<var>n</var>%+d</th>", b, c);
+         }
 
          TD_32BIT(kCountInGroup);
          TD_32BIT(kMinN);

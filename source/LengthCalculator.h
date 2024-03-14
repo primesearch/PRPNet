@@ -13,7 +13,7 @@ public:
 
    ~LengthCalculator();
 
-   double     CalculateDecimalLength(int64_t intK, int32_t intB, int32_t intN);
+   double     CalculateDecimalLength(int64_t intK, int32_t intB, int32_t intN, int32_t intD);
    void       CalculateDecimalLengths(Socket *theSocket);
 
 private:

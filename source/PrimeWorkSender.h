@@ -38,10 +38,11 @@ private:
    int32_t     SelectOneKPerClientCandidates(int32_t sendWorkUnits, bool firstPass);
    int32_t     SelectGFNCandidates(int32_t sendWorkUnits);
    int32_t     SelectCandidates(int32_t sendWorkUnits);
+   bool        CanHandleDGT1WhenDGT1(void);
    bool        CheckGenefer(string candidateName);
    bool        CheckDoubleCheck(string candidateName, double decimalLength, int64_t lastUpdateTime);
    bool        ReserveCandidate(string candidateName);
-   bool        SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC);
+   bool        SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD);
    bool        UpdateGroupStats(string candidateName);
 };
 

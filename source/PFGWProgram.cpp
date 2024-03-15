@@ -10,7 +10,7 @@ void     PFGWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWor
 testresult_t   PFGWProgram::Execute(testtype_t testType)
 {
    char           command[200], sign, * normalPriority;
-   char           affinity[20];
+   char           affinity[20], newBase[20];
    testresult_t   testResult;
    int32_t        aValue;
    FILE          *fp;
@@ -49,12 +49,20 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    else
       sign = ((ii_c > 0) ? 'm' : 'p');
 
-   if (ii_Affinity > 0)
-      snprintf(affinity, 20, "-A%u", ii_Affinity);
-   else
-      affinity[0] = 0;
+   newBase[0] = 0;
+   affinity[0] = 0;
+   normalPriority[0] = 0;
 
-   normalPriority = (char*)(ii_NormalPriority ? "-N" : "");
+   if (ii_Affinity > 0)
+      snprintf(affinity, sizeof(affinity), "-A%u", ii_Affinity);
+
+   // If k = 1 and b mod 3 = 0, then choose a base 5 for the PRP test
+   if (il_k == 1 && ii_b % 3 == 0)
+      if (ii_ServerType == ST_SIERPINSKIRIESEL || ii_ServerType == ST_FIXEDBKC || ii_ServerType == ST_FIXEDBNC)
+         strcat(newBase, "-b 5");
+
+   if (ii_NormalPriority)
+      strcat(normalPriority, "-N");
 
    do
    {
@@ -75,8 +83,8 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
       switch (testType)
       {
          case TT_PRP:
-            snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -l%s %s",
-                    is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
+            snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -l%s %s %s",
+                    is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), newBase, is_InFileName.c_str());
             break;
 
          case TT_PRIMALITY:

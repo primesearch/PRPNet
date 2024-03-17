@@ -1,5 +1,8 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.7.2:  March 17, 2024 - New Release
+    prpclient:  Fix issue with fixed kbn and fixed bnc formats introduced in 5.7.1.
+                
 Version 5.7.1:  March 15, 2024 - New Release
     prpclient:  For generalized repunits, if using pfgw for the PRP test and b % 3 = 0, then
                 tell pfgw to use base 5 for the PRP test.

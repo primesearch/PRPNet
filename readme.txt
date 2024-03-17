@@ -1,4 +1,4 @@
-Welcome to PRPNet Client/Server Version 5.3.2 (July 2014)
+Welcome to PRPNet Client/Server
 
 What is PRPNet?
     PRPNet is a distributed Client/Server application that can used to manage

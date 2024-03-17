@@ -9,7 +9,7 @@ void     PFGWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWor
 
 testresult_t   PFGWProgram::Execute(testtype_t testType)
 {
-   char           command[200], sign, * normalPriority;
+   char           command[200], sign, normalPriority[20];
    char           affinity[20], newBase[20];
    testresult_t   testResult;
    int32_t        aValue;

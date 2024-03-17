@@ -284,6 +284,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    char     tempHeader[200];
 
    ib_firstABCDLine = false;
+   il_theK = 0;
+   ii_theB = ii_theN = ii_theD = 0;
+   ii_theC = 0;
 
    strcpy(tempHeader, abcHeader.c_str());
 
@@ -665,14 +668,6 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
 
    switch (ii_ABCFormat)
    {
-      case ABC_DGT1C:
-         il_theK = 1;
-      case ABC_DGT1A:
-      case ABCD_FK:
-         if (sscanf(tempLine, "%d", &value32) != 1) return false;
-         ii_theN += value32;
-         return true;
-
       case ABCD_FN:
          if (sscanf(tempLine, "%lld", &value64) != 1) return false;
          il_theK += value64;
@@ -725,9 +720,25 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theN, &ii_theC) != 3) return false;
          return true;
 
+      case ABC_DGT1C:
+         il_theK = 1;
+      case ABC_DGT1A:
+         if (sscanf(tempLine, "%d", &value32) != 1) return false;
+         ii_theN += value32;
+         return true;
+
+      case ABCD_FK:
+         ii_theD = 1;
+         if (sscanf(tempLine, "%d", &value32) != 1) return false;
+         ii_theN += value32;
+         return true;
+
       case ABC_DGT1D:
          il_theK = 1;
       case ABC_DGT1B:
+         if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
+         return true;
+
       case ABC_FKB:
          ii_theD = 1;
          if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;

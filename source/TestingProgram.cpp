@@ -15,8 +15,9 @@ TestingProgram::TestingProgram(Log *theLog, string programName)
    ib_IsPRP = ib_IsPrime = ib_TestFailure = false;
    is_Residue.clear();
    ip_FirstGFN = 0;
-   ii_Affinity = -1;
+   is_CpuAffinity = "";
    ii_NormalPriority = 0;
+   ii_GpuAffinity = -1;
 }
 
 void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUnitName,

@@ -9,12 +9,12 @@ void     PFGWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWor
 
 testresult_t   PFGWProgram::Execute(testtype_t testType)
 {
-   char           command[200], sign, normalPriority[20];
-   char           affinity[20], newBase[20];
+   char           command[200], sign, normalPriority[20], fftSize[20];
+   char           affinity[20], newBase[20], primalityValue[20];
+   char           pfgwArguments[200];
    testresult_t   testResult;
-   int32_t        aValue;
    FILE          *fp;
-   int            tryCount;
+   int32_t        tryCount, a;
 
    unlink(is_InFileName.c_str());
    unlink("pfgw.ini");
@@ -41,7 +41,6 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    fprintf(fp, "%s", is_WorkUnitName.c_str());
    fclose(fp);
 
-   aValue = (testType == TT_GFN ? 2 : 0);
    if (ii_ServerType == ST_CYCLOTOMIC)
       sign = 'm';
    else if (ii_ServerType == ST_CAROLKYNEA)
@@ -49,14 +48,19 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    else
       sign = ((ii_c > 0) ? 'm' : 'p');
 
+   primalityValue[0] = 0;
    newBase[0] = 0;
    affinity[0] = 0;
    normalPriority[0] = 0;
 
-   if (ii_Affinity > 0)
-      snprintf(affinity, sizeof(affinity), "-A%u", ii_Affinity);
+   if (testType == TT_PRIMALITY)
+      snprintf(primalityValue, sizeof(primalityValue), "-e%d -t%c", ii_b, sign);
 
-   // If k = 1 and b mod 3 = 0, then choose a base 5 for the PRP test
+   if (is_CpuAffinity.length() > 0)
+      snprintf(affinity, sizeof(affinity), "-A%s", is_CpuAffinity.c_str());
+
+   // If k = 1 and b mod 3 = 0, then choose a base 5 for the PRP test as the default is base 3
+   // and the PRP test is likely to yield bad results.
    if (il_k == 1 && ii_b % 3 == 0)
       if (ii_ServerType == ST_SIERPINSKIRIESEL || ii_ServerType == ST_FIXEDBKC || ii_ServerType == ST_FIXEDBNC)
          strcat(newBase, "-b 5");
@@ -64,13 +68,32 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    if (ii_NormalPriority)
       strcat(normalPriority, "-N");
 
+   // Start with a larger FFT size for GFNs.
+   a = (testType == TT_GFN ? 2 : 0);
+
    do
    {
+      fftSize[0] = 0;
+
+      if (a > 0)
+         snprintf(fftSize, sizeof(fftSize), "-a%u", a);
+
+      // -k   terse output
+      // -f0  prevents trail factoring
+      // -a<> changes the FFT size which helps avoid FFT failures
+      // -b<> changes the base
+      // -A<> sets CPU affinity
+      // -N   normal priority (by default, pfgw runs at low priority)
+      // -e<> increases likelihood that PFGW will get to 33% factorization for primarily tests.  This
+      //      is primarity an issue with GFNs and not other forms as GFNs have large bases.
+      // -t<> ensures the correct type of primality test is run
+      snprintf(pfgwArguments, sizeof(pfgwArguments), "-k -f0 %s %s %s %s %s", fftSize, newBase, affinity, normalPriority, primalityValue);
+
       ib_TestFailure = false;
 
-      if (aValue > 2)
+      if (a > 2)
       {
-         ip_Log->LogMessage("%s: PFGW failed on WorkUnit %s for both -a1 and -a2.  Exiting program",
+         ip_Log->LogMessage("%s: PFGW failed on WorkUnit %s for multiple FFT sizes.  Exiting program",
                             is_Suffix.c_str(), is_WorkUnitName.c_str());
          exit(-1);
       }
@@ -80,34 +103,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
       if (ii_ServerType == ST_GENERIC)
          DetermineDecimalLength();
 
-      switch (testType)
-      {
-         case TT_PRP:
-            snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -l%s %s %s",
-                    is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), newBase, is_InFileName.c_str());
-            break;
-
-         case TT_PRIMALITY:
-            // Use -e to increase likelihood that PFGW will get to 33% factorization, which
-            // is necessary for a primality proof.  This is an issue with GFNs which tend to
-            // have large bases.
-            if (ii_ServerType == ST_CYCLOTOMIC)
-               snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -t%c -l%s %s",
-                       is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, sign, is_OutFileName.c_str(), is_InFileName.c_str());
-            else
-               snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -e%d -t%c -l%s %s",
-                       is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, ii_b, sign, is_OutFileName.c_str(), is_InFileName.c_str());
-            break;
-
-         case TT_GFN:
-            snprintf(command, 200, "%s %s %s -k -f0 %s -a%d -gxo -l%s %s", 
-                    is_ExeName.c_str(), is_ExeArguments.c_str(), affinity, normalPriority, aValue, is_OutFileName.c_str(), is_InFileName.c_str());
-            break;
-
-         default:
-            printf("Unhandled case for test type %d\n", (int32_t) testType);
-            exit(0);
-      }
+      snprintf(command, 200, "%s %s %s -l%s %s", is_ExeName.c_str(), is_ExeArguments.c_str(), pfgwArguments, is_OutFileName.c_str(), is_InFileName.c_str());
 
       ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
@@ -115,7 +111,8 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
 
       testResult = ParseTestResults(testType);
 
-      aValue++;
+      // Increase FFT size and try again.
+      a++;
    } while (ib_TestFailure);
 
    unlink(is_InFileName.c_str());

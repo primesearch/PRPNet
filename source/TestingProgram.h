@@ -58,7 +58,9 @@ public:
 
    void        SetNormalPriority(int32_t normalPriority) { ii_NormalPriority = normalPriority; };
 
-   void        SetAffinity(int32_t affinity) { ii_Affinity = affinity; };
+   void        SetCpuAffinity(string cpuAffinity) { is_CpuAffinity = cpuAffinity; };
+
+   void        SetGpuAffinity(uint32_t gpuAffinity) { ii_GpuAffinity = gpuAffinity; };
 
    virtual void SendStandardizedName(Socket *theSocket, uint32_t returnWorkUnit) {};
 
@@ -76,7 +78,8 @@ protected:
    string      is_InFileName;
    string      is_OutFileName;
 
-   int32_t     ii_Affinity;
+   string      is_CpuAffinity;
+   uint32_t    ii_GpuAffinity;
    int32_t     ii_ServerType;
    string      is_WorkUnitName;
 

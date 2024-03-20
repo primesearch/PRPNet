@@ -83,8 +83,8 @@ testresult_t   GeneferProgram::Execute(testtype_t testType)
 
       is_InternalProgramName = is_ProgramList[ii_RunIndex[index]];
 
-      if (ii_Affinity >= 0 && index == 0)
-         snprintf(command, 200, "%s -d %d %s", is_InternalProgramName.c_str(), ii_Affinity, is_InFileName.c_str());
+      if (ii_GpuAffinity >= 0 && index == 0)
+         snprintf(command, 200, "%s -d %d %s", is_InternalProgramName.c_str(), ii_GpuAffinity, is_InFileName.c_str());
       else
          snprintf(command, 200, "%s %s", is_InternalProgramName.c_str(), is_InFileName.c_str());
 

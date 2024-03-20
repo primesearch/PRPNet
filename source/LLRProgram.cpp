@@ -39,8 +39,8 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
    fprintf(fp, "PgenOutputFile=%s\n", is_OutFileName.c_str());
    fprintf(fp, "PgenLine=1\n");
    fprintf(fp, "WorkDone=0\n");
-   if (ii_Affinity >= 0)
-      fprintf(fp, "Affinity=%u\n", ii_Affinity);
+   if (is_CpuAffinity.length() > 0)
+      fprintf(fp, "Affinity=%s\n", is_CpuAffinity.c_str());
    fclose(fp);
 
    snprintf(command, 100, "%s %s -q\"%s\" -d", is_ExeName.c_str(), is_ExeArguments.c_str(), is_WorkUnitName.c_str());

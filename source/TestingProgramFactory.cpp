@@ -2,9 +2,10 @@
 
 TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
 {
-   int32_t cpuAffinity = -1, gpuAffinity = -1, normalPriority = 0;
+   int32_t gpuAffinity = -1, normalPriority = 0;
    FILE   *fp;
    char    line[2001];
+   string  cpuAffinity = "";
 
    ip_LLRProgram = NULL;
    ip_PhrotProgram = NULL;
@@ -43,16 +44,16 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
       else if (!memcmp(line, "normalpriority=", 15) && strlen(line) > 15)
          normalPriority = atoi(line+15);
       else if (!memcmp(line, "cpuaffinity=", 12) && strlen(line) > 12)
-         cpuAffinity = atol(line+12);
+         cpuAffinity = line+12;
       else if (!memcmp(line, "gpuaffinity=", 12) && strlen(line) > 12)
          gpuAffinity = atol(line+12);
    }
 
-   if (ip_LLRProgram)      ip_LLRProgram->SetAffinity(cpuAffinity);
-   if (ip_GeneferProgram)  ip_GeneferProgram->SetAffinity(gpuAffinity);
-   if (ip_PFGWProgram)     ip_PFGWProgram->SetAffinity(cpuAffinity);
+   if (ip_LLRProgram)      ip_LLRProgram->SetCpuAffinity(cpuAffinity);
+   if (ip_GeneferProgram)  ip_GeneferProgram->SetGpuAffinity(gpuAffinity);
+   if (ip_PFGWProgram)     ip_PFGWProgram->SetCpuAffinity(cpuAffinity);
    if (ip_PFGWProgram)     ip_PFGWProgram->SetNormalPriority(normalPriority);
-   if (ip_PRSTProgram)     ip_PRSTProgram->SetAffinity(cpuAffinity);
+   if (ip_PRSTProgram)     ip_PRSTProgram->SetCpuAffinity(cpuAffinity);
 }
 
 TestingProgramFactory::~TestingProgramFactory()

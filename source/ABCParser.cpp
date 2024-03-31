@@ -63,8 +63,8 @@ static const char *fnabcdstring = "$a*%d^%d%d [%" PRIu64"]";
 
 static const char* dgt1string1 = "(%" PRIu64"*%d^$a%d)/%d [%d]";
 static const char* dgt1string2 = "(%" PRIu64"*%d^$a%d)/%d";
-static const char* dgt1string3 = "(*%d^$a%d)/%d [%d]";
-static const char* dgt1string4 = "(*%d^$a%d)/%d";
+static const char* dgt1string3 = "(%d^$a%d)/%d [%d]";
+static const char* dgt1string4 = "(%d^$a%d)/%d";
 
 #define ABC_UNKNOWN      0
 #define ABC_CW_FB       10

@@ -62,56 +62,13 @@ testresult_t   LLRProgram::Execute(testtype_t testType)
 // Parse the output from LLR and determine if the candidate is PRP or prime
 testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
 {
-   char        line[250], fileName[30], scale[200], *ptr, *endOfResidue;
+   char        line[250], scale[200], *ptr, *endOfResidue;
    int32_t     part1, part2;
-   FILE       *fp;
-   int         tryCount = 0;
 
    id_Seconds = 0;
 
-   strcpy(fileName, "lresults.txt");
-
-   Sleep(100);
-   tryCount = 1;
-   while ((fp = fopen(fileName, "r")) == NULL)
-   {
-      // Try up to five times to open the file before bailing
-      if (tryCount < 5)
-      {
-         Sleep(500);
-         tryCount++;
-      }
-      else
-      {
-         ip_Log->LogMessage("%s: Could not open file [%s] for reading.  Assuming user stopped with ^C",
-                            is_Suffix.c_str(), fileName);
-#ifdef WIN32
-         SetQuitting(1);
-#else
-         raise(SIGINT);
-#endif
-         return TR_CANCELLED;
-      }
-   }
-
-   *line = 0;
-   while (!strstr(line, "is a probable prime") && !strstr(line, "is prime") && !strstr(line, "RES64") &&
-          !strstr(line, "Res64") && !strstr(line, "Fermat PRP") &&
-          !strstr(line, "composite") && !strstr(line, "small factor"))
-     if (!fgets(line, sizeof(line), fp))
-     {
-        ip_Log->LogMessage("%s: Test results not found in file [%s].  Assuming user stopped with ^C",
-                           is_Suffix.c_str(), fileName);
-#ifdef WIN32
-        SetQuitting(1);
-#else
-        raise(SIGINT);
-#endif
-        fclose(fp);
-        return TR_CANCELLED;
-     }
-
-   fclose(fp);
+   if (!GetLineWithTestResult(line, sizeof(line)))
+      return TR_CANCELLED;
 
    // The time is typically in the format "Time : 144.499 ms".
    ptr = strstr(line, "Time : ");
@@ -132,7 +89,7 @@ testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
       return TR_COMPLETED;
    }
 
-   if (strstr(line, "is a probable prime") || strstr(line, "Fermat PRP"))
+   if (strstr(line, "is a probable prime") || strstr(line, "Fermat PRP") || strstr(line, "Frobenius PRP"))
    {
       ib_IsPRP = true;
       return TR_COMPLETED;
@@ -141,27 +98,36 @@ testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
    ptr = strstr(line, "RES64:");
    if (!ptr) ptr = strstr(line, "Res64:");
 
-   if (!ptr)
+   if (ptr == NULL)
+   {
       if (strstr(line, "small factor"))
       {
          is_Residue = "small_factor";
          return TR_COMPLETED;
       }
 
-   if (!ptr)
+      if (strstr(line, "is not prime. (APRCL test)"))
+      {
+         is_Residue = "APRCL_composite";
+         return TR_COMPLETED;
+      }
+   }
+
+   if (ptr == NULL)
    {
-      ip_Log->LogMessage("%s: Could not find RES64 residue [%s].  Is llr broken?", is_Suffix.c_str(), fileName);
+      ip_Log->LogMessage("%s: Could not find RES64 residue lresults.txt.  Is llr broken?", is_Suffix.c_str());
       exit(0);
    }
 
    ptr += 7;
+
    endOfResidue = strchr(ptr, ' ');
    if (!endOfResidue) endOfResidue = strchr(ptr, '.');
 
-   if (!endOfResidue)
+   if (endOfResidue == NULL)
    {
-      ip_Log->LogMessage("%s: Could not find terminator for the residue in [%s].  Is LLR broken?",
-                         is_Suffix.c_str(), fileName);
+      ip_Log->LogMessage("%s: Could not find terminator for the residue in lresults.txt.  Is LLR broken?",
+                         is_Suffix.c_str());
       exit(0);
    }
 
@@ -176,6 +142,99 @@ testresult_t   LLRProgram::ParseTestResults(testtype_t testType)
    is_Residue = ptr;
 
    return TR_COMPLETED;
+}
+
+bool  LLRProgram::GetLineWithTestResult(char* line, uint32_t lineLength)
+{
+   int   tryCount = 0;
+   char  fileName[30];
+   char  nextLine[500];
+   FILE* fp;
+
+   strcpy(fileName, "lresults.txt");
+
+   Sleep(100);
+   tryCount = 1;
+   while ((fp = fopen(fileName, "r")) == NULL)
+   {
+      // Try up to five times to open the file before bailing
+      if (tryCount < 5)
+      {
+         Sleep(500);
+         tryCount++;
+      }
+      else
+      {
+         ip_Log->LogMessage("%s: Could not open file [%s] for reading.  Assuming user stopped with ^C",
+            is_Suffix.c_str(), fileName);
+#ifdef WIN32
+         SetQuitting(1);
+#else
+         raise(SIGINT);
+#endif
+         return false;
+      }
+   }
+
+   *line = 0;
+   while (!strstr(line, "is a probable prime") && !strstr(line, "is prime") && !strstr(line, "RES64") &&
+      !strstr(line, "Res64") && !strstr(line, "Fermat PRP") && !strstr(line, "is not prime") &&
+      !strstr(line, "Frobenius PRP") && !strstr(line, "composite") && !strstr(line, "small factor"))
+      if (!fgets(line, lineLength, fp))
+      {
+         ip_Log->LogMessage("%s: Test results not found in file [%s].  Assuming user stopped with ^C",
+            is_Suffix.c_str(), fileName);
+#ifdef WIN32
+         SetQuitting(1);
+#else
+         raise(SIGINT);
+#endif
+         fclose(fp);
+         return false;
+      }
+
+   // If we find "Fermat PRP", then LLR might do another PRP test, so look
+   // for that line as the candidate might actually be composite.
+   if (strstr(line, "Fermat PRP") == NULL)
+   {
+      fclose(fp);
+      return line;
+   }
+
+   if (!fgets(nextLine, sizeof(nextLine), fp))
+   {
+      fclose(fp);
+      return true;
+   }
+
+   // If there is another line in the file and it has "Starting Lucas" in it, then look for
+   // the results from that test.
+   if (strstr(nextLine, "Starting Lucas") == NULL)
+   {
+      fclose(fp);
+      return true;
+   }
+
+   *line = 0;
+   while (!strstr(line, "is a probable prime") && !strstr(line, "is prime") && !strstr(line, "RES64") &&
+      !strstr(line, "Res64") && !strstr(line, "Fermat PRP") && !strstr(line, "is not prime") && 
+      !strstr(line, "Frobenius PRP") && !strstr(line, "composite") && !strstr(line, "small factor"))
+      if (!fgets(line, lineLength, fp))
+      {
+         ip_Log->LogMessage("%s: Test results not found in file [%s].  Assuming user stopped with ^C",
+            is_Suffix.c_str(), fileName);
+#ifdef WIN32
+         SetQuitting(1);
+#else
+         raise(SIGINT);
+#endif
+         fclose(fp);
+         return false;
+      }
+
+   fclose(fp);
+
+   return true;
 }
 
 void  LLRProgram::DetermineVersion(void)

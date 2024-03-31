@@ -186,6 +186,11 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
    {
       if (theD > 1)
       {
+         // For GRUs, use PFGW if the base is divisible by 3 to avoid false positives
+         // as LLR uses base 3 for the PRP test and yields false positives.
+         if (theK == 1 && theB % 3 == 0)
+            if (ip_PFGWProgram)  return ip_PFGWProgram;
+
          if (ip_PRSTProgram) return ip_PRSTProgram;
          if (ip_LLRProgram)   return ip_LLRProgram;
          if (ip_PFGWProgram)  return ip_PFGWProgram;

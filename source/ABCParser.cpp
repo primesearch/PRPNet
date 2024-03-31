@@ -300,7 +300,10 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
          return ABC_DGT1A;
 
       if (sscanf(tempHeader, dgt1string3, &ii_theB, &ii_theC, &ii_theD, &ii_theN) == 4)
+      {
+         il_theK = 1;
          return ABC_DGT1C;
+      }
 
       if (sscanf(tempHeader, fkabcdstring, &il_theK, &ii_theB, &ii_theC, &ii_theN) == 4)
           return ABCD_FK;
@@ -337,7 +340,11 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    if (pos) *pos = 0;
 
    if (sscanf(tempHeader, dgt1string2, &il_theK, &ii_theB, &ii_theC, &ii_theD) == 4) return ABC_DGT1B;
-   if (sscanf(tempHeader, dgt1string4, &ii_theB, &ii_theC, &ii_theD) == 3) return ABC_DGT1B;
+   if (sscanf(tempHeader, dgt1string4, &ii_theB, &ii_theC, &ii_theD) == 3)
+   {
+      il_theK = 1;
+      return ABC_DGT1B;
+   }
 
    if (strstr(tempHeader, "$b") == NULL)
    {

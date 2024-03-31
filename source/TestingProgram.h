@@ -60,7 +60,7 @@ public:
 
    void        SetCpuAffinity(string cpuAffinity) { is_CpuAffinity = cpuAffinity; };
 
-   void        SetGpuAffinity(uint32_t gpuAffinity) { ii_GpuAffinity = gpuAffinity; };
+   void        SetGpuAffinity(int32_t gpuAffinity) { ii_GpuAffinity = gpuAffinity; };
 
    virtual void SendStandardizedName(Socket *theSocket, uint32_t returnWorkUnit) {};
 
@@ -79,7 +79,7 @@ protected:
    string      is_OutFileName;
 
    string      is_CpuAffinity;
-   uint32_t    ii_GpuAffinity;
+   int32_t     ii_GpuAffinity;
    int32_t     ii_ServerType;
    string      is_WorkUnitName;
 

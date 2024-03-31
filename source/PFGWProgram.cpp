@@ -63,7 +63,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    // and the PRP test is likely to yield bad results.
    if (il_k == 1 && ii_b % 3 == 0)
       if (ii_ServerType == ST_SIERPINSKIRIESEL || ii_ServerType == ST_FIXEDBKC || ii_ServerType == ST_FIXEDBNC)
-         strcat(newBase, "-b 5");
+         strcat(newBase, "-b5");
 
    if (ii_NormalPriority)
       strcat(normalPriority, "-N");

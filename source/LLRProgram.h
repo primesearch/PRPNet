@@ -19,6 +19,8 @@ public:
    void        DetermineVersion(void);
 
 private:
+   bool        GetLineWithTestResult(char* line, uint32_t lineLength);
+
    testresult_t   ParseTestResults(testtype_t testType);
 };
 

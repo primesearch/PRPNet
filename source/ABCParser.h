@@ -6,6 +6,8 @@
 
 #include "Socket.h"
 
+enum rowtype_t { RT_CANDIDATE = 1, RT_IGNORE = 11, RT_EOF = 99 };
+
 class ABCParser
 {
 public:
@@ -19,7 +21,7 @@ public:
    // be used with this server
    bool     IsValidFormat(void);
 
-   int32_t  GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC, int32_t &theD);
+   rowtype_t GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC, int32_t &theD);
 
 private:
    int32_t  ii_ABCFormat;
@@ -27,7 +29,7 @@ private:
 
    Socket  *ip_Socket;
 
-   bool     ib_firstABCDLine;
+   bool     ib_ABCDFormat;
 
    // These are populated from the first line of the ABC file
    int64_t  il_theK;

@@ -91,8 +91,16 @@ void      PrimeHelperThread::AdminABCFile(void)
    totalEntries = newEntries = badEntries = dupEntries = failedInserts = 0;
    lengthCalculator = new LengthCalculator(ii_ServerType, ip_DBInterface, ip_Log);
 
-   while (abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC, theD))
+   while (true)
    {
+      rowtype_t rowType = abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC, theD);
+
+      if (rowType == RT_IGNORE)
+         continue;
+
+      if (rowType == RT_EOF)
+         break;
+
       // Tell the admin tool that we are still here and have processed
       // everything it has sent.  Now the admin tool can send more.
       if (!memcmp(candidateName.c_str(), "sent", 4))

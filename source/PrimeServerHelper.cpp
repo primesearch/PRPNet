@@ -206,8 +206,16 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    totalEntries = newEntries = badEntries = dupEntries = failedInserts = 0;
    lengthCalculator = new LengthCalculator(ii_ServerType, ip_DBInterface, ip_Log);
 
-   while (abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC, theD))
+   while (true)
    {
+      rowtype_t rowType = abcParser->GetNextCandidate(candidateName, theK, theB, theN, theC, theD);
+
+      if (rowType == RT_IGNORE)
+         continue;
+
+      if (rowType == RT_EOF)
+         break;
+
       totalEntries++;
 
       if (theC != 1 && theC != -1 && (ii_ServerType == ST_SOPHIEGERMAIN || ii_ServerType == ST_TWIN || ii_ServerType == ST_TWINANDSOPHIE))

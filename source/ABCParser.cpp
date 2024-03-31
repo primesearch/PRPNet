@@ -283,7 +283,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    char     ch, *pos;
    char     tempHeader[200];
 
-   ib_firstABCDLine = false;
+   ib_ABCDFormat = false;
    il_theK = 0;
    ii_theB = ii_theN = ii_theD = 0;
    ii_theC = 0;
@@ -294,7 +294,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    {
       strcpy(tempHeader, abcHeader.c_str() + 5);
 
-      ib_firstABCDLine = true;
+      ib_ABCDFormat = true;
 
       if (sscanf(tempHeader, dgt1string1, &il_theK, &ii_theB, &ii_theC, &ii_theD, &ii_theN) == 5)
          return ABC_DGT1A;
@@ -480,15 +480,15 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    return ABC_UNKNOWN;
 }
 
-int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC, int32_t &theD)
+rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC, int32_t &theD)
 {
    char     abcLine[200], *theMessage;
    char     tempName[BUFFER_SIZE];
 
    if (!ip_ABCFile && !ip_Socket)
-      return false;
+      return RT_EOF;
 
-   if (!ib_firstABCDLine)
+   if (!ib_ABCDFormat)
    {
       if (ip_ABCFile)
       {
@@ -496,7 +496,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          {
             fclose(ip_ABCFile);
             ip_ABCFile = 0;
-            return false;
+            return RT_EOF;
          }
 
          StripCRLF(abcLine);
@@ -504,7 +504,14 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          if (!memcmp(abcLine, "ABC ", 4) || !memcmp(abcLine, "ABCD ", 5))
          {
             if (DetermineABCFormat(abcLine) != ii_ABCFormat)
-               return false;
+            {
+               printf("Mixed ABC formats is not supported\n");
+               return RT_EOF;
+            }
+
+            // Return if this is ABC format
+            if (!memcmp(abcLine, "ABC ", 4))
+               return RT_IGNORE;
          }
          else
          {
@@ -513,7 +520,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
                fclose(ip_ABCFile);
                ip_ABCFile = 0;
                printf("Unable to parse line [%s] from ABC file.  Processing stopped\n", abcLine);
-               return false;
+               return RT_EOF;
             }
          }
       }
@@ -522,44 +529,47 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
          theMessage = ip_Socket->Receive();
 
          if (!theMessage)
-            return false;
+            return RT_EOF;
 
          if (!memcmp(theMessage, "End of File", 11))
-            return false;
+            return RT_EOF;
 
          if (!memcmp(theMessage, "sent", 4))
          {
             theName = theMessage;
-            return true;
+            return RT_IGNORE;
          }
 
          if (!memcmp(theMessage, "ABC ", 4) || !memcmp(theMessage, "ABCD " , 5))
          {
             if (DetermineABCFormat(theMessage) != ii_ABCFormat)
-               return false;
+            {
+               ip_Socket->Send("ERR: Mixed ABC formats is not supported");
+               return RT_EOF;
+            }
 
             theName = theMessage;
 
-            // Return if this is not ABCD format
-            if (!ib_firstABCDLine)
-               return true;
+            // Return if this is ABC format
+            if (!memcmp(abcLine, "ABC ", 4))
+               return RT_IGNORE;
          }
 
          if (ii_ABCFormat == ABC_UNKNOWN)
          {
             theC = 0;
             theD = 0;
-            return true;
+            return RT_EOF;
          }
 
          // If is is an ABCD line from the input, then we don't need to parse it
          // as the first Candidate is derived from that line.
-         if (!ib_firstABCDLine && !ParseCandidateLine(theMessage))
+         if (!ib_ABCDFormat && !ParseCandidateLine(theMessage))
          {
             ip_Socket->Send("ERR: Unable to parse line [%s] from ABC file.  Processing stopped\n", theMessage);
             theC = 0;
             theD = 0;
-            return true;
+            return RT_EOF;
          }
       
          if (ii_ABCFormat == NOT_ABC)
@@ -574,7 +584,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
       }
    }
 
-   ib_firstABCDLine = false;
+   ib_ABCDFormat = false;
 
    switch (ii_ServerType)
    {
@@ -646,7 +656,7 @@ int32_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &th
    theD = ii_theD;
    theName = tempName;
 
-   return true;
+   return RT_CANDIDATE;
 }
 
 bool  ABCParser::ParseCandidateLine(string abcLine)

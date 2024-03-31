@@ -296,10 +296,15 @@ bool  ServerHandler::ProcessWorkUnit(int32_t &specialsFound, bool inProgressOnly
 {
    double   seconds;
    bool     completed;
+   double   timeStarted, timeDone;
+
+   timeStarted = (double) time(NULL);
 
    completed = ip_Worker->ProcessWorkUnit(specialsFound, inProgressOnly, seconds);
 
-   id_TotalTime += seconds;
+   timeDone = (double)time(NULL);
+
+   id_TotalTime += timeDone - timeStarted;
 
    ii_CurrentWorkUnits = ip_Worker->GetCurrentWorkUnits();
    ii_CompletedWorkUnits = ip_Worker->GetCompletedWorkUnits();

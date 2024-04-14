@@ -24,13 +24,13 @@ public:
    void     SendPrograms(Socket *theSocket);
 
    void     SetNumber(int32_t serverType, string suffix, string workUnitName,
-                      uint64_t theK, uint32_t theB, uint32_t theN, int32_t theC, uint32_t theD);
+                      uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD);
    
    TestingProgram *GetPRPTestingProgram(int32_t serverType,
                                         uint64_t theK, uint32_t theB, uint32_t theN, uint32_t theD);
 
    TestingProgram *GetPrimalityTestingProgram(int32_t serverType,
-                                              uint32_t theB, uint32_t theN, int32_t theC, uint32_t theD);
+                                              uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD);
 
    LLRProgram     *GetLLRProgram(void)     { return ip_LLRProgram;     };
    PFGWProgram    *GetPFGWProgram(void)    { return ip_PFGWProgram;    };

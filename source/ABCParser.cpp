@@ -10,7 +10,7 @@
 #include "ABCParser.h"
 
 // Cullen/Woodall form from gcwsieve (fixed base)
-static const char *cwfb_string = "$a*%d^$a%d";
+static const char *cwfb_string = "$a*%d^$a%" PRId64"";
 static const char *cwfbastring = "$a*%d^$a$%c";
 static const char *cwfbcstring = "$a*%d^$a$b";
 
@@ -19,23 +19,23 @@ static const char *cwvb_string = "$a*$b^$a%d";
 static const char *cwvbastring = "$a*$b^$a$c";
 
 // Fixed k forms for k*b^n+/-c
-static const char *fk_string = "%" PRIu64"*$a^$b%d";
+static const char *fk_string = "%" PRIu64"*$a^$b%" PRId64"";
 static const char *fkastring = "%" PRIu64"*$a^$b$%c";
 
 // Fixed k/b forms for k*b^n+/-c
-static const char* fkbstring = "%" PRIu64"*%d^$a%d";
+static const char* fkbstring = "%" PRIu64"*%d^$a%" PRId64"";
 
 // Fixed b forms for k*b^n+/-c
-static const char *fb_string = "$a*%d^$b%d";
+static const char *fb_string = "$a*%d^$b%" PRId64"";
 static const char *fbastring = "$a*%d^$b$%c";
 
 // Fixed n forms for k*b^n+/-c
-static const char *fn_string = "$a*$b^%d%d";
+static const char *fn_string = "$a*$b^%d%" PRId64"";
 static const char *fnastring = "$a*$b^%d$%c";
 
 // Any form of k*b^n+/-c
-static const char *abc_string = "$a*$b^$c%d";
-static const char *abcastring = "$a*$b^$c$d";
+static const char *abc_string = "$a*$b^$c%" PRId64"";
+static const char *abcastring = "$a*$b^$c$" PRId64"";
 
 // Any form of n!+/-c (factorials)
 static const char *fact_string = "$a!%d";
@@ -61,8 +61,8 @@ static const char *wagstaffstring = "(2^$a+1)/3";
 static const char *fkabcdstring = "%" PRIu64"*%d^$a%d [%d]";
 static const char *fnabcdstring = "$a*%d^%d%d [%" PRIu64"]";
 
-static const char* dgt1string1 = "(%" PRIu64"*%d^$a%d)/%d [%d]";
-static const char* dgt1string2 = "(%" PRIu64"*%d^$a%d)/%d";
+static const char* dgt1string1 = "(%" PRIu64"*%d^$a%" PRId64")/%d [%d]";
+static const char* dgt1string2 = "(%" PRIu64"*%d^$a%" PRId64")/%d";
 static const char* dgt1string3 = "(%d^$a%d)/%d [%d]";
 static const char* dgt1string4 = "(%d^$a%d)/%d";
 
@@ -286,7 +286,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    ib_ABCDFormat = false;
    il_theK = 0;
    ii_theB = ii_theN = ii_theD = 0;
-   ii_theC = 0;
+   il_theC = 0;
 
    strcpy(tempHeader, abcHeader.c_str());
 
@@ -296,19 +296,19 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
       ib_ABCDFormat = true;
 
-      if (sscanf(tempHeader, dgt1string1, &il_theK, &ii_theB, &ii_theC, &ii_theD, &ii_theN) == 5)
+      if (sscanf(tempHeader, dgt1string1, &il_theK, &ii_theB, &il_theC, &ii_theD, &ii_theN) == 5)
          return ABC_DGT1A;
 
-      if (sscanf(tempHeader, dgt1string3, &ii_theB, &ii_theC, &ii_theD, &ii_theN) == 4)
+      if (sscanf(tempHeader, dgt1string3, &ii_theB, &il_theC, &ii_theD, &ii_theN) == 4)
       {
          il_theK = 1;
          return ABC_DGT1C;
       }
 
-      if (sscanf(tempHeader, fkabcdstring, &il_theK, &ii_theB, &ii_theC, &ii_theN) == 4)
+      if (sscanf(tempHeader, fkabcdstring, &il_theK, &ii_theB, &il_theC, &ii_theN) == 4)
           return ABCD_FK;
 
-      if (sscanf(tempHeader, fnabcdstring, &ii_theB, &ii_theN, &ii_theC, &il_theK) == 4)
+      if (sscanf(tempHeader, fnabcdstring, &ii_theB, &ii_theN, &il_theC, &il_theK) == 4)
           return ABCD_FN;
    }
 
@@ -339,8 +339,8 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    pos = strchr(tempHeader, ' ');
    if (pos) *pos = 0;
 
-   if (sscanf(tempHeader, dgt1string2, &il_theK, &ii_theB, &ii_theC, &ii_theD) == 4) return ABC_DGT1B;
-   if (sscanf(tempHeader, dgt1string4, &ii_theB, &ii_theC, &ii_theD) == 3)
+   if (sscanf(tempHeader, dgt1string2, &il_theK, &ii_theB, &il_theC, &ii_theD) == 4) return ABC_DGT1B;
+   if (sscanf(tempHeader, dgt1string4, &ii_theB, &il_theC, &ii_theD) == 3)
    {
       il_theK = 1;
       return ABC_DGT1B;
@@ -349,11 +349,11 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    if (strstr(tempHeader, "$b") == NULL)
    {
       // Cullen/Woodall form (fixed base), typically from gcwsieve
-      if (sscanf(tempHeader, cwfb_string, &ii_theB, &ii_theC) == 2)
+      if (sscanf(tempHeader, cwfb_string, &ii_theB, &il_theC) == 2)
       {
-         if (ii_theC > 0)
+         if (il_theC > 0)
             return ABC_CW_FBP;
-         if (ii_theC < 0)
+         if (il_theC < 0)
             return ABC_CW_FBM;
       }
 
@@ -368,22 +368,22 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    }
 
    // Cullen/Woodall form (variable base)
-   if (sscanf(tempHeader, cwvb_string, &ii_theC) == 1)
+   if (sscanf(tempHeader, cwvb_string, &il_theC) == 1)
    {
-     if (ii_theC > 0)
+     if (il_theC > 0)
        return ABC_CW_VBP;
-     if (ii_theC < 0)
+     if (il_theC < 0)
        return ABC_CW_VBM;
    }
 
    if (!strncmp(tempHeader, cwvbastring, strlen(cwvbastring))) return ABC_CW_VBA;
 
    // Fixed k forms for k*b^n+/-c
-   if (sscanf(tempHeader, fk_string, &il_theK, &ii_theC) == 2)
+   if (sscanf(tempHeader, fk_string, &il_theK, &il_theC) == 2)
    {
-     if (ii_theC > 0)
+     if (il_theC > 0)
        return ABC_FKP;
-     if (ii_theC < 0)
+     if (il_theC < 0)
        return ABC_FKM;
    }
 
@@ -393,15 +393,15 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
        return ABC_FKA;
    }
 
-   if (sscanf(tempHeader, fkbstring, &il_theK, &ii_theB, &ii_theC) == 3)
+   if (sscanf(tempHeader, fkbstring, &il_theK, &ii_theB, &il_theC) == 3)
       return ABC_FKB;
 
    // Fixed b forms for k*b^n+/-c
-   if (sscanf(tempHeader, fb_string, &ii_theB, &ii_theC) == 2)
+   if (sscanf(tempHeader, fb_string, &ii_theB, &il_theC) == 2)
    {
-     if (ii_theC > 0)
+     if (il_theC > 0)
        return ABC_FBP;
-     if (ii_theC < 0)
+     if (il_theC < 0)
        return ABC_FBM;
    }
 
@@ -412,11 +412,11 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    }
 
    // Fixed n forms for k*b^n+/-c
-   if (sscanf(tempHeader, fn_string, &ii_theB, &ii_theC) == 2)
+   if (sscanf(tempHeader, fn_string, &ii_theB, &il_theC) == 2)
    {
-     if (ii_theC > 0)
+     if (il_theC > 0)
        return ABC_FNP;
-     if (ii_theC < 0)
+     if (il_theC < 0)
        return ABC_FNM;
    }
    if (sscanf(tempHeader, fnastring, &ii_theB, &ch) == 2)
@@ -426,33 +426,33 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    }
 
    // Any form of k*b^n+/-c
-   if (sscanf(tempHeader, abc_string, &ii_theC) == 1)
+   if (sscanf(tempHeader, abc_string, &il_theC) == 1)
    {
-     if (ii_theC > 0)
+     if (il_theC > 0)
        return ABC_VP;
-     if (ii_theC < 0)
+     if (il_theC < 0)
        return ABC_VM;
    }
 
    if (!strncmp(tempHeader, abcastring, strlen(abcastring))) return ABC_VA;
 
    // Any form of n#+/-c
-   if (sscanf(tempHeader, prim_string, &ii_theC) == 1)
+   if (sscanf(tempHeader, prim_string, &il_theC) == 1)
    {
-     if (ii_theC > 0)
+     if (il_theC > 0)
        return ABC_PRIMP;
-     if (ii_theC < 0)
+     if (il_theC < 0)
        return ABC_PRIMM;
    }
 
    if (!strncmp(tempHeader, primastring, strlen(primastring))) return ABC_PRIMA;
 
    // Any form of n!+/-c
-   if (!strstr(tempHeader, "$b") && sscanf(tempHeader, fact_string, &ii_theC) == 1)
+   if (!strstr(tempHeader, "$b") && sscanf(tempHeader, fact_string, &il_theC) == 1)
    {
-     if (ii_theC > 0)
+     if (il_theC > 0)
        return ABC_FACTP;
-     if (ii_theC < 0)
+     if (il_theC < 0)
        return ABC_FACTM;
    }
 
@@ -487,7 +487,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    return ABC_UNKNOWN;
 }
 
-rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int32_t &theC, int32_t &theD)
+rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int64_t &theC, int32_t &theD)
 {
    char     abcLine[200], *theMessage;
    char     tempName[BUFFER_SIZE];
@@ -585,7 +585,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
             il_theK = 0;
             ii_theB = 0;
             ii_theN = 0;
-            ii_theC = 0;
+            il_theC = 0;
             ii_theD = 0;
          }
       }
@@ -604,36 +604,36 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
          if (ii_theD > 1)
          {
             if (il_theK > 1)
-               snprintf(tempName, BUFFER_SIZE, "(%" PRIu64"*%d^%d%+d)/%d", il_theK, ii_theB, ii_theN, ii_theC, ii_theD);
+               snprintf(tempName, BUFFER_SIZE, "(%" PRIu64"*%d^%d%+" PRId64")/%d", il_theK, ii_theB, ii_theN, il_theC, ii_theD);
             else
-               snprintf(tempName, BUFFER_SIZE, "(%d^%d%+d)/%d", ii_theB, ii_theN, ii_theC, ii_theD);
+               snprintf(tempName, BUFFER_SIZE, "(%d^%d%+" PRId64")/%d", ii_theB, ii_theN, il_theC, ii_theD);
          }
          else
-            snprintf(tempName, BUFFER_SIZE, "%" PRIu64"*%d^%d%+d", il_theK, ii_theB, ii_theN, ii_theC);
+            snprintf(tempName, BUFFER_SIZE, "%" PRIu64"*%d^%d%+" PRId64"", il_theK, ii_theB, ii_theN, il_theC);
          break;
 
       case ST_CULLENWOODALL:
-         snprintf(tempName, BUFFER_SIZE, "%d*%d^%d%+d", ii_theN, ii_theB, ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d*%d^%d%+" PRId64"", ii_theN, ii_theB, ii_theN, il_theC);
          break;
 
       case ST_PRIMORIAL:
-         snprintf(tempName, BUFFER_SIZE, "%d#%+d", ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d#%+" PRId64"", ii_theN, il_theC);
          break;
 
       case ST_FACTORIAL:
-         snprintf(tempName, BUFFER_SIZE, "%d!%+d", ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d!%+" PRId64"", ii_theN, il_theC);
          break;
          
       case ST_MULTIFACTORIAL:
-         snprintf(tempName, BUFFER_SIZE, "%d!%d%+d", ii_theN, ii_theB, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d!%d%+" PRId64"", ii_theN, ii_theB, il_theC);
          break;
 
       case ST_GFN:
-         snprintf(tempName, BUFFER_SIZE, "%d^%d%+d", ii_theB, ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d^%d%+" PRId64"", ii_theB, ii_theN, il_theC);
          break;
 
       case ST_XYYX:
-         snprintf(tempName, BUFFER_SIZE, "%d^%d%c%d^%d", ii_theB, ii_theN, ((ii_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
+         snprintf(tempName, BUFFER_SIZE, "%d^%d%c%d^%d", ii_theB, ii_theN, ((il_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
          break;
          
       case ST_CYCLOTOMIC:
@@ -644,7 +644,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
          break;
 
       case ST_CAROLKYNEA:
-         snprintf(tempName, BUFFER_SIZE, "(%d^%d%+d)^2-2", ii_theB, ii_theN, ii_theC);
+         snprintf(tempName, BUFFER_SIZE, "(%d^%d%+" PRId64")^2-2", ii_theB, ii_theN, il_theC);
          break;
          
       case ST_WAGSTAFF:
@@ -659,7 +659,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
    theK = il_theK;
    theB = ii_theB;
    theN = ii_theN;
-   theC = ii_theC;
+   theC = il_theC;
    theD = ii_theD;
    theName = tempName;
 
@@ -686,12 +686,12 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
    switch (ii_ABCFormat)
    {
       case ABCD_FN:
-         if (sscanf(tempLine, "%lld", &value64) != 1) return false;
+         if (sscanf(tempLine, "%" PRId64"", &value64) != 1) return false;
          il_theK += value64;
          return true;
 
       case ABC_CW_FB:
-         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
+         if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
          il_theK = ii_theN;
          return true;
 
@@ -706,7 +706,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_CW_FBA:
-         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
+         if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
          il_theK = ii_theN;
          return true;
 
@@ -721,7 +721,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_CW_VBA:
-         if (sscanf(tempLine, "%d %d %d", &ii_theN, &ii_theB, &ii_theC) != 3) return false;
+         if (sscanf(tempLine, "%d %d %" PRId64"", &ii_theN, &ii_theB, &il_theC) != 3) return false;
          il_theK = ii_theN;
          return true;
 
@@ -734,7 +734,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_FKA:
-         if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theN, &ii_theC) != 3) return false;
+         if (sscanf(tempLine, "%d %d %lld", &ii_theB, &ii_theN, &il_theC) != 3) return false;
          return true;
 
       case ABC_DGT1C:
@@ -770,7 +770,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_FBA:
-         if (sscanf(tempLine, "%" PRIu64" %d %d", &il_theK, &ii_theN, &ii_theC) != 3) return false;
+         if (sscanf(tempLine, "%" PRIu64" %d %" PRId64"", &il_theK, &ii_theN, &il_theC) != 3) return false;
          return true;
 
       case ABC_FNP:
@@ -782,7 +782,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_FNA:
-         if (sscanf(tempLine, "%" PRIu64" %d %d", &il_theK, &ii_theB, &ii_theC) != 3) return false;
+         if (sscanf(tempLine, "%" PRIu64" %d %" PRId64"", &il_theK, &ii_theB, &il_theC) != 3) return false;
          return true;
 
       case ABC_VP:
@@ -794,7 +794,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_VA:
-         return sscanf(tempLine, "%" PRIu64" %d %d %d", &il_theK, &ii_theB, &ii_theN, &ii_theC) == 4;
+         return sscanf(tempLine, "%" PRIu64" %d %d %" PRId64"", &il_theK, &ii_theB, &ii_theN, &il_theC) == 4;
 
       case ABC_PRIMM:
       case ABC_FACTM:
@@ -810,50 +810,50 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
 
       case ABC_PRIMA:
       case ABC_FACTA:
-         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
+         if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
          il_theK = ii_theB = ii_theN;
          return true;
  
       case ABC_MF:
-         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
+         if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
          il_theK = ii_theN;
          return true;
 
       case ABC_GFN:
          if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
-         il_theK = ii_theC = 1;
+         il_theK = il_theC = 1;
          return true;
 
       case ABC_XYYXP:
          if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
          il_theK = 1;
-         ii_theC = 1;
+         il_theC = 1;
          return true;
 
       case ABC_XYYXM:
          if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
          il_theK = 1;
-         ii_theC = -1;
+         il_theC = -1;
          return true;
 
       case ABC_PHI_AB:
          if (sscanf(tempLine, "%" PRIu64" %d", &il_theK, &ii_theB) != 2) return false;
-         ii_theC = ii_theN = 1;
+         il_theC = ii_theN = 1;
          return true;
 
       case ABC_PHI_ABC:
          if (sscanf(tempLine, "%" PRIu64" %d %d", &il_theK, &ii_theB, &ii_theN) != 3) return false;
-         ii_theC = 1;
+         il_theC = 1;
          return true;
 
       case ABC_CK:
-         if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theC) != 2) return false;
+         if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
          il_theK = 1;
          return true;
 
       case ABC_WAGSTAFF:
          if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
-         il_theK = ii_theB = ii_theC = 1;
+         il_theK = il_theC = ii_theB = 1;
          return true;
    }
    return false;

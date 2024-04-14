@@ -17,7 +17,7 @@ private:
    bool     NotifyUser(string toEmailID, string candidateName, 
                        int64_t testID, double decimalLength);
 
-   void     AppendGFNDivisibilityData(int32_t theB, int32_t theC,
+   void     AppendGFNDivisibilityData(int32_t theB, int64_t theC,
                                       int32_t checkedGFNDivisibility, string candidateName,
                                       string testedNumber);
 

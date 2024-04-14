@@ -47,7 +47,7 @@ bool     PrimeWorkUnitTest::TestWorkUnit(WorkUnitTest *parentWorkUnit)
          return true;
    }
 
-   ip_TestingProgramFactory->SetNumber(ii_ServerType, is_WorkSuffix, is_ChildName, il_k, ii_b, ii_n, ii_c, ii_d);
+   ip_TestingProgramFactory->SetNumber(ii_ServerType, is_WorkSuffix, is_ChildName, il_k, ii_b, ii_n, il_c, ii_d);
 
    ib_HadTestFailure = false;
    iwut_State = WUT_INPROGRESS;
@@ -180,9 +180,9 @@ testresult_t   PrimeWorkUnitTest::DoPrimalityTest(void)
 
       case R_PRP:
 
-         testingProgram = ip_TestingProgramFactory->GetPrimalityTestingProgram(ii_ServerType, ii_b, ii_n, ii_c, ii_d);
+         testingProgram = ip_TestingProgramFactory->GetPrimalityTestingProgram(ii_ServerType, ii_b, ii_n, il_c, ii_d);
 
-         if (!testingProgram || ii_c > 1 || ii_c < -1)
+         if (!testingProgram || il_c > 1 || il_c < -1)
          {
             ip_Log->Debug(DEBUG_WORK, "%s is PRP, but no program is available to prove primality", is_ChildName.c_str());
             return TR_COMPLETED;
@@ -234,7 +234,7 @@ testresult_t   PrimeWorkUnitTest::CheckForGFNDivisibility(void)
    TestingProgram   *testingProgram;
    testresult_t      testResult;
 
-   if (ii_b != 2 || ii_c != 1 || ii_ServerType == ST_XYYX || ii_ServerType == ST_CAROLKYNEA)
+   if (ii_b != 2 || il_c != 1 || ii_ServerType == ST_XYYX || ii_ServerType == ST_CAROLKYNEA)
    {
       ip_Log->Debug(DEBUG_WORK, "%s is not a Proth number (form k*2^n+1).  GFN divisibility check skipped", is_ChildName.c_str());
       return TR_COMPLETED;

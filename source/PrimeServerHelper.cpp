@@ -177,8 +177,8 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    StatsUpdater* su;
    int32_t    totalEntries, newEntries, badEntries, dupEntries, failedInserts;
    int32_t    countFound;
-   int64_t    theK;
-   int32_t    theB, theN, theC, theD;
+   int64_t    theK, theC;
+   int32_t    theB, theN, theD;
    double     decimalLength;
    string     candidateName;
    const char* selectSQL = "select count(*) from Candidate " \

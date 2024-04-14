@@ -69,7 +69,7 @@ bool  CullenWoodallStatsUpdater::UpdateGroupStats(string candidateName)
    return success;
 }
 
-bool  CullenWoodallStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  CullenWoodallStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -151,9 +151,9 @@ bool  CullenWoodallStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, in
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and c = %d)", theB, theC);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and c = %" PRId64")", theB, theC);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and c = %d and n < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and c = %" PRId64" and n < %d), %d)",
               theB, theC, nextToTest, nextToTest);
 
    // Finally, update the group stats
@@ -170,7 +170,7 @@ bool  CullenWoodallStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, in
 }
 
 bool   CullenWoodallStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                                 int32_t theC, int32_t theD, double decimalLength)
+                                                 int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, k, b, n, c, LastUpdateTime ) " \

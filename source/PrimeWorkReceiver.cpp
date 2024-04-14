@@ -222,8 +222,8 @@ int32_t  PrimeWorkReceiver::ProcessWorkUnit(string candidateName, int64_t testID
    int32_t   gotTerminator, completedTests;
    result_t  mainTestResult;
    int32_t   ii;
-   int64_t   theK;
-   int32_t   theB, theC, theN, theD;
+   int64_t   theK, theC;
+   int32_t   theB, theN, theD;
    double    decimalLength;
    int32_t   numberOfPRPs = 0, numberOfPrimes = 0;
    SQLStatement *sqlStatement;
@@ -491,8 +491,8 @@ bool     PrimeWorkReceiver::BadProgramVersion(string version)
 bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t mainTestResult)
 {
    SQLStatement *sqlStatement;
-   int64_t     theK;
-   int32_t     theB, theC, theN, theD;
+   int64_t     theK, theC;
+   int32_t     theB, theN, theD;
    bool        success;
    const char *selectSQL = "select k, b, c, d, n " \
                            "  from Candidate " \

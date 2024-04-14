@@ -83,8 +83,8 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
    char     testedNumber[NAME_LENGTH+1];
    char     prpingProgram[NAME_LENGTH+1], provingProgram[NAME_LENGTH+1];
    int32_t  testIndex, testResult, checkedGFNDivisibility;
-   int64_t  theK;
-   int32_t  theB, theC, count;
+   int64_t  theK, theC;
+   int32_t  theB, count;
    double   secondsForTest;
    const char *testResultSelect = "select Candidate.k, Candidate.b, Candidate.c, " \
                                   "       CandidateTest.MachineID, " \
@@ -239,7 +239,7 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
    return true;
 }
 
-void  PrimeMail::AppendGFNDivisibilityData(int32_t theB, int32_t theC,
+void  PrimeMail::AppendGFNDivisibilityData(int32_t theB, int64_t theC,
                                            int32_t checkedGFNDivisibility,
                                            string candidateName, string testedNumber)
 {

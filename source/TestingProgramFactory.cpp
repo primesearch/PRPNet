@@ -132,7 +132,7 @@ void     TestingProgramFactory::SendPrograms(Socket *theSocket)
 }
 
 void     TestingProgramFactory::SetNumber(int32_t serverType, string suffix, string workUnitName,
-                                          uint64_t theK, uint32_t theB, uint32_t theN, int32_t theC, uint32_t theD)
+                                          uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD)
 {
    if (ip_LLRProgram)      ip_LLRProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
    if (ip_PRSTProgram)     ip_PRSTProgram->SetNumber(serverType, suffix, workUnitName, theK, theB, theN, theC, theD);
@@ -207,7 +207,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
 }
 
 // Return the most appropriate primality testing program given the server type and base
-TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t serverType, uint32_t theB, uint32_t theN, int32_t theC, uint32_t theD)
+TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t serverType, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD)
 {
    // For GFN, factorials and primorials, don't do primality tests for larger n because
    // they can take days and PFGW does not checkpoint during the primality test.  If PFGW
@@ -238,10 +238,10 @@ TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t server
             return 0;
 
          if (theD > 1) {
-            if (ip_PFGWProgram)  return ip_PFGWProgram;
+            if (ip_PFGWProgram != NULL)  return ip_PFGWProgram;
          } else {
-            if (ip_PRSTProgram)  return ip_PRSTProgram;
-            if (ip_PFGWProgram)  return ip_PFGWProgram;
+            if (ip_PRSTProgram != NULL)  return ip_PRSTProgram;
+            if (ip_PFGWProgram != NULL)  return ip_PFGWProgram;
          }
          break;
       case ST_SIERPINSKIRIESEL:
@@ -251,13 +251,13 @@ TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t server
          if (theD != 1)
             return 0;
 
-         if (ip_PRSTProgram)  return ip_PRSTProgram;
-         if (ip_PFGWProgram)  return ip_PFGWProgram;
+         if (ip_PRSTProgram != NULL)  return ip_PRSTProgram;
+         if (ip_PFGWProgram != NULL)  return ip_PFGWProgram;
          break;
       default:
          if (theC > 1 || theC < -1)
             return 0;
-         if (ip_PFGWProgram)
+         if (ip_PFGWProgram != NULL)
             return ip_PFGWProgram;
    }
 

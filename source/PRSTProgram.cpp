@@ -34,10 +34,12 @@ testresult_t   PRSTProgram::Execute(testtype_t testType)
 testresult_t   PRSTProgram::ParseTestResults(testtype_t testType)
 {
    char        line[250], fileName[30], *ptr, *endOfResidue;
-   FILE* fp;
+   FILE       *fp;
    int         tryCount = 0;
+   testresult_t testResult = TR_CANCELLED;
 
    id_Seconds = 0;
+   is_Residue = "";
 
    strcpy(fileName, "result.txt");
 
@@ -65,72 +67,64 @@ testresult_t   PRSTProgram::ParseTestResults(testtype_t testType)
    }
 
    *line = 0;
-   while (!strstr(line, "is a probable prime") && !strstr(line, "is prime") 
-      && !strstr(line, "RES64") && !strstr(line, "is not prime"))
+   while (true)
+   {
       if (!fgets(line, sizeof(line), fp))
       {
-         ip_Log->LogMessage("%s: Test results not found in file [%s].  Assuming user stopped with ^C",
-            is_Suffix.c_str(), fileName);
+         if (testResult != TR_COMPLETED)
+            ip_Log->LogMessage("%s: Test results not found in file [%s].  Assuming user stopped with ^C",
+               is_Suffix.c_str(), fileName);
 #ifdef WIN32
          SetQuitting(1);
 #else
          raise(SIGINT);
 #endif
          fclose(fp);
-         return TR_CANCELLED;
+         return testResult;
       }
 
-   fclose(fp);
+      ptr = strstr(line, "ime : ");
+      if (ptr)
+         sscanf(ptr, "ime : %lf s", &id_Seconds);
 
-   // The time is typically in the format "Time : 144.499 ms".
-   ptr = strstr(line, "ime : ");
-   if (ptr)
-   {
-      sscanf(ptr, "ime : %lf s", &id_Seconds);
-   }
+      if (strstr(line, "is prime"))
+      {
+         ib_IsPrime = true;
+         testResult = TR_COMPLETED;
+      }
 
-   if (strstr(line, "is prime"))
-   {
-      ib_IsPrime = true;
-      return TR_COMPLETED;
-   }
+      if (strstr(line, "is a probable prime"))
+      {
+         ib_IsPRP = true;
+         testResult = TR_COMPLETED;
+      }
 
-   if (strstr(line, "is a probable prime"))
-   {
-      ib_IsPRP = true;
-      return TR_COMPLETED;
-   }
-
-   ptr = strstr(line, "RES64:");
-
-   if (!ptr)
       if (strstr(line, "divisible"))
       {
          is_Residue = "small_factor";
-         return TR_COMPLETED;
+         testResult = TR_COMPLETED;
       }
 
-   if (!ptr)
-   {
-      ip_Log->LogMessage("%s: Could not find RES64 residue [%s].  Is prst broken?", is_Suffix.c_str(), fileName);
-      exit(0);
+
+      ptr = strstr(line, "RES64:");
+      if (!ptr)
+         continue;
+
+      ptr += 7;
+      endOfResidue = strchr(ptr, ',');
+
+      if (!endOfResidue)
+      {
+         ip_Log->LogMessage("%s: Could not find terminator for the residue in [%s].  Is prst broken?",
+            is_Suffix.c_str(), fileName);
+         exit(0);
+      }
+
+      *endOfResidue = 0;
+
+      is_Residue = ptr;
+      testResult = TR_COMPLETED;
    }
-
-   ptr += 7;
-   endOfResidue = strchr(ptr, ',');
-
-   if (!endOfResidue)
-   {
-      ip_Log->LogMessage("%s: Could not find terminator for the residue in [%s].  Is prst broken?",
-         is_Suffix.c_str(), fileName);
-      exit(0);
-   }
-
-   *endOfResidue = 0;
-
-   is_Residue = ptr;
-
-   return TR_COMPLETED;
 }
 
 void  PRSTProgram::DetermineVersion(void)
@@ -189,7 +183,7 @@ bool  PRSTProgram::IsPerformingProthTest(void)
       case ST_FIXEDBNC:
       case ST_TWIN:
       case ST_TWINANDSOPHIE:
-         return (ii_b == 2 && ii_c == 1);
+         return (ii_b == 2 && il_c == 1);
 
       default:
        return false;

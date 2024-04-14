@@ -67,7 +67,7 @@ bool  PrimeWorker::ProcessWorkUnit(int32_t &specialsFound, bool inProgressOnly, 
             if (!IsWorkUnitCompleted(srWU))
             {
                if (srWU->l_k == wu->l_k && srWU->i_b == wu->i_b &&
-                   srWU->i_c == wu->i_c && srWU->i_n > wu->i_n)
+                   srWU->l_c == wu->l_c && srWU->i_n > wu->i_n)
                {
                   srWU->b_SRSkipped = true;
                   ip_Log->LogMessage("%s: %s will not be tested because %s is %s", is_WorkSuffix.c_str(),
@@ -125,7 +125,7 @@ bool     PrimeWorker::GetWork(void)
          wu->m_FirstWorkUnitTest = 0;
          wu->l_k = 0;
          wu->i_b = 0;
-         wu->i_c = 0;
+         wu->l_c = 0;
          wu->i_n = 0;
          wu->i_d = 0;
          wu->b_SRSkipped = false;
@@ -133,27 +133,27 @@ bool     PrimeWorker::GetWork(void)
          if (ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL)
          {
             toScan = 4;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %d",
-               wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_c);
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %" PRId64"",
+               wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->l_c);
          }
          if (ii_ServerType == ST_MULTIFACTORIAL)
          {
             toScan = 5;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %d",
-               wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n, &wu->i_c);
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %" PRId64"",
+               wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n, &wu->l_c);
          }
          else if (ii_ServerType == ST_GFN)
          {
             toScan = 4;
             wu->l_k = 1;
-            wu->i_c = 1;
+            wu->l_c = 1;
             wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u",
                wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n);
          }
          else if (ii_ServerType == ST_CYCLOTOMIC)
          {
             toScan = 5;
-            wu->i_c = 1;
+            wu->l_c = 1;
             wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %d %u",
                wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n);
          }
@@ -161,15 +161,15 @@ bool     PrimeWorker::GetWork(void)
          {
             toScan = 5;
             wu->l_k = 1;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %d",
-               wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n, &wu->i_c);
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u %u %" PRId64"",
+               wu->s_Name, &wu->l_TestID, &wu->i_b, &wu->i_n, &wu->l_c);
          }
          else if (ii_ServerType == ST_WAGSTAFF)
          {
             toScan = 3;
             wu->l_k = 1;
             wu->i_b = 1;
-            wu->i_c = 1;
+            wu->l_c = 1;
             wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %u",
                wu->s_Name, &wu->l_TestID, &wu->i_n);
          }
@@ -179,7 +179,7 @@ bool     PrimeWorker::GetWork(void)
             wu->l_k = 1;
             wu->i_b = 1;
             wu->i_n = 1;
-            wu->i_c = 1;
+            wu->l_c = 1;
             wu->i_d = 1;
             wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64"",
                wu->s_Name, &wu->l_TestID);
@@ -187,16 +187,16 @@ bool     PrimeWorker::GetWork(void)
          else
          {
             toScan = 7;
-            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %d %u",
-               wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, &wu->i_d);
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %" PRId64" %u",
+               wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->l_c, &wu->i_d);
 
             // This is for backward compatibility where the client is 5.7.0 and the server is 5.6.6 or older
             if (wasScanned == 6)
             {
                toScan = 6;
                wu->i_d = 1;
-               wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %d",
-                  wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c);
+               wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %" PRId64"",
+                  wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->l_c);
             }
          }
 
@@ -364,8 +364,8 @@ void  PrimeWorker::Save(FILE *fPtr)
    ip_FirstWorkUnit = 0;
    while (wu)
    {
-      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %+d %d %d %d\n",
-         wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->i_c, wu->i_d, wu->b_SRSkipped, wu->i_DecimalLength);
+      fprintf(fPtr, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %+" PRId64" %d %d %d\n",
+         wu->l_TestID, wu->s_Name, wu->l_k, wu->i_b, wu->i_n, wu->l_c, wu->i_d, wu->b_SRSkipped, wu->i_DecimalLength);
 
       wuNext = (workunit_t *) wu->m_NextWorkUnit;
       wu->m_NextWorkUnit = 0;
@@ -416,13 +416,13 @@ void  PrimeWorker::Load(string saveFileName)
 
          wu = new workunit_t;
          wu->m_FirstWorkUnitTest = 0;
-         countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %d %d %d %d",
-            &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, &wu->i_d, (int *) &wu->b_SRSkipped, &wu->i_DecimalLength);
+         countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %" PRId64" %d %d %d",
+            &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->l_c, &wu->i_d, (int *) &wu->b_SRSkipped, &wu->i_DecimalLength);
 
          if (countScanned != 9)
          {
-            countScanned = countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %d %d %d",
-               &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->i_c, (int*)&wu->b_SRSkipped, &wu->i_DecimalLength);
+            countScanned = countScanned = sscanf(line, "Start WorkUnit %" PRIu64" %s %" PRIu64" %d %d %" PRId64" %d %d",
+               &wu->l_TestID, wu->s_Name, &wu->l_k, &wu->i_b, &wu->i_n, &wu->l_c, (int*)&wu->b_SRSkipped, &wu->i_DecimalLength);
 
             // This is for backward compatibility when reading a save file with prpclient 5.7.0, but it was saved with an older client
             if (countScanned != 8)

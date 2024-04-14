@@ -6,7 +6,8 @@
 bool  FixedBNCStatsUpdater::RollupGroupStats(bool deleteInsert)
 {
    SQLStatement  *sqlStatement;
-   int32_t        theB, theN, theC, theD;
+   int32_t        theB, theN, theD;
+   int64_t        theC;
    bool           success;
    const char    *deleteSQL = "delete from CandidateGroupStats";
    const char    *insertSQL = "insert into CandidateGroupStats (b, n, c, d) (select distinct b, n, c, d from Candidate)";
@@ -53,7 +54,8 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(string candidateName)
 {
    SQLStatement  *sqlStatement;
    bool           success;
-   int32_t        theB, theN, theC, theD;
+   int64_t        theC;
+   int32_t        theB, theN, theD;
    const char    *selectSQL = "select b, n, c, d from Candidate where CandidateName = ?";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
@@ -71,7 +73,7 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(string candidateName)
    return UpdateGroupStats(0, theB, theN, theC, theD);
 }
 
-bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
+bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -173,9 +175,9 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and n = %d and c = %d and d = %d)", theB, theN, theC, theD);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and n = %d and c = %" PRId64" and d = %d)", theB, theN, theC, theD);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and n = %d and c = %d and d = %d and n < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and n = %d and c = %" PRId64" and d = %d and n < %d), %d)",
               theB, theN, theC, theD, nextToTest, nextToTest);
 
    // Finally, update the group stats
@@ -194,7 +196,7 @@ bool  FixedBNCStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t
 }
 
 bool   FixedBNCStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                             int32_t theC, int32_t theD, double decimalLength)
+                                             int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, k, b, n, c, d, LastUpdateTime ) " \

@@ -69,7 +69,7 @@ bool  SophieGermainStatsUpdater::UpdateGroupStats(string candidateName)
    return UpdateGroupStats(0, theB, theN, theC);
 }
 
-bool  SophieGermainStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  SophieGermainStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -161,9 +161,9 @@ bool  SophieGermainStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, in
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and n = %d and c = %d)", theB, theN, theC);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and n = %d and c = %" PRId64")", theB, theN, theC);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and n = %d and c = %d and n < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and n = %d and c = %" PRId64" and n < %d), %d)",
               theB, theN, theC, nextToTest, nextToTest);
 
    // Finally, update the group stats
@@ -181,7 +181,7 @@ bool  SophieGermainStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, in
 }
 
 bool   SophieGermainStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                                  int32_t theC, int32_t theD, double decimalLength)
+                                                  int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, k, b, n, c, LastUpdateTime ) " \

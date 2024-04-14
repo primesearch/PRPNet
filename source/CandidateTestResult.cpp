@@ -211,7 +211,7 @@ void     CandidateTestResult::InsertGeneferROE(string geneferVersion)
 
 void     CandidateTestResult::LogResults(int32_t socketID, int32_t completedTests, bool needsDoubleCheck,
                                          bool showOnWebPage, double decimalLength,
-                                         int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
+                                         int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD)
 {
    Log     *prpLog, *testLog;
    char     doubleCheck[30], logHeader[200], prover[50], residue[50];
@@ -335,7 +335,7 @@ void     CandidateTestResult::InsertTestResult(void)
 
 void     CandidateTestResult::LogResults(int32_t socketID, CandidateTestResult *mainTestResult,
                                          bool showOnWebPage, double decimalLength,
-                                         int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
+                                         int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD)
 {
    Log     *prpLog, *testLog;
 
@@ -376,7 +376,7 @@ void     CandidateTestResult::LogResults(int32_t socketID, CandidateTestResult *
 }
 
 void     CandidateTestResult::InsertUserPrime(double decimalLength, bool showOnWebPage,
-                                              int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
+                                              int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD)
 {
    SQLStatement *sqlStatement;
    int64_t theTime;

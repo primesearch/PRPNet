@@ -57,7 +57,7 @@ create table UserPrimes (
    k                       bigint,
    b                       int,
    n                       int,
-   c                       int,
+   c                       bigint,
    d                       int,
    primary key (UserID, CandidateName, TestedNumber)
 ) ENGINE=InnoDB;
@@ -96,7 +96,7 @@ create table Candidate (
    k                       bigint,
    b                       int,
    n                       int,
-   c                       int,
+   c                       bigint,
    d                       int,
    MainTestResult          int,
    LastUpdateTime          bigint            not null,
@@ -167,7 +167,7 @@ create table CandidateGroupStats (
    k                       bigint            default 0,
    b                       int               default 0,
    n                       int               default 0,
-   c                       int               default 0,
+   c                       bigint            default 0,
    d                       int               default 0,
    CountInGroup            int               default 0,
    CountInProgress         int               default 0,

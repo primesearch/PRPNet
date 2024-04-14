@@ -9,7 +9,7 @@ TwinWorkUnitTest::TwinWorkUnitTest(Log *theLog, int32_t serverType, string workS
    il_k = wu->l_k;
    ii_b = wu->i_b;
    ii_n = wu->i_n;
-   ii_c = -wu->i_c;
+   il_c = -wu->l_c;
 
    if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || 
       serverType == ST_MULTIFACTORIAL || serverType == ST_XYYX || serverType == ST_GENERIC)
@@ -18,7 +18,7 @@ TwinWorkUnitTest::TwinWorkUnitTest(Log *theLog, int32_t serverType, string workS
       exit(0);
    }
 
-   snprintf(tempName, 200, "%" PRIu64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
+   snprintf(tempName, 200, "%" PRIu64"*%d^%d%+" PRId64"", il_k, ii_b, ii_n, il_c);
    is_ChildName = tempName;
 }
 

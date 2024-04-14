@@ -220,8 +220,8 @@ int32_t  PrimeWorkSender::SelectDoubleCheckCandidates(int32_t sendWorkUnits, dou
 {
    SQLStatement *selectStatement;
    char     candidateName[NAME_LENGTH+1];
-   int64_t  theK, lastUpdateTime = 0;
-   int32_t  theB, theC, theN, theD;
+   int64_t  theK, theC, lastUpdateTime = 0;
+   int32_t  theB, theN, theD;
    double   decimalLength = 0.0;
    bool     encounteredError;
    int32_t  sentWorkUnits;
@@ -323,8 +323,8 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
    SQLStatement *selectKBCStatement;
    SQLStatement *selectStatement;
    char     candidateName[NAME_LENGTH+1];
-   int64_t  theK;
-   int32_t  theB, theC, theD, theN = 0;
+   int64_t  theK, theC;
+   int32_t  theB, theD, theN = 0;
    int32_t  sierpinskiRieselPrimeN;
    int32_t  countInProgress;
    bool     encounteredError;
@@ -537,8 +537,8 @@ int32_t  PrimeWorkSender::SelectCandidates(int32_t sendWorkUnits)
 {
    SQLStatement *selectStatement;
    char     candidateName[NAME_LENGTH+1];
-   int64_t  theK;
-   int32_t  theB, theC, theN, theD;
+   int64_t  theK, theC;
+   int32_t  theB, theN, theD;
    bool     encounteredError;
    int32_t  sentWorkUnits;
 
@@ -819,7 +819,7 @@ bool     PrimeWorkSender::ReserveCandidate(string candidateName)
    return UpdateGroupStats(candidateName);
 }
 
-bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
+bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD)
 {
    int64_t  lastUpdateTime;
    bool     sent;
@@ -895,8 +895,8 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
 bool     PrimeWorkSender::UpdateGroupStats(string candidateName)
 {
    SQLStatement* sqlStatement;
-   int64_t     theK;
-   int32_t     theB, theC, theD;
+   int64_t     theK, theC;
+   int32_t     theB, theD;
    bool        success;
    const char* selectSQL = "select k, b, c, d " \
                            "  from Candidate " \

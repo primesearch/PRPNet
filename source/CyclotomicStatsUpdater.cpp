@@ -69,7 +69,7 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(string candidateName)
    return UpdateGroupStats(theK, 0, theN, 0);
 }
 
-bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -170,7 +170,7 @@ bool  CyclotomicStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32
 }
 
 bool   CyclotomicStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                               int32_t theC, int32_t theD, double decimalLength)
+                                               int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, k, b, n, LastUpdateTime ) " \

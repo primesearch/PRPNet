@@ -42,7 +42,7 @@ private:
    bool        CheckGenefer(string candidateName);
    bool        CheckDoubleCheck(string candidateName, double decimalLength, int64_t lastUpdateTime);
    bool        ReserveCandidate(string candidateName);
-   bool        SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD);
+   bool        SendWork(string candidateName, int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
    bool        UpdateGroupStats(string candidateName);
 };
 

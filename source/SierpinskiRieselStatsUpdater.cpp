@@ -6,8 +6,8 @@
 bool  SierpinskiRieselStatsUpdater::RollupGroupStats(bool deleteInsert)
 {
    SQLStatement  *sqlStatement;
-   int64_t        theK;
-   int32_t        theB, theC, theD;
+   int64_t        theK, theC;
+   int32_t        theB, theD;
    bool           success, foundOne;
    const char    *deleteSQL = "delete from CandidateGroupStats";
    const char    *insertSQL = "insert into CandidateGroupStats (b, k, c, d) (select distinct b, k, c, d from Candidate)";
@@ -52,7 +52,7 @@ bool  SierpinskiRieselStatsUpdater::RollupGroupStats(bool deleteInsert)
    return true;
 }
 
-bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int32_t theB, int32_t theC, int32_t theD, int32_t theN)
+bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int32_t theB, int64_t theC, int32_t theD, int32_t theN)
 {
    SQLStatement  *sqlStatement;
    int32_t        sierpinskiRieselPrimeN;
@@ -93,7 +93,7 @@ bool  SierpinskiRieselStatsUpdater::SetSierspinkiRieselPrimeN(int64_t theK, int3
    return success;
 }
 
-bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, int32_t theB, int32_t theC, int32_t theD, bool &foundOne)
+bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, int32_t theB, int64_t theC, int32_t theD, bool &foundOne)
 {
    SQLStatement  *sqlStatement;
    int32_t        theN;
@@ -145,7 +145,7 @@ bool  SierpinskiRieselStatsUpdater::SetHasSierspinkiRieselPrime(int64_t theK, in
    return success;
 }
 
-bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD)
+bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -249,9 +249,9 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %d and d = %d)", theB, theK, theC, theD);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %" PRId64" and d = %d)", theB, theK, theC, theD);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %d and d = %d and n < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and k = %" PRIu64" and c = %" PRId64" and d = %d and n < %d), %d)",
               theB, theK, theC, theD, nextToTest, nextToTest);
 
    // Finally, update the group stats
@@ -270,7 +270,7 @@ bool  SierpinskiRieselStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB,
 }
 
 bool   SierpinskiRieselStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                                     int32_t theC, int32_t theD, double decimalLength)
+                                                     int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, k, b, n, c, d, LastUpdateTime ) " \

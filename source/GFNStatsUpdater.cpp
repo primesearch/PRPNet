@@ -65,7 +65,7 @@ bool  GFNStatsUpdater::UpdateGroupStats(string candidateName)
    return UpdateGroupStats(0, 0, theN, 0);
 }
 
-bool  GFNStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  GFNStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -155,7 +155,7 @@ bool  GFNStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN
 }
 
 bool   GFNStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                        int32_t theC, int32_t theD, double decimalLength)
+                                        int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, b, n, c, LastUpdateTime ) " \

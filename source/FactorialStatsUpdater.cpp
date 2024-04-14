@@ -65,7 +65,7 @@ bool  FactorialStatsUpdater::UpdateGroupStats(string candidateName)
    return UpdateGroupStats(0, 0, 0, theC);
 }
 
-bool  FactorialStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  FactorialStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -137,9 +137,9 @@ bool  FactorialStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where c = %d)", theC);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where c = %" PRId64")", theC);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where c = %d and n < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where c = %" PRId64" and n < %d), %d)",
               theC, nextToTest, nextToTest);
 
    // Finally, update the group stats
@@ -155,7 +155,7 @@ bool  FactorialStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_
 }
 
 bool   FactorialStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                              int32_t theC, int32_t theD, double decimalLength)
+                                              int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, n, c, LastUpdateTime ) " \

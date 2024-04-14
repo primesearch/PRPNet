@@ -50,7 +50,7 @@ protected:
    uint64_t il_k;
    uint32_t ii_b;
    uint32_t ii_n;
-   int32_t  ii_c;
+   int64_t  il_c;
    uint32_t ii_d;
 
    bool     ib_HadTestFailure;

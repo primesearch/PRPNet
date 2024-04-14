@@ -9,29 +9,29 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
    il_k = wu->l_k;
    ii_b = wu->i_b;
    ii_n = wu->i_n;
-   ii_c = wu->i_c;
+   il_c = wu->l_c;
    ii_d = wu->i_d;
 
    switch (serverType)
    {
       case ST_PRIMORIAL:
-         snprintf(tempName, sizeof(tempName), "%d#%+d", ii_b, ii_c);
+         snprintf(tempName, sizeof(tempName), "%d#%+" PRId64"", ii_b, il_c);
          break;
 
       case ST_FACTORIAL:
-         snprintf(tempName, sizeof(tempName), "%d!%+d", ii_b, ii_c);
+         snprintf(tempName, sizeof(tempName), "%d!%+" PRId64"", ii_b, il_c);
          break;
 
       case ST_MULTIFACTORIAL:
-         snprintf(tempName, sizeof(tempName), "%d!%d%+d", ii_b, ii_n, ii_c);
+         snprintf(tempName, sizeof(tempName), "%d!%d%+" PRId64"", ii_b, ii_n, il_c);
          break;
 
       case ST_GFN:
-         snprintf(tempName, sizeof(tempName), "%d^%d%+d", ii_b, ii_n, ii_c);
+         snprintf(tempName, sizeof(tempName), "%d^%d%+" PRId64"", ii_b, ii_n, il_c);
          break;
 
       case ST_XYYX:
-         snprintf(tempName, sizeof(tempName), "%d^%d%c%d^%d", ii_b, ii_n, ((ii_c == 1) ? '+' : '-'), ii_n, ii_b);
+         snprintf(tempName, sizeof(tempName), "%d^%d%c%d^%d", ii_b, ii_n, ((il_c == 1) ? '+' : '-'), ii_n, ii_b);
          break;
 
       case ST_GENERIC:
@@ -40,7 +40,7 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
          break;
 
       case ST_CAROLKYNEA:
-         snprintf(tempName, sizeof(tempName), "(%d^%d%+d)^2-2", ii_b, ii_n, ii_c);
+         snprintf(tempName, sizeof(tempName), "(%d^%d%+" PRId64")^2-2", ii_b, ii_n, il_c);
          break;
 
       case ST_WAGSTAFF:
@@ -49,11 +49,11 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
 
       default:
         if (il_k > 1 && ii_d > 1)
-           snprintf(tempName, sizeof(tempName), "(%" PRIu64"*%d^%d%+d)/%d", il_k, ii_b, ii_n, ii_c, ii_d);
+           snprintf(tempName, sizeof(tempName), "(%" PRIu64"*%d^%d%+" PRId64")/%d", il_k, ii_b, ii_n, il_c, ii_d);
         else if (ii_d > 1)
-           snprintf(tempName, sizeof(tempName), "(%d^%d%+d)/%d", ii_b, ii_n, ii_c, ii_d);
+           snprintf(tempName, sizeof(tempName), "(%d^%d%+" PRId64")/%d", ii_b, ii_n, il_c, ii_d);
         else
-           snprintf(tempName, sizeof(tempName), "%" PRIu64"*%d^%d%+d", il_k, ii_b, ii_n, ii_c);
+           snprintf(tempName, sizeof(tempName), "%" PRIu64"*%d^%d%+" PRId64"", il_k, ii_b, ii_n, il_c);
         break;
    }
 

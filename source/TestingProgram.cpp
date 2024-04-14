@@ -21,7 +21,7 @@ TestingProgram::TestingProgram(Log *theLog, string programName)
 }
 
 void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUnitName,
-                                uint64_t theK, uint32_t theB, uint32_t theN, int32_t theC, uint32_t theD)
+                                uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD)
 {
    is_Suffix = suffix;
    is_InFileName = "work_" + suffix + ".in";
@@ -37,7 +37,7 @@ void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUn
    il_k = theK;
    ii_b = theB;
    ii_n = theN;
-   ii_c = theC;
+   il_c = theC;
    ii_d = theD;
 }
 

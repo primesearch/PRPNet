@@ -41,7 +41,7 @@ bool  GenericStatsUpdater::UpdateGroupStats(string candidateName)
    return UpdateGroupStats(0, 0, 0, 0);
 }
 
-bool  GenericStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  GenericStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -69,7 +69,7 @@ bool  GenericStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t 
 }
 
 bool   GenericStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                            int32_t theC, int32_t theD, double decimalLength)
+                                            int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, LastUpdateTime ) " \

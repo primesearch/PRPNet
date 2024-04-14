@@ -46,7 +46,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    else if (ii_ServerType == ST_CAROLKYNEA)
       sign = 'p';
    else
-      sign = ((ii_c > 0) ? 'm' : 'p');
+      sign = ((il_c > 0) ? 'm' : 'p');
 
    primalityValue[0] = 0;
    newBase[0] = 0;

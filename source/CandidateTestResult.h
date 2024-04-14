@@ -32,10 +32,10 @@ public:
 
    void        LogResults(int32_t socketID, int32_t completedTests, bool needsDoubleCheck,
                           bool showOnWebPage, double decimalLength,
-                          int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD);
+                          int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
    void        LogResults(int32_t socketID, CandidateTestResult *mainTestResult,
                           bool showOnWebPage, double decimalLength,
-                          int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD);
+                          int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
    void        LogTwinResults(int32_t socketID, CandidateTestResult *mainTestResult);
    void        LogSophieGermainResults(int32_t socketID, CandidateTestResult *mainTestResult, sgtype_t sgType);
 
@@ -71,7 +71,7 @@ private:
    void        InsertGFNDivsior(string gfn);
    void        InsertGeneferROE(string geneferVersion);
    void        InsertUserPrime(double decimalLength, bool showOnWebPage,
-                               int64_t theK, int32_t theB, int32_t theN, int32_t theC, int32_t theD);
+                               int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
 
    void        LogTwinMessage(Log *testLog, Log *prpLog, string logHeader, string prover,
                               string residue, string doubleCheck);

@@ -38,12 +38,12 @@ testresult_t   PhrotProgram::Execute(testtype_t testType)
 
    if (ii_ServerType == ST_GFN)
    {
-      fprintf(fp, "ABC $a^$b%+d\n", ii_c);
+      fprintf(fp, "ABC $a^$b%+" PRId64"\n", il_c);
       fprintf(fp, "%d %d\n", ii_b, ii_n);
    }
    else
    {
-      fprintf(fp, "ABC $a*$b^$c%+d\n", ii_c);
+      fprintf(fp, "ABC $a*$b^$c%+" PRId64"\n", il_c);
       fprintf(fp, "%" PRIu64" %d %d\n", il_k, ii_b, ii_n);
    }
 

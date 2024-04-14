@@ -67,7 +67,7 @@ bool  XYYXStatsUpdater::UpdateGroupStats(string candidateName)
    return UpdateGroupStats(0, theB, 0, theC);
 }
 
-bool  XYYXStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int32_t theC)
+bool  XYYXStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC)
 {
    SQLStatement *sqlStatement;
    bool          success;
@@ -151,7 +151,7 @@ bool  XYYXStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t the
    if (nextToTest == 0)
       snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d)", theB);
    else
-      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and c = %d and n < %d), %d)",
+      snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and c = %" PRId64" and n < % d), % d)",
               theB, theC, nextToTest, nextToTest);
 
    // Finally, update the group stats
@@ -168,7 +168,7 @@ bool  XYYXStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t the
 }
 
 bool   XYYXStatsUpdater::InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                         int32_t theC, int32_t theD, double decimalLength)
+                                         int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
                            "( CandidateName, DecimalLength, b, n, c, LastUpdateTime ) " \

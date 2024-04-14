@@ -1,5 +1,9 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.7.4:  April 14, 2024 - New Release
+          all:  Add support for c up to 2^63.
+    prpclient:  Modify handling of prst output to correctly identify prime and to get time for the test.
+    
 Version 5.7.3:  March 31, 2024 - New Release
     prpclient:  Use clock time to get time used by the helper program instead of the output of that program.
     prpserver:  Fix issue with input files with multiple ABC lines.

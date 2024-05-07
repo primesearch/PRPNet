@@ -83,9 +83,9 @@ testresult_t   PRSTProgram::ParseTestResults(testtype_t testType)
          return testResult;
       }
 
-      ptr = strstr(line, "ime : ");
+      ptr = strstr(line, "ime: ");
       if (ptr)
-         sscanf(ptr, "ime : %lf s", &id_Seconds);
+         sscanf(ptr, "ime: %lf s", &id_Seconds);
 
       if (strstr(line, "is prime"))
       {
@@ -186,7 +186,6 @@ bool  PRSTProgram::IsPerformingProthTest(void)
          return (ii_b == 2 && il_c == 1);
 
       default:
-       return false;
-
+         return false;
    }
 }

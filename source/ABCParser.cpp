@@ -305,6 +305,8 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
          return ABC_DGT1C;
       }
 
+      ii_theD = 1;
+
       if (sscanf(tempHeader, fkabcdstring, &il_theK, &ii_theB, &il_theC, &ii_theN) == 4)
           return ABCD_FK;
 
@@ -370,10 +372,10 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    // Cullen/Woodall form (variable base)
    if (sscanf(tempHeader, cwvb_string, &il_theC) == 1)
    {
-     if (il_theC > 0)
-       return ABC_CW_VBP;
-     if (il_theC < 0)
-       return ABC_CW_VBM;
+      if (il_theC > 0)
+         return ABC_CW_VBP;
+      if (il_theC < 0)
+         return ABC_CW_VBM;
    }
 
    if (!strncmp(tempHeader, cwvbastring, strlen(cwvbastring))) return ABC_CW_VBA;
@@ -381,16 +383,16 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    // Fixed k forms for k*b^n+/-c
    if (sscanf(tempHeader, fk_string, &il_theK, &il_theC) == 2)
    {
-     if (il_theC > 0)
-       return ABC_FKP;
-     if (il_theC < 0)
-       return ABC_FKM;
+      if (il_theC > 0)
+         return ABC_FKP;
+      if (il_theC < 0)
+         return ABC_FKM;
    }
 
    if (sscanf(tempHeader, fkastring, &il_theK, &ch) == 2)
    {
-     if (ch == 'c')
-       return ABC_FKA;
+      if (ch == 'c')
+         return ABC_FKA;
    }
 
    if (sscanf(tempHeader, fkbstring, &il_theK, &ii_theB, &il_theC) == 3)
@@ -399,39 +401,48 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    // Fixed b forms for k*b^n+/-c
    if (sscanf(tempHeader, fb_string, &ii_theB, &il_theC) == 2)
    {
-     if (il_theC > 0)
-       return ABC_FBP;
-     if (il_theC < 0)
-       return ABC_FBM;
+      if (il_theC > 0)
+        return ABC_FBP;
+      if (il_theC < 0)
+         return ABC_FBM;
    }
 
    if (sscanf(tempHeader, fbastring, &ii_theB, &ch) == 2)
    {
-     if (ch == 'c')
-       return ABC_FBA;
+      if (ch == 'c')
+         return ABC_FBA;
    }
 
    // Fixed n forms for k*b^n+/-c
    if (sscanf(tempHeader, fn_string, &ii_theB, &il_theC) == 2)
    {
-     if (il_theC > 0)
-       return ABC_FNP;
-     if (il_theC < 0)
-       return ABC_FNM;
+      ii_theD = 1;
+ 
+      if (il_theC > 0)
+         return ABC_FNP;
+      
+      if (il_theC < 0)
+         return ABC_FNM;
    }
+
    if (sscanf(tempHeader, fnastring, &ii_theB, &ch) == 2)
    {
-     if (ch == 'c')
-       return ABC_FNA;
+      ii_theD = 1;
+
+      if (ch == 'c')
+         return ABC_FNA;
    }
 
    // Any form of k*b^n+/-c
    if (sscanf(tempHeader, abc_string, &il_theC) == 1)
    {
-     if (il_theC > 0)
-       return ABC_VP;
-     if (il_theC < 0)
-       return ABC_VM;
+      ii_theD = 1;
+    
+      if (il_theC > 0)
+         return ABC_VP;
+     
+      if (il_theC < 0)
+         return ABC_VM;
    }
 
    if (!strncmp(tempHeader, abcastring, strlen(abcastring))) return ABC_VA;
@@ -439,10 +450,11 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    // Any form of n#+/-c
    if (sscanf(tempHeader, prim_string, &il_theC) == 1)
    {
-     if (il_theC > 0)
-       return ABC_PRIMP;
-     if (il_theC < 0)
-       return ABC_PRIMM;
+      if (il_theC > 0)
+         return ABC_PRIMP;
+      
+      if (il_theC < 0)
+         return ABC_PRIMM;
    }
 
    if (!strncmp(tempHeader, primastring, strlen(primastring))) return ABC_PRIMA;
@@ -450,17 +462,17 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    // Any form of n!+/-c
    if (!strstr(tempHeader, "$b") && sscanf(tempHeader, fact_string, &il_theC) == 1)
    {
-     if (il_theC > 0)
-       return ABC_FACTP;
-     if (il_theC < 0)
-       return ABC_FACTM;
+      if (il_theC > 0)
+         return ABC_FACTP;
+      if (il_theC < 0)
+         return ABC_FACTM;
    }
 
    // Any form of $a!%d$b
    if (strstr(tempHeader, "$b") && sscanf(tempHeader, mf_string, &ii_theB) == 1)
    {
-     if (ii_theB > 0)
-       return ABC_MF;
+      if (ii_theB > 0)
+         return ABC_MF;
    }
    
    if (!strncmp(tempHeader, wagstaffstring, strlen(wagstaffstring))) return ABC_WAGSTAFF;

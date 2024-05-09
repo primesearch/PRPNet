@@ -72,13 +72,16 @@ testresult_t   PRSTProgram::ParseTestResults(testtype_t testType)
       if (!fgets(line, sizeof(line), fp))
       {
          if (testResult != TR_COMPLETED)
+         {
             ip_Log->LogMessage("%s: Test results not found in file [%s].  Assuming user stopped with ^C",
                is_Suffix.c_str(), fileName);
 #ifdef WIN32
-         SetQuitting(1);
+            SetQuitting(1);
 #else
-         raise(SIGINT);
+            raise(SIGINT);
 #endif
+         }
+
          fclose(fp);
          return testResult;
       }

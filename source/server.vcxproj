@@ -296,6 +296,8 @@
     <ClCompile Include="HTMLGeneratorFactory.cpp" />
     <ClCompile Include="KeepAliveThread.cpp" />
     <ClCompile Include="LengthCalculator.cpp" />
+    <ClCompile Include="LifchitzHTML.cpp" />
+    <ClCompile Include="LifchitzStatsUpdater.cpp" />
     <ClCompile Include="Log.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -355,8 +357,8 @@
     <ClCompile Include="WWWWStatsUpdater.cpp" />
     <ClCompile Include="WWWWWorkReceiver.cpp" />
     <ClCompile Include="WWWWWorkSender.cpp" />
-    <ClCompile Include="XYYXHTML.cpp" />
-    <ClCompile Include="XYYXStatsUpdater.cpp" />
+    <ClCompile Include="LeylandHTML.cpp" />
+    <ClCompile Include="LeylandStatsUpdater.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ABCParser.h" />
@@ -385,6 +387,8 @@
     <ClInclude Include="HTMLGeneratorFactory.h" />
     <ClInclude Include="KeepAliveThread.h" />
     <ClInclude Include="LengthCalculator.h" />
+    <ClInclude Include="LifchitzHTML.h" />
+    <ClInclude Include="LifchitzStatsUpdater.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Mail.h" />
     <ClInclude Include="MailFactory.h" />
@@ -426,8 +430,8 @@
     <ClInclude Include="WWWWStatsUpdater.h" />
     <ClInclude Include="WWWWWorkReceiver.h" />
     <ClInclude Include="WWWWWorkSender.h" />
-    <ClInclude Include="XYYXHTML.h" />
-    <ClInclude Include="XYYXStatsUpdater.h" />
+    <ClInclude Include="LeylandHTML.h" />
+    <ClInclude Include="LeylandStatsUpdater.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

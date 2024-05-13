@@ -168,7 +168,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
       return ip_PFGWProgram;
    }
 
-   if (serverType == ST_XYYX || serverType == ST_GENERIC || serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL)
+   if (serverType == ST_LEYLAND || serverType == ST_LIFCHITZ || serverType == ST_GENERIC || serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL)
       return ip_PFGWProgram;
 
    if (serverType == ST_CYCLOTOMIC)
@@ -225,7 +225,8 @@ TestingProgram *TestingProgramFactory::GetPrimalityTestingProgram(int32_t server
    // For Wagstaff, pfgw cannot prove primality
       case ST_WAGSTAFF:
    // For XYYX, pfgw cannot prove primality
-      case ST_XYYX:
+      case ST_LEYLAND:
+      case ST_LIFCHITZ:
    // Don't know if pfgw can prove primality, so don't try
       case ST_GENERIC:
          return 0;

@@ -30,8 +30,12 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
          snprintf(tempName, sizeof(tempName), "%d^%d%+" PRId64"", ii_b, ii_n, il_c);
          break;
 
-      case ST_XYYX:
+      case ST_LEYLAND:
          snprintf(tempName, sizeof(tempName), "%d^%d%c%d^%d", ii_b, ii_n, ((il_c == 1) ? '+' : '-'), ii_n, ii_b);
+         break;
+
+      case ST_LIFCHITZ:
+         snprintf(tempName, sizeof(tempName), "%d^%d%c%d^%d", ii_b, ii_b, ((il_c == 1) ? '+' : '-'), ii_n, ii_n);
          break;
 
       case ST_GENERIC:

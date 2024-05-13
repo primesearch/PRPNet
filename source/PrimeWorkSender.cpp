@@ -853,7 +853,7 @@ bool     PrimeWorkSender::SendWork(string candidateName, int64_t theK, int32_t t
 
    if (ii_ServerType == ST_GFN)
       sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %d %u", candidateName.c_str(), lastUpdateTime, theB, theN);
-   else if (ii_ServerType == ST_XYYX)
+   else if (ii_ServerType == ST_LEYLAND)
       sent = ip_Socket->Send("WorkUnit: %s %" PRIu64" %d %d %d", candidateName.c_str(), lastUpdateTime, 
          (theC == 1 ? theB : theN), (theC == 1 ? theN : theB), theC);
    else if (ii_ServerType == ST_GENERIC)

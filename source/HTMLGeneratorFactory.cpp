@@ -5,7 +5,7 @@
 #include "FixedBKCHTML.h"
 #include "FixedBNCHTML.h"
 #include "GFNHTML.h"
-#include "XYYXHTML.h"
+#include "LeylandHTML.h"
 #include "PrimorialHTML.h"
 #include "FactorialHTML.h"
 #include "MultiFactorialHTML.h"
@@ -59,8 +59,8 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
          htmlGenerator = new FixedBKCHTML(globals);
          break;
 
-      case ST_XYYX:
-         htmlGenerator = new XYYXHTML(globals);
+      case ST_LEYLAND:
+         htmlGenerator = new LeylandHTML(globals);
          break;
          
       case ST_CYCLOTOMIC:

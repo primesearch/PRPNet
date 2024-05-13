@@ -39,6 +39,10 @@ void  PrimeHelperThread::ProcessRequest(string theMessage)
       if (VerifyAdminPassword(tempMessage + 16))
          ExpireWorkunitTest();
 
+   if (!memcmp(tempMessage, "DELETE_DATA ", 11))
+      if (VerifyAdminPassword(tempMessage + 16))
+         DeleteData();
+
    if (!memcmp(tempMessage, "GETWORK", 7))
    {
       workSender = new PrimeWorkSender(ip_DBInterface, ip_Socket, ip_Globals,
@@ -367,6 +371,127 @@ void      PrimeHelperThread::ExpireWorkunitTest(void)
    {
       ip_Socket->Send("Failed to expire test for candidate %s", theMessage+7);
       ip_DBInterface->Rollback();
+   }
+
+   ip_Socket->Send("End of Message");
+}
+
+void      PrimeHelperThread::DeleteData(void)
+{
+   char* theMessage;
+   char  deleteWhich, deletePrimes, deleteStats;
+   char  theValue[30];
+   uint32_t rows;
+
+   SQLStatement* sqlStatement;
+
+   const char* deleteCandidateTestResultSQL = "delete from CandidateTestResult ctr " \
+      " where ctr.CandidateName = (select c.CandidateName from Candidate c where c.CandidateName = ctr.CandidateName and c.%c <= %s)";
+   const char* deleteCandidateTestSQL = "delete from CandidateTest ct " \
+      " where ct.CandidateName = (select c.CandidateName from Candidate c where c.CandidateName = ct.CandidateName and c.%c <= %s)";
+   const char* deleteCandidateSQL = "delete from Candidate where %c <= %s)";
+   const char* deleteUserPrimesSQL = "delete from UserPrimes where %c <= %s)";
+   const char* deleteCandidateGroupStatsSQL = "delete from CandidateGroupStats where %c <= %s)";
+
+   theMessage = ip_Socket->Receive();
+   if (!theMessage) return;
+
+   if (sscanf(theMessage, "DELETE %c %s %c %c", &deleteWhich, theValue, deletePrimes, deleteStats) != 4)
+   {
+      ip_Socket->Send("Failed to parse mesasge %s", theMessage + 7);
+      ip_Socket->Send("End of Message");
+      return;
+   }
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateTestResultSQL, deleteWhich, theValue);
+
+   if (!sqlStatement->Execute())
+   {
+      ip_Socket->Send("Failed trying to delete CandidateTestResults");
+      ip_DBInterface->Rollback();
+
+      ip_Socket->Send("End of Message");
+      return;
+   }
+
+   rows = sqlStatement->GetRowsAffected();
+   ip_DBInterface->Commit();
+   ip_Socket->Send("Deleted %u CandidateTestResults", rows);
+
+   delete sqlStatement;
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateTestSQL, deleteWhich, theValue);
+
+   if (!sqlStatement->Execute())
+   {
+      ip_Socket->Send("Failed trying to delete CandidateTests");
+      ip_DBInterface->Rollback();
+
+      ip_Socket->Send("End of Message");
+      return;
+   }
+
+   rows = sqlStatement->GetRowsAffected();
+   ip_DBInterface->Commit();
+   ip_Socket->Send("Deleted %u CandidateTests", rows);
+
+   delete sqlStatement;
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateSQL, deleteWhich, theValue);
+
+   if (!sqlStatement->Execute())
+   {
+      ip_Socket->Send("Failed trying to delete Candidates");
+      ip_DBInterface->Rollback();
+
+      ip_Socket->Send("End of Message");
+      return;
+   }
+
+   rows = sqlStatement->GetRowsAffected();
+   ip_DBInterface->Commit();
+   ip_Socket->Send("Deleted %u Candidate", rows);
+
+   delete sqlStatement;
+
+   if (deletePrimes == 'y')
+   {
+      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteUserPrimesSQL, deleteWhich, theValue);
+
+      if (!sqlStatement->Execute())
+      {
+         ip_Socket->Send("Failed trying to delete UserPrimes");
+         ip_DBInterface->Rollback();
+
+         ip_Socket->Send("End of Message");
+         return;
+      }
+
+      rows = sqlStatement->GetRowsAffected();
+      ip_DBInterface->Commit();
+      ip_Socket->Send("Deleted %u UserPrimes", rows);
+
+      delete sqlStatement;
+   }
+
+   if (deleteStats == 'y')
+   {
+      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateGroupStatsSQL, deleteWhich, theValue);
+
+      if (!sqlStatement->Execute())
+      {
+         ip_Socket->Send("Failed trying to delete CandidateGroupStats");
+         ip_DBInterface->Rollback();
+
+         ip_Socket->Send("End of Message");
+         return;
+      }
+
+      rows = sqlStatement->GetRowsAffected();
+      ip_DBInterface->Commit();
+      ip_Socket->Send("Deleted %u CandidateGroupStats", rows);
+
+      delete sqlStatement;
    }
 
    ip_Socket->Send("End of Message");

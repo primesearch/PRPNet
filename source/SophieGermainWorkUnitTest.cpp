@@ -18,8 +18,8 @@ SophieGermainWorkUnitTest::SophieGermainWorkUnitTest(Log *theLog, int32_t server
    il_c = wu->l_c;
    isg_Type = sgType;
 
-   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL ||
-      serverType == ST_MULTIFACTORIAL || serverType == ST_XYYX || serverType == ST_GENERIC)
+   if (serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_LEYLAND ||
+      serverType == ST_MULTIFACTORIAL || serverType == ST_LIFCHITZ || serverType == ST_GENERIC)
    {
       printf("Cannot create Sophie-Germain workunit for servertype %d.  Exiting\n", serverType);
       exit(0);

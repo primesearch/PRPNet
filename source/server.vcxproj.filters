@@ -177,10 +177,10 @@
     <ClCompile Include="WWWWServerHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="XYYXHTML.cpp">
+    <ClCompile Include="LeylandHTML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="XYYXStatsUpdater.cpp">
+    <ClCompile Include="LeylandStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GenericHTML.cpp">
@@ -211,6 +211,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WagstaffStatsUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LifchitzHTML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LifchitzStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -386,10 +392,10 @@
     <ClInclude Include="WWWWServerHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="XYYXHTML.h">
+    <ClInclude Include="LeylandHTML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="XYYXStatsUpdater.h">
+    <ClInclude Include="LeylandStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GenericHTML.h">
@@ -420,6 +426,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WagstaffStatsUpdater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LifchitzHTML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LifchitzStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

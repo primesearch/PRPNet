@@ -53,6 +53,7 @@ static const char *phiabcstring = "Phi($a,$b^$c)";
 
 static const char *xyyxpstring = "$a^$b+$b^$a";
 static const char *xyyxmstring = "$a^$b-$b^$a";
+static const char* lifchitzstring = "$a^$a$b*$c^$c";
 
 static const char *ckstring = "(%d^$a$b)^2-2";
 
@@ -90,6 +91,7 @@ static const char* dgt1string4 = "(%d^$a%d)/%d";
 #define ABC_GFN         71
 #define ABC_XYYXP       81
 #define ABC_XYYXM       82
+#define ABC_LIFCHITZ    83
 #define ABC_PHI_AB      91
 #define ABC_PHI_ABC     92
 
@@ -214,10 +216,14 @@ bool  ABCParser::IsValidFormat(void)
       if (ii_ABCFormat == ABC_GFN)
          return true;
    
-   if (ii_ServerType == ST_XYYX)
+   if (ii_ServerType == ST_LEYLAND)
       if (ii_ABCFormat == ABC_XYYXP || ii_ABCFormat == ABC_XYYXM)
          return true;
-   
+
+   if (ii_ServerType == ST_LIFCHITZ)
+      if (ii_ABCFormat == ABC_LIFCHITZ)
+         return true;
+
    if (ii_ServerType == ST_CYCLOTOMIC)
       if (ii_ABCFormat == ABC_PHI_AB || ii_ABCFormat == ABC_PHI_ABC)
          return true;
@@ -487,6 +493,8 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (!strncmp(tempHeader, xyyxmstring, strlen(xyyxmstring))) return ABC_XYYXM;
 
+   if (!strncmp(tempHeader, lifchitzstring, strlen(lifchitzstring))) return ABC_LIFCHITZ;
+
    if (!strncmp(tempHeader, phiabstring, strlen(phiabstring))) return ABC_PHI_AB;
 
    if (!strncmp(tempHeader, phiabcstring, strlen(phiabcstring))) return ABC_PHI_ABC;
@@ -644,7 +652,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
          snprintf(tempName, BUFFER_SIZE, "%d^%d%+" PRId64"", ii_theB, ii_theN, il_theC);
          break;
 
-      case ST_XYYX:
+      case ST_LEYLAND:
          snprintf(tempName, BUFFER_SIZE, "%d^%d%c%d^%d", ii_theB, ii_theN, ((il_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
          break;
          
@@ -846,6 +854,11 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          if (sscanf(tempLine, "%d %d", &ii_theB, &ii_theN) != 2) return false;
          il_theK = 1;
          il_theC = -1;
+         return true;
+
+      case ABC_LIFCHITZ:
+         if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theB, &ii_theN) != 3) return false;
+         il_theK = 1;
          return true;
 
       case ABC_PHI_AB:

@@ -277,7 +277,8 @@ Worker  *ServerHandler::AllocateWorker(int32_t serverType)
       case ST_MULTIFACTORIAL:
       case ST_TWIN:
       case ST_GFN:
-      case ST_XYYX:
+      case ST_LEYLAND:
+      case ST_LIFCHITZ:
       case ST_SOPHIEGERMAIN:
       case ST_GENERIC:
       case ST_CYCLOTOMIC:

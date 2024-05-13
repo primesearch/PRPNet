@@ -18,6 +18,7 @@ protected:
    void        AdminFactorFile(void);
    void        ProcessRequest(string theMessage);
    void        ExpireWorkunitTest(void);
+   void        DeleteData(void);
 };
 
 #endif // #ifndef _PrimeHelperThread_

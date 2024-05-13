@@ -44,6 +44,7 @@ void     ExpireWorkunit(const char *workunit);
 void     SetQuitting(int a);
 void     PipeInterrupt(int a);
 void     ProcessCommandLine(int count, char *arg[]);
+void     DeleteData(char deleteWhich, char* deleteValue, char deletePrimes, char deleteStats);
 void     Usage(char *exeName);
 bool     ConfirmBatch(int countSent, bool allDone);
 
@@ -51,6 +52,7 @@ void      AdminMenu(void)
 {
    int   menuitem = -1;
    char  response[500], *theMessage;
+   char  deleteValue[30], deletePrimes[1], deleteStats[1];
    int32_t ranges;
 
    while (true)
@@ -65,7 +67,10 @@ void      AdminMenu(void)
          printf(" 4. Add new candidates from ABC file\n");
          printf(" 5. Remove candidates based upon factors file\n");
          printf(" 6. Add search ranges\n");
-         printf("10. Expire work unit\n");
+         printf("11. Expire work unit\n");
+         printf("21. Delete candidates for k <=\n");
+         printf("22. Delete candidates for b <=\n");
+         printf("23. Delete candidates for n <=\n");
          printf("91. Recompute user and team statistics\n");
          printf("92. Recompute server statistics\n");
       }
@@ -84,7 +89,7 @@ void      AdminMenu(void)
             return;
 
          case 1:
-            strcpy(g_ServerName, PromptForValue("Enter server address: ", false));
+            snprintf(g_ServerName, sizeof(g_ServerName), PromptForValue("Enter server address: ", false));
             g_Password[0] = 0;
             break;
 
@@ -94,11 +99,11 @@ void      AdminMenu(void)
             break;
 
          case 3:
-            strcpy(g_Password, PromptForValue("Enter administrator password: ", false));
+            snprintf(g_Password, sizeof(g_Password), PromptForValue("Enter administrator password: ", false));
             break;
 
          case 4:
-            strcpy(response, PromptForValue("Enter ABC file to be imported: ", true));
+            snprintf(response, sizeof(response), PromptForValue("Enter ABC file to be imported: ", true));
 
             if (strlen(response) && OpenAdminSocket())
             {
@@ -108,7 +113,7 @@ void      AdminMenu(void)
             break;
 
          case 5:
-            strcpy(response, PromptForValue("Enter factor file to be applied: ", true));
+            snprintf(response, sizeof(response), PromptForValue("Enter factor file to be applied: ", true));
 
             if (strlen(response) && OpenAdminSocket())
             {
@@ -119,7 +124,7 @@ void      AdminMenu(void)
 
 
          case 6:
-            strcpy(response, PromptForValue("Enter number of ranges to add: ", false));
+            snprintf(response, sizeof(response), PromptForValue("Enter number of ranges to add: ", false));
             ranges = atol(response);
 
             if (strlen(response) && ranges > 0 && OpenAdminSocket())
@@ -129,13 +134,70 @@ void      AdminMenu(void)
             }
             break;
 
-         case 10:
-            strcpy(response, PromptForValue("Enter candidate (or low end of wwww range) to expire: ", false));
+         case 11:
+            snprintf(response, sizeof(response), PromptForValue("Enter candidate (or low end of wwww range) to expire: ", false));
 
             if (strlen(response) && OpenAdminSocket())
             {
                ExpireWorkunit(response);
                CloseAdminSocket();
+            }
+            break;
+
+         case 21:
+            snprintf(deleteValue, sizeof(deleteValue), PromptForValue("Enter k for which all candidates less than or equal will be deleted: ", false));
+
+            if (strlen(deleteValue))
+            {
+               snprintf(deletePrimes, sizeof(deletePrimes), PromptForValue("Also delete primes (y/n): ", false));
+
+               if (strlen(deletePrimes)) {
+                  snprintf(deleteStats, sizeof(deleteStats), PromptForValue("Also delete candidate group stats (y/n): ", false));
+
+                  if (strlen(deleteStats) && OpenAdminSocket())
+                  {
+                     DeleteData('k', deleteValue, *deletePrimes, *deleteStats);
+                     CloseAdminSocket();
+                  }
+               }
+            }
+            break;
+
+         case 22:
+            snprintf(deleteValue, sizeof(deleteValue), PromptForValue("Enter b for which all candidates less than or equal will be deleted: ", false));
+
+            if (strlen(deleteValue))
+            {
+               snprintf(deletePrimes, sizeof(deletePrimes), PromptForValue("Also delete primes (y/n): ", false));
+
+               if (strlen(deletePrimes)) {
+                  snprintf(deleteStats, sizeof(deleteStats), PromptForValue("Also delete candidate group stats (y/n): ", false));
+
+                  if (strlen(deleteStats) && OpenAdminSocket())
+                  {
+                     DeleteData('b', deleteValue, *deletePrimes, *deleteStats);
+                     CloseAdminSocket();
+                  }
+               }
+            }
+            break;
+
+         case 23:
+            snprintf(deleteValue, sizeof(deleteValue), PromptForValue("Enter n for which all candidates less than or equal will be deleted: ", false));
+
+            if (strlen(deleteValue))
+            {
+               snprintf(deletePrimes, sizeof(deletePrimes), PromptForValue("Also delete primes (y/n): ", false));
+
+               if (strlen(deletePrimes)) {
+                  snprintf(deleteStats, sizeof(deleteStats), PromptForValue("Also delete candidate group stats (y/n): ", false));
+
+                  if (strlen(deleteStats) && OpenAdminSocket())
+                  {
+                     DeleteData('n', deleteValue, *deletePrimes, *deleteStats);
+                     CloseAdminSocket();
+                  }
+               }
             }
             break;
 
@@ -484,6 +546,30 @@ void  ExpireWorkunit(const char *workunit)
       return;
 
    g_Socket->Send("EXPIRE %s", workunit);
+
+   theMessage = g_Socket->Receive(120);
+   while (theMessage && !endLoop)
+   {
+      if (!memcmp(theMessage, "End of Message", 14))
+         endLoop = true;
+      else
+         if (memcmp(theMessage, "keepalive", 9))
+            g_Log->LogMessage(theMessage);
+
+      if (!endLoop)
+         theMessage = g_Socket->Receive(30);
+   }
+}
+
+void  DeleteData(char deleteWhich, char* deleteValue, char deletePrimes, char deleteStats)
+{
+   char* theMessage;
+   int32_t     endLoop = false;
+
+   if (!VerifyCommand("DELETE_DATA"))
+      return;
+
+   g_Socket->Send("DELETE %c %s %c %c", deleteWhich, deleteValue, deletePrimes, deleteStats);
 
    theMessage = g_Socket->Receive(120);
    while (theMessage && !endLoop)

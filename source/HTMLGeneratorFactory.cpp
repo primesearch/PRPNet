@@ -6,6 +6,7 @@
 #include "FixedBNCHTML.h"
 #include "GFNHTML.h"
 #include "LeylandHTML.h"
+#include "LifchitzHTML.h"
 #include "PrimorialHTML.h"
 #include "FactorialHTML.h"
 #include "MultiFactorialHTML.h"
@@ -62,7 +63,11 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
       case ST_LEYLAND:
          htmlGenerator = new LeylandHTML(globals);
          break;
-         
+
+      case ST_LIFCHITZ:
+         htmlGenerator = new LifchitzHTML(globals);
+         break;
+
       case ST_CYCLOTOMIC:
          htmlGenerator = new CyclotomicHTML(globals);
          break;

@@ -383,6 +383,8 @@ void      PrimeHelperThread::DeleteData(void)
    char  theValue[30];
    uint32_t rows;
 
+   deletePrimes = deleteStats = 'n';
+
    SQLStatement* sqlStatement;
 
    const char* deleteCandidateTestResultSQL = "delete from CandidateTestResult ctr " \
@@ -396,7 +398,7 @@ void      PrimeHelperThread::DeleteData(void)
    theMessage = ip_Socket->Receive();
    if (!theMessage) return;
 
-   if (sscanf(theMessage, "DELETE %c %s %c %c", &deleteWhich, theValue, deletePrimes, deleteStats) != 4)
+   if (sscanf(theMessage, "DELETE %c %s %c %c", &deleteWhich, theValue, &deletePrimes, &deleteStats) != 4)
    {
       ip_Socket->Send("Failed to parse mesasge %s", theMessage + 7);
       ip_Socket->Send("End of Message");

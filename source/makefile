@@ -20,13 +20,13 @@ else
 endif
 
 HTMLOBJECTS=HTMLGeneratorFactory.o PrimeHTMLGenerator.o CullenWoodallHTML.o \
-	SierpinskiRieselHTML.o FixedBKCHTML.o FixedBNCHTML.o GFNHTML.o XYYXHTML.o \
+	SierpinskiRieselHTML.o FixedBKCHTML.o FixedBNCHTML.o GFNHTML.o LeylandHTML.o LifchitzHTML.o \
 	PrimorialHTML.o FactorialHTML.o MultiFactorialHTML.o SophieGermainHTML.o WWWWHTMLGenerator.o \
    CyclotomicHTML.o GenericHTML.o HTMLGenerator.o CarolKyneaHTML.o WagstaffHTML.o MultiFactorialHTML.o
 STATSOBJECTS=StatsUpdaterFactory.o StatsUpdater.o MultiFactorialStatsUpdater.o FactorialStatsUpdater.o \
 	PrimorialStatsUpdater.o FixedBKCStatsUpdater.o FixedBNCStatsUpdater.o \
 	GFNStatsUpdater.o SierpinskiRieselStatsUpdater.o CullenWoodallStatsUpdater.o \
-	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o XYYXStatsUpdater.o \
+	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o LeylandStatsUpdater.o LifchitzStatsUpdater.o \
 	CyclotomicStatsUpdater.o GenericStatsUpdater.o CarolKyneaStatsUpdater.o WagstaffStatsUpdater.o MultiFactorialStatsUpdater.o
 MAILOBJECTS=MailFactory.o Mail.o PrimeMail.o WWWWMail.o
 HELPEROBJECTS=ServerHelperFactory.o PrimeServerHelper.o WWWWServerHelper.o

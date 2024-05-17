@@ -4,6 +4,7 @@
 #include "MultiFactorialStatsUpdater.h"
 #include "GFNStatsUpdater.h"
 #include "LeylandStatsUpdater.h"
+#include "LifchitzStatsUpdater.h"
 #include "CullenWoodallStatsUpdater.h"
 #include "FixedBKCStatsUpdater.h"
 #include "FixedBNCStatsUpdater.h"
@@ -32,7 +33,11 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
       case ST_LEYLAND:
          theUpdater = new LeylandStatsUpdater();
          break;
-         
+
+      case ST_LIFCHITZ:
+         theUpdater = new LifchitzStatsUpdater();
+         break;
+
       case ST_GENERIC:
          theUpdater = new GenericStatsUpdater();
          break;

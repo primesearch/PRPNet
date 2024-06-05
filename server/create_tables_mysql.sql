@@ -103,6 +103,8 @@ create table Candidate (
    primary key (CandidateName),
    index ix_bkcn (b, k, c, n),
    index ix_bnck (b, n, c, k),
+   index ix_kn (k, n),
+   index ix_nk (n, k),
    index ix_completed (CompletedTests),
    index ix_length (DecimalLength)
 ) ENGINE=InnoDB;

@@ -110,6 +110,8 @@ create table Candidate (
 create unique index pk_Candidate on Candidate (CandidateName);
 create index ix_bkcn on Candidate (b, k, c, n);
 create index ix_bnck on Candidate (b, n, c, k);
+create index ix_kn on Candidate k, n),
+create index ix_nk on Candidate (n, k),
 create index ix_completed on Candidate (CompletedTests);
 create index ix_length on Candidate (DecimalLength);
 

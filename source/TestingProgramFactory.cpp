@@ -191,7 +191,6 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
          if (theK == 1 && theB % 3 == 0)
             if (ip_PFGWProgram)  return ip_PFGWProgram;
 
-         if (ip_PRSTProgram) return ip_PRSTProgram;
          if (ip_LLRProgram)   return ip_LLRProgram;
          if (ip_PFGWProgram)  return ip_PFGWProgram;
       }

@@ -64,8 +64,8 @@ static const char *fnabcdstring = "$a*%d^%d%d [%" PRIu64"]";
 
 static const char* dgt1string1 = "(%" PRIu64"*%d^$a%" PRId64")/%d [%d]";
 static const char* dgt1string2 = "(%" PRIu64"*%d^$a%" PRId64")/%d";
-static const char* dgt1string3 = "(%d^$a%d)/%d [%d]";
-static const char* dgt1string4 = "(%d^$a%d)/%d";
+static const char* dgt1string3 = "(%d^$a%" PRId64")/%d [%d]";
+static const char* dgt1string4 = "(%d^$a%" PRId64")/%d";
 
 #define ABC_UNKNOWN      0
 #define ABC_CW_FB       10
@@ -191,7 +191,7 @@ bool  ABCParser::IsValidFormat(void)
        ii_ServerType == ST_FIXEDBKC ||
        ii_ServerType == ST_FIXEDBNC)
       if (ii_ABCFormat == ABC_DGT1A || ii_ABCFormat == ABC_DGT1B ||
-          ii_ABCFormat == ABC_DGT1C|| ii_ABCFormat == ABC_DGT1D)
+          ii_ABCFormat == ABC_DGT1C || ii_ABCFormat == ABC_DGT1D)
          return true;
 
    if (ii_ServerType == ST_CULLENWOODALL)
@@ -351,7 +351,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    if (sscanf(tempHeader, dgt1string4, &ii_theB, &il_theC, &ii_theD) == 3)
    {
       il_theK = 1;
-      return ABC_DGT1B;
+      return ABC_DGT1D;
    }
 
    if (strstr(tempHeader, "$b") == NULL)

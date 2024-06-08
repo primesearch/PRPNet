@@ -27,8 +27,6 @@ bool  FixedBNCStatsUpdater::RollupGroupStats(bool deleteInsert)
       delete sqlStatement;
 
       if (!success) return false;
-
-      ip_DBInterface->Commit();
    }
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
@@ -41,8 +39,8 @@ bool  FixedBNCStatsUpdater::RollupGroupStats(bool deleteInsert)
    {
       if (!UpdateGroupStats(0, theB, theN, theC, theD))
          return false;
-      else
-         ip_DBInterface->Commit();
+ 
+      ip_DBInterface->Commit();
    }
 
    sqlStatement->CloseCursor();

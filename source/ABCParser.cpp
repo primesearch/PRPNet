@@ -15,7 +15,7 @@ static const char *cwfbastring = "$a*%d^$a$%c";
 static const char *cwfbcstring = "$a*%d^$a$b";
 
 // Cullen/Woodall form from gcwsieve (variable base)
-static const char *cwvb_string = "$a*$b^$a%d";
+static const char *cwvb_string = "$a*$b^$a%" PRId64"";
 static const char *cwvbastring = "$a*$b^$a$c";
 
 // Fixed k forms for k*b^n+/-c
@@ -38,12 +38,12 @@ static const char *abc_string = "$a*$b^$c%" PRId64"";
 static const char *abcastring = "$a*$b^$c$" PRId64"";
 
 // Any form of n!+/-c (factorials)
-static const char *fact_string = "$a!%d";
+static const char *fact_string = "$a!%" PRId64"";
 static const char *factastring = "$a!+$b";
 static const char *mf_string = "$a!%d$b";
 
 // Any form of n#+/-c (primorials)
-static const char *prim_string = "$a#%d";
+static const char *prim_string = "$a#%" PRId64"";
 static const char *primastring = "$a#+$b";
 
 static const char *gfnstring = "$a^$b+1";
@@ -59,8 +59,8 @@ static const char *ckstring = "(%d^$a$b)^2-2";
 
 static const char *wagstaffstring = "(2^$a+1)/3";
 
-static const char *fkabcdstring = "%" PRIu64"*%d^$a%d [%d]";
-static const char *fnabcdstring = "$a*%d^%d%d [%" PRIu64"]";
+static const char *fkabcdstring = "%" PRIu64"*%d^$a%" PRId64" [%d]";
+static const char *fnabcdstring = "$a*%d^%d%" PRId64" [%" PRIu64"]";
 
 static const char* dgt1string1 = "(%" PRIu64"*%d^$a%" PRId64")/%d [%d]";
 static const char* dgt1string2 = "(%" PRIu64"*%d^$a%" PRId64")/%d";
@@ -754,7 +754,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_FKA:
-         if (sscanf(tempLine, "%d %d %lld", &ii_theB, &ii_theN, &il_theC) != 3) return false;
+         if (sscanf(tempLine, "%d %d %" PRId64"", &ii_theB, &ii_theN, &il_theC) != 3) return false;
          return true;
 
       case ABC_DGT1C:

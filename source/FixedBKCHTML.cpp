@@ -19,7 +19,7 @@ void FixedBKCHTML::ServerStats(void)
                            "       CountInProgress, CompletedThru, LeadingEdge, " \
                            "       PRPandPrimesFound " \
                            "  from CandidateGroupStats " \
-                           "order by k, b, c";
+                           "order by b, k, c, d";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect);
 
@@ -68,8 +68,10 @@ void FixedBKCHTML::ServerStats(void)
          ip_Socket->Send("<th scope=\"row\">(%" PRIu64"*%d^<var>n</var>%+d)/%d</th>", k, b, c, d);
       else if (d > 1)
          ip_Socket->Send("<th scope=\"row\">(%d^<var>n</var>%+d)/%d</th>", b, c, d);
-      else
+      else if (k > 1)
          ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
+      else
+         ip_Socket->Send("<th scope=\"row\">%d^<var>n</var>%+d</th>", b, c);
 
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);

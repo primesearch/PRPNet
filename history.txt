@@ -1,5 +1,17 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.7.9:  October 25, 2024 - New Release
+          all:  Remove references or change references to my old e-mail account.
+    prpserver:  When serverstatssummaryonly=1 for servertyp=1, accumulate skipped tests and 
+                Primes/PRPs found for the summary row.
+
+Version 5.7.8:  June 8, 2024 - New Release
+    prpserver:  Fixes for handling Generalized Repunits.
+
+Version 5.7.7:  May 17, 2024 - New Release
+    prpclient:  Do not use PRST for d > 1 because it doesn't support Generalized Repunits.
+    prpserver:  Updates for handling Generalized Repunits.
+
 Version 5.7.6:  May 13, 2024 - New Release
           all:  Renamed server type XYYX as Leyland
                 Add server type Lifchitz

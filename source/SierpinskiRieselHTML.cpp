@@ -167,6 +167,12 @@ void SierpinskiRieselHTML::ServerStats(void)
       if (!kPRPsAndPrimesFound)
          conjectureLeadingEdge = (kLeadingEdge < conjectureLeadingEdge ? kLeadingEdge : conjectureLeadingEdge);
 
+      if (sierpinskiRieselPrimeN > 0)
+      {
+         conjecturePRPsAndPrimesFound++;
+         conjectureTestsSkipped += (kCountInGroup - kCountInProgress - kCountedTested);
+      }
+
       if (!ib_ServerStatsSummaryOnly)
       {
          ip_Socket->Send("<tr class=\"%s\">", ((sierpinskiRieselPrimeN > 0) ? "found" : (kCountUntested ? "untested" : "tested")));
@@ -195,11 +201,7 @@ void SierpinskiRieselHTML::ServerStats(void)
          TD_32BIT(kCountInProgress);
 
          if (sierpinskiRieselPrimeN > 0)
-         {
             TD_32BIT(kCountInGroup - kCountInProgress - kCountedTested);
-            conjecturePRPsAndPrimesFound++;
-            conjectureTestsSkipped += (kCountInGroup - kCountInProgress - kCountedTested);
-         }
          else
             TD_32BIT(0);
 
@@ -213,6 +215,7 @@ void SierpinskiRieselHTML::ServerStats(void)
             ip_Socket->Send("<td style=\"text-align: center;\">none found</td></tr>");
       }
    } while (sqlStatement->FetchRow(false));
+
 
    if (ib_ServerStatsSummaryOnly)
       ip_Socket->Send("<tr><th scope=\"row\">%c%d <var>k</var>\'s: %d</th>",

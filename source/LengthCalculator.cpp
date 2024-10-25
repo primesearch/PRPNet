@@ -1,7 +1,3 @@
-// LengthCalculator.cpp
-//
-// Mark Rodenkirch (rogue@wi.rr.com)
-
 #include <stdio.h>
 #include <ctype.h>
 #include <math.h>

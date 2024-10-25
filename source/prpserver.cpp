@@ -1,7 +1,3 @@
-// prpserver.cpp
-//
-// Mark Rodenkirch (rogue@wi.rr.com)
-
 #include <stdio.h>
 #include <time.h>
 #include <ctype.h>

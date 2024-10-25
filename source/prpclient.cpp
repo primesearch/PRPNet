@@ -1,7 +1,3 @@
-// prpclient.cpp
-//
-// Mark Rodenkirch (rogue@wi.rr.com)
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

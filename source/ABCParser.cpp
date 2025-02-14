@@ -366,10 +366,10 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
          if (ch == 'c')
             return ABC_CW_FBA;
       }
-
-      if (sscanf(tempHeader, cwfbcstring, &ii_theB) == 1)
-          return ABC_CW_FB;
    }
+
+   if (sscanf(tempHeader, cwfbcstring, &ii_theB) == 1)
+      return ABC_CW_FB;
 
    // Cullen/Woodall form (variable base)
    if (sscanf(tempHeader, cwvb_string, &il_theC) == 1)

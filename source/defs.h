@@ -8,7 +8,7 @@
 
 #define _defs_
 
-#define PRPNET_VERSION "5.7.9"
+#define PRPNET_VERSION "5.8.0"
 
 #if defined(__unix__) || defined(__unix) || defined(__APPLE__)
    #include <inttypes.h>

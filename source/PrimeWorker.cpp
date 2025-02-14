@@ -191,6 +191,13 @@ bool     PrimeWorker::GetWork(void)
             wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64"",
                wu->s_Name, &wu->l_TestID);
          }
+         else if (ii_ServerType == ST_CULLENWOODALL)
+         {
+            toScan = 6;
+            wu->i_d = 1;
+            wasScanned = sscanf(readBuf, "WorkUnit: %s %" PRIu64" %" PRIu64" %u %u %" PRId64"",
+               wu->s_Name, &wu->l_TestID, &wu->l_k, &wu->i_b, &wu->i_n, &wu->l_c);
+         }
          else
          {
             toScan = 7;

@@ -173,8 +173,8 @@ bool   CullenWoodallStatsUpdater::InsertCandidate(string candidateName, int64_t 
                                                  int64_t theC, int32_t theD, double decimalLength)
 {
    const char *insertSQL = "insert into Candidate " \
-                           "( CandidateName, DecimalLength, k, b, n, c, LastUpdateTime ) " \
-                           "values ( ?,?,?,?,?,?,? )";
+                           "( CandidateName, DecimalLength, k, b, n, c, d, LastUpdateTime ) " \
+                           "values ( ?,?,?,?,?,?,?,? )";
 
    if (!ip_CandidateLoader)
    {
@@ -185,6 +185,7 @@ bool   CullenWoodallStatsUpdater::InsertCandidate(string candidateName, int64_t 
       ip_CandidateLoader->BindInputParameter(theB);
       ip_CandidateLoader->BindInputParameter(theN);
       ip_CandidateLoader->BindInputParameter(theC);
+      ip_CandidateLoader->BindInputParameter(theD);
       ip_CandidateLoader->BindInputParameter((int64_t) 1);
    }
 
@@ -194,6 +195,7 @@ bool   CullenWoodallStatsUpdater::InsertCandidate(string candidateName, int64_t 
    ip_CandidateLoader->SetInputParameterValue(theB);
    ip_CandidateLoader->SetInputParameterValue(theN);
    ip_CandidateLoader->SetInputParameterValue(theC);
+   ip_CandidateLoader->SetInputParameterValue(theD);
    ip_CandidateLoader->SetInputParameterValue((int64_t) time(NULL));
 
    return ip_CandidateLoader->Execute();

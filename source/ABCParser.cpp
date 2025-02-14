@@ -350,6 +350,9 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
       return ABC_DGT1D;
    }
 
+   // d != 1 is not supportd for any forms below
+   ii_theD = 1;
+
    if (strstr(tempHeader, "$b") == NULL)
    {
       // Cullen/Woodall form (fixed base), typically from gcwsieve
@@ -418,8 +421,6 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    // Fixed n forms for k*b^n+/-c
    if (sscanf(tempHeader, fn_string, &ii_theB, &il_theC) == 2)
    {
-      ii_theD = 1;
- 
       if (il_theC > 0)
          return ABC_FNP;
       
@@ -429,17 +430,13 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
    if (sscanf(tempHeader, fnastring, &ii_theB, &ch) == 2)
    {
-      ii_theD = 1;
-
       if (ch == 'c')
          return ABC_FNA;
    }
 
    // Any form of k*b^n+/-c
    if (sscanf(tempHeader, abc_string, &il_theC) == 1)
-   {
-      ii_theD = 1;
-    
+   {    
       if (il_theC > 0)
          return ABC_VP;
      

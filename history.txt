@@ -1,5 +1,10 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.8.0:  February 17, 2025 - New Release
+    prpclient:  Fix support of Cullen/Woodall when running against servers that support d > 1.
+    prpserver:  Fix handling of ABC files from gcwsieve/gcwsievecl, broken when support for terms with
+                a divisor were added.
+
 Version 5.7.9:  October 25, 2024 - New Release
           all:  Remove references or change references to my old e-mail account.
     prpserver:  When serverstatssummaryonly=1 for servertyp=1, accumulate skipped tests and 

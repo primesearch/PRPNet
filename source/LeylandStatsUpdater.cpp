@@ -149,7 +149,7 @@ bool  LeylandStatsUpdater::UpdateGroupStats(int64_t theK, int32_t theB, int32_t 
    // tested.  Note that the $null_func$ is needed in case only one candidate in the group
    // has been tested.  In that case it returns that candidate.
    if (nextToTest == 0)
-      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d)", theB);
+      snprintf(completedSQL, sizeof(completedSQL), "(select max(n) from Candidate where b = %d and c = %+" PRId64")", theB, theC);
    else
       snprintf(completedSQL, sizeof(completedSQL), "$null_func$((select max(n) from Candidate where b = %d and c = %" PRId64" and n < % d), % d)",
               theB, theC, nextToTest, nextToTest);

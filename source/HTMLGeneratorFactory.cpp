@@ -13,6 +13,7 @@
 #include "SophieGermainHTML.h"
 #include "CyclotomicHTML.h"
 #include "CarolKyneaHTML.h"
+#include "HyperCullenWoodallHTML.h"
 #include "GenericHTML.h"
 #include "WagstaffHTML.h"
 
@@ -75,6 +76,9 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
       case ST_CAROLKYNEA:
          htmlGenerator = new CarolKyneaHTML(globals);
          break;
+
+      case ST_HYPERCW:
+         htmlGenerator = new HyperCullenWoodallHTML(globals);
 
       case ST_GENERIC:
          htmlGenerator = new GenericHTML(globals);

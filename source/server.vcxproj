@@ -294,6 +294,8 @@
     <ClCompile Include="HelperThread.cpp" />
     <ClCompile Include="HTMLGenerator.cpp" />
     <ClCompile Include="HTMLGeneratorFactory.cpp" />
+    <ClCompile Include="HyperCullenWoodallHTML.cpp" />
+    <ClCompile Include="HyperCullenWoodallStatsUpdater.cpp" />
     <ClCompile Include="KeepAliveThread.cpp" />
     <ClCompile Include="LengthCalculator.cpp" />
     <ClCompile Include="LifchitzHTML.cpp" />
@@ -385,6 +387,8 @@
     <ClInclude Include="HelperThread.h" />
     <ClInclude Include="HTMLGenerator.h" />
     <ClInclude Include="HTMLGeneratorFactory.h" />
+    <ClInclude Include="HyperCullenWoodallHTML.h" />
+    <ClInclude Include="HyperCullenWoodallStatsUpdater.h" />
     <ClInclude Include="KeepAliveThread.h" />
     <ClInclude Include="LengthCalculator.h" />
     <ClInclude Include="LifchitzHTML.h" />

@@ -38,6 +38,10 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
          snprintf(tempName, sizeof(tempName), "%d^%d%c%d^%d", ii_b, ii_b, ((il_c == 1) ? '+' : '-'), ii_n, ii_n);
          break;
 
+      case ST_HYPERCW:
+         snprintf(tempName, sizeof(tempName), "%d^%d*%d^%d%+" PRId64"", ii_b, ii_n, ii_n, ii_b, il_c);
+         break;
+
       case ST_GENERIC:
       case ST_CYCLOTOMIC:
          snprintf(tempName, sizeof(tempName), "%s", wu->s_Name);

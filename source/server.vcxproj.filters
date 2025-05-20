@@ -219,6 +219,12 @@
     <ClCompile Include="LifchitzStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HyperCullenWoodallHTML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HyperCullenWoodallStatsUpdater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ABCParser.h">
@@ -432,6 +438,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LifchitzStatsUpdater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HyperCullenWoodallHTML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HyperCullenWoodallStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

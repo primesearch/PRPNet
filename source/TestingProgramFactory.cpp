@@ -168,7 +168,10 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
       return ip_PFGWProgram;
    }
 
-   if (serverType == ST_LEYLAND || serverType == ST_LIFCHITZ || serverType == ST_GENERIC || serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL)
+   if (serverType == ST_LEYLAND || serverType == ST_LIFCHITZ || serverType == ST_HYPERCW)
+      return ip_PFGWProgram;
+   
+   if (serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL || serverType == ST_GENERIC)
       return ip_PFGWProgram;
 
    if (serverType == ST_CYCLOTOMIC)

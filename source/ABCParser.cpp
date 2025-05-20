@@ -58,10 +58,12 @@ static const char *wagstaffstring = "(2^$a+1)/3";
 static const char *fkabcdstring = "%" PRIu64"*%d^$a%" PRId64" [%d]";
 static const char *fnabcdstring = "$a*%d^%d%" PRId64" [%" PRIu64"]";
 
-static const char* dgt1string1 = "(%" PRIu64"*%d^$a%" PRId64")/%d [%d]";
-static const char* dgt1string2 = "(%" PRIu64"*%d^$a%" PRId64")/%d";
-static const char* dgt1string3 = "(%d^$a%" PRId64")/%d [%d]";
-static const char* dgt1string4 = "(%d^$a%" PRId64")/%d";
+static const char *dgt1string1 = "(%" PRIu64"*%d^$a%" PRId64")/%d [%d]";
+static const char *dgt1string2 = "(%" PRIu64"*%d^$a%" PRId64")/%d";
+static const char *dgt1string3 = "(%d^$a%" PRId64")/%d [%d]";
+static const char *dgt1string4 = "(%d^$a%" PRId64")/%d";
+
+static const char *hcwstring = "$a^$b*$b^$a$c";
 
 #define ABC_UNKNOWN      0
 #define ABC_CW_FB       10
@@ -106,6 +108,8 @@ static const char* dgt1string4 = "(%d^$a%" PRId64")/%d";
 #define ABC_DGT1B      132
 #define ABC_DGT1C      133
 #define ABC_DGT1D      134
+
+#define ABC_HCW        141
 
 #define ABCD_FK        201
 #define ABCD_FN        202
@@ -226,6 +230,10 @@ bool  ABCParser::IsValidFormat(void)
    
    if (ii_ServerType == ST_CAROLKYNEA) 
        if (ii_ABCFormat == ABC_CK)
+          return true;
+
+   if (ii_ServerType == ST_HYPERCW) 
+       if (ii_ABCFormat == ABC_HCW)
           return true;
 
    if (ii_ServerType == ST_GENERIC)
@@ -384,6 +392,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    }
 
    if (!strncmp(tempHeader, cwvbastring, strlen(cwvbastring))) return ABC_CW_VBA;
+   if (!strncmp(tempHeader, hcwstring, strlen(hcwstring))) return ABC_HCW;
 
    // Fixed k forms for k*b^n+/-c
    if (sscanf(tempHeader, fk_string, &il_theK, &il_theC) == 2)
@@ -648,6 +657,14 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
       case ST_LEYLAND:
          snprintf(tempName, BUFFER_SIZE, "%d^%d%c%d^%d", ii_theB, ii_theN, ((il_theC == 1) ? '+' : '-'), ii_theN, ii_theB);
          break;
+
+      case ST_LIFCHITZ:
+         snprintf(tempName, BUFFER_SIZE, "%d^%d%c%d^%d", ii_theB, ii_theB, ((il_theC == 1) ? '+' : '-'), ii_theN, ii_theN);
+         break;
+
+      case ST_HYPERCW:
+         snprintf(tempName, BUFFER_SIZE, "%d^%d*%d^%d%+d", ii_theB, ii_theN, ii_theN, ii_theB, il_theC);
+         break;
          
       case ST_CYCLOTOMIC:
          if (ii_theN == 1)
@@ -850,7 +867,12 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          return true;
 
       case ABC_LIFCHITZ:
-         if (sscanf(tempLine, "%d %d %d", &ii_theB, &ii_theB, &ii_theN) != 3) return false;
+         if (sscanf(tempLine, "%d %" PRIu64" %d", &ii_theB, &il_theC, &ii_theN) != 3) return false;
+         il_theK = 1;
+         return true;
+
+      case ABC_HCW:
+         if (sscanf(tempLine, "%d %d %" PRIu64"", &ii_theB, &ii_theN, &il_theC) != 3) return false;
          il_theK = 1;
          return true;
 

@@ -13,6 +13,7 @@
 #include "GenericStatsUpdater.h"
 #include "CyclotomicStatsUpdater.h"
 #include "CarolKyneaStatsUpdater.h"
+#include "HyperCullenWoodallStatsUpdater.h"
 #include "WWWWStatsUpdater.h"
 #include "WagstaffStatsUpdater.h"
 
@@ -78,6 +79,10 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
          
       case ST_CAROLKYNEA:
          theUpdater = new CarolKyneaStatsUpdater();
+         break;
+
+      case ST_HYPERCW:
+         theUpdater = new HyperCullenWoodallStatsUpdater();
          break;
 
       case ST_WAGSTAFF:

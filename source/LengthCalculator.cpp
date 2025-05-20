@@ -118,6 +118,12 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
          unroundedLength = log10(doubleB) * doubleN;
          break;
 
+      case ST_HYPERCW:
+         doubleB = (double) intB;
+         doubleN = (double) intN;
+         unroundedLength = log10(doubleB) * doubleN + log10(doubleN) * doubleB;
+         break;
+         
       case ST_CYCLOTOMIC:
          doubleB = (double) abs(intB);
          doubleN = (double) intN;

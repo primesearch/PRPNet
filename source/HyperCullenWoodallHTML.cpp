@@ -38,7 +38,7 @@ void HyperCullenWoodallHTML::ServerStats(void)
    if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
       return;
 
-   ServerStatsHeader(BY_Y);
+   ServerStatsHeader(BY_N);
 
    do
    {
@@ -58,7 +58,7 @@ void HyperCullenWoodallHTML::ServerStats(void)
       if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
          break;
 
-      ip_Socket->Send("<th scope=\"row\">%d^<var>y</var>*<var>y</var>^%d%+d</th>", b, b, c);
+      ip_Socket->Send("<th scope=\"row\">%d^<var>n</var>*<var>n</var>^%d%+d</th>", b, b, c);
 
       TD_32BIT(countInGroup);
       TD_32BIT(minInGroup);

@@ -79,6 +79,7 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 
       case ST_HYPERCW:
          htmlGenerator = new HyperCullenWoodallHTML(globals);
+         break;
 
       case ST_GENERIC:
          htmlGenerator = new GenericHTML(globals);

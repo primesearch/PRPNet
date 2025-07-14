@@ -48,7 +48,7 @@ void      AdminMenu(void)
 {
    int   menuitem = -1;
    char  response[500], *theMessage;
-   char  deleteValue[30], deletePrimes[1], deleteStats[1];
+   char  deleteValue[30], deletePrimes[2], deleteStats[2];
    int32_t ranges;
 
    while (true)

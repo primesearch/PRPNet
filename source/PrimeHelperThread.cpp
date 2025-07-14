@@ -39,8 +39,8 @@ void  PrimeHelperThread::ProcessRequest(string theMessage)
       if (VerifyAdminPassword(tempMessage + 16))
          ExpireWorkunitTest();
 
-   if (!memcmp(tempMessage, "DELETE_DATA ", 11))
-      if (VerifyAdminPassword(tempMessage + 16))
+   if (!memcmp(tempMessage, "DELETE_DATA ", 12))
+      if (VerifyAdminPassword(tempMessage + 12))
          DeleteData();
 
    if (!memcmp(tempMessage, "GETWORK", 7))
@@ -388,12 +388,12 @@ void      PrimeHelperThread::DeleteData(void)
    SQLStatement* sqlStatement;
 
    const char* deleteCandidateTestResultSQL = "delete from CandidateTestResult ctr " \
-      " where ctr.CandidateName = (select c.CandidateName from Candidate c where c.CandidateName = ctr.CandidateName and c.%c <= %s)";
+      " where ctr.CandidateName = (select c.CandidateName from Candidate c where c.CandidateName = ctr.CandidateName and c.%c <= %" PRId64")";
    const char* deleteCandidateTestSQL = "delete from CandidateTest ct " \
-      " where ct.CandidateName = (select c.CandidateName from Candidate c where c.CandidateName = ct.CandidateName and c.%c <= %s)";
-   const char* deleteCandidateSQL = "delete from Candidate where %c <= %s)";
-   const char* deleteUserPrimesSQL = "delete from UserPrimes where %c <= %s)";
-   const char* deleteCandidateGroupStatsSQL = "delete from CandidateGroupStats where %c <= %s)";
+      " where ct.CandidateName = (select c.CandidateName from Candidate c where c.CandidateName = ct.CandidateName and c.%c <= %" PRId64")";
+   const char* deleteCandidateSQL = "delete from Candidate where %c <= %" PRId64"";
+   const char* deleteUserPrimesSQL = "delete from UserPrimes where %c <= %" PRId64"";
+   const char* deleteCandidateGroupStatsSQL = "delete from CandidateGroupStats where %c <= %" PRId64"";
 
    theMessage = ip_Socket->Receive();
    if (!theMessage) return;
@@ -405,7 +405,23 @@ void      PrimeHelperThread::DeleteData(void)
       return;
    }
 
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateTestResultSQL, deleteWhich, theValue);
+   uint64_t longValue = atoll(theValue);
+
+   if (deleteWhich != 'b' && deleteWhich != 'n' && deleteWhich != 'k')
+   {
+      ip_Socket->Send("Expected column to delete by is invalid");
+      ip_Socket->Send("End of Message");
+      return;
+   }
+
+   if (longValue == 0)
+   {
+      ip_Socket->Send("The value for %c must be numeric", deleteWhich);
+      ip_Socket->Send("End of Message");
+      return;
+   }
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateTestResultSQL, deleteWhich, longValue);
 
    if (!sqlStatement->Execute())
    {
@@ -422,7 +438,7 @@ void      PrimeHelperThread::DeleteData(void)
 
    delete sqlStatement;
 
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateTestSQL, deleteWhich, theValue);
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateTestSQL, deleteWhich, longValue);
 
    if (!sqlStatement->Execute())
    {
@@ -439,7 +455,7 @@ void      PrimeHelperThread::DeleteData(void)
 
    delete sqlStatement;
 
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateSQL, deleteWhich, theValue);
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateSQL, deleteWhich, longValue);
 
    if (!sqlStatement->Execute())
    {
@@ -458,7 +474,7 @@ void      PrimeHelperThread::DeleteData(void)
 
    if (deletePrimes == 'y')
    {
-      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteUserPrimesSQL, deleteWhich, theValue);
+      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteUserPrimesSQL, deleteWhich, longValue);
 
       if (!sqlStatement->Execute())
       {
@@ -478,7 +494,7 @@ void      PrimeHelperThread::DeleteData(void)
 
    if (deleteStats == 'y')
    {
-      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateGroupStatsSQL, deleteWhich, theValue);
+      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateGroupStatsSQL, deleteWhich, longValue);
 
       if (!sqlStatement->Execute())
       {

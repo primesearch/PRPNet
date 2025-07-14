@@ -663,7 +663,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
          break;
 
       case ST_HYPERCW:
-         snprintf(tempName, BUFFER_SIZE, "%d^%d*%d^%d%+d", ii_theB, ii_theN, ii_theN, ii_theB, il_theC);
+         snprintf(tempName, BUFFER_SIZE, "%d^%d*%d^%d%+" PRId64"", ii_theB, ii_theN, ii_theN, ii_theB, il_theC);
          break;
          
       case ST_CYCLOTOMIC:

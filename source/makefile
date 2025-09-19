@@ -15,7 +15,7 @@ else
       if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
    else
       LFLAGS_CLIENT=-pthread -lpthread -lstdc++
-      LFLAGS_SERVER=-pthread -lpthread -liodbc -lstdc++
+      LFLAGS_SERVER=-pthread -lpthread -lodbc -lstdc++
    endif
 endif
 

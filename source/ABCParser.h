@@ -6,7 +6,7 @@
 
 #include "Socket.h"
 
-enum rowtype_t { RT_CANDIDATE = 1, RT_IGNORE = 11, RT_EOF = 99 };
+enum rowtype_t { RT_CANDIDATE, RT_IGNORE, RT_BATCH, RT_EOF };
 
 class ABCParser
 {

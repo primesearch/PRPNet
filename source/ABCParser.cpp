@@ -8,7 +8,6 @@
 // Cullen/Woodall form from gcwsieve (fixed base)
 static const char *cwfb_string = "$a*%d^$a%" PRId64"";
 static const char *cwfbastring = "$a*%d^$a$%c";
-static const char *cwfbcstring = "$a*%d^$a$b";
 
 // Cullen/Woodall form from gcwsieve (variable base)
 static const char *cwvb_string = "$a*$b^$a%" PRId64"";
@@ -66,7 +65,6 @@ static const char *dgt1string4 = "(%d^$a%" PRId64")/%d";
 static const char *hcwstring = "$a^$b*$b^$a$c";
 
 #define ABC_UNKNOWN      0
-#define ABC_CW_FB       10
 #define ABC_CW_FBP      11
 #define ABC_CW_FBM      12
 #define ABC_CW_FBA      13
@@ -196,8 +194,7 @@ bool  ABCParser::IsValidFormat(void)
 
    if (ii_ServerType == ST_CULLENWOODALL)
       if (ii_ABCFormat == ABC_CW_FBP || ii_ABCFormat == ABC_CW_FBM || ii_ABCFormat == ABC_CW_FBA ||
-          ii_ABCFormat == ABC_CW_VBP || ii_ABCFormat == ABC_CW_VBM || ii_ABCFormat == ABC_CW_VBA ||
-          ii_ABCFormat == ABC_CW_FB)
+          ii_ABCFormat == ABC_CW_VBP || ii_ABCFormat == ABC_CW_VBM || ii_ABCFormat == ABC_CW_VBA)
          return true;
     
    if (ii_ServerType == ST_PRIMORIAL) 
@@ -378,9 +375,6 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
             return ABC_CW_FBA;
       }
    }
-
-   if (sscanf(tempHeader, cwfbcstring, &ii_theB) == 1)
-      return ABC_CW_FB;
 
    // Cullen/Woodall form (variable base)
    if (sscanf(tempHeader, cwvb_string, &il_theC) == 1)
@@ -566,7 +560,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
          if (!memcmp(theMessage, "sent", 4))
          {
             theName = theMessage;
-            return RT_IGNORE;
+            return RT_BATCH;
          }
 
          if (!memcmp(theMessage, "ABC ", 4) || !memcmp(theMessage, "ABCD " , 5))
@@ -708,7 +702,7 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
       return true;
 
    // This is only used for Sierpinski/Riesel forms, but numerous ABC/ABCD formats are used for
-   // Sierpinski/Riesel, so we use this for a catch all when we know that d = 1.The 
+   // Sierpinski/Riesel, so we use this for a catch all when we know that d = 1.
    if (ii_ABCFormat != ABC_DGT1A && ii_ABCFormat != ABC_DGT1B &&
        ii_ABCFormat != ABC_DGT1C && ii_ABCFormat != ABC_DGT1D)
       ii_theD = 1;
@@ -718,11 +712,6 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
       case ABCD_FN:
          if (sscanf(tempLine, "%" PRId64"", &value64) != 1) return false;
          il_theK += value64;
-         return true;
-
-      case ABC_CW_FB:
-         if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
-         il_theK = ii_theN;
          return true;
 
       case ABC_CW_FBP:
@@ -898,4 +887,3 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
    }
    return false;
 }
-

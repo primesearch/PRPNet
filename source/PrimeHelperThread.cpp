@@ -107,14 +107,11 @@ void      PrimeHelperThread::AdminABCFile(void)
 
       // Tell the admin tool that we are still here and have processed
       // everything it has sent.  Now the admin tool can send more.
-      if (!memcmp(candidateName.c_str(), "sent", 4))
+      if (rowType == RT_BATCH)
       {
          ip_Socket->Send("processed %d records", totalEntries);
          continue;
       }
-
-      if (!memcmp(candidateName.c_str(), "ABC ", 4))
-         continue;
 
       totalEntries++;
 

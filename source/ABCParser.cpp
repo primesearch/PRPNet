@@ -6,146 +6,92 @@
 #include "ABCParser.h"
 
 // Cullen/Woodall form from gcwsieve (fixed base)
-static const char *cwfb_string = "$a*%d^$a%" PRId64"";
-static const char *cwfbastring = "$a*%d^$a$%c";
+static const char * const cwfb_string = "$a*%d^$a%" PRId64"";
+static const char * const cwfbastring = "$a*%d^$a$%c";
 
 // Cullen/Woodall form from gcwsieve (variable base)
-static const char *cwvb_string = "$a*$b^$a%" PRId64"";
-static const char *cwvbastring = "$a*$b^$a$c";
+static const char * const cwvb_string = "$a*$b^$a%" PRId64"";
+static const char * const cwvbastring = "$a*$b^$a$c";
 
 // Fixed k forms for k*b^n+/-c
-static const char *fk_string = "%" PRIu64"*$a^$b%" PRId64"";
-static const char *fkastring = "%" PRIu64"*$a^$b$%c";
+static const char * const fk_string = "%" PRIu64"*$a^$b%" PRId64"";
+static const char * const fkastring = "%" PRIu64"*$a^$b$%c";
 
 // Fixed k/b forms for k*b^n+/-c
-static const char* fkbstring = "%" PRIu64"*%d^$a%" PRId64"";
+static const char * const fkbstring = "%" PRIu64"*%d^$a%" PRId64"";
 
 // Fixed b forms for k*b^n+/-c
-static const char *fb_string = "$a*%d^$b%" PRId64"";
-static const char *fbastring = "$a*%d^$b$%c";
+static const char * const fb_string = "$a*%d^$b%" PRId64"";
+static const char * const fbastring = "$a*%d^$b$%c";
 
 // Fixed n forms for k*b^n+/-c
-static const char *fn_string = "$a*$b^%d%" PRId64"";
-static const char *fnastring = "$a*$b^%d$%c";
+static const char * const fn_string = "$a*$b^%d%" PRId64"";
+static const char * const fnastring = "$a*$b^%d$%c";
 
 // Any form of k*b^n+/-c
-static const char *abc_string = "$a*$b^$c%" PRId64"";
-static const char *abcastring = "$a*$b^$c$" PRId64"";
+static const char * const abc_string = "$a*$b^$c%" PRId64"";
+static const char * const abcastring = "$a*$b^$c$" PRId64"";
 
 // Any form of n!+/-c (factorials)
-static const char *fact_string = "$a!%" PRId64"";
-static const char *factastring = "$a!+$b";
-static const char *mf_string = "$a!%d$b";
+static const char * const fact_string = "$a!%" PRId64"";
+static const char * const factastring = "$a!+$b";
+static const char * const mf_string = "$a!%d$b";
 
 // Any form of n#+/-c (primorials)
-static const char *prim_string = "$a#%" PRId64"";
-static const char *primastring = "$a#+$b";
+static const char * const prim_string = "$a#%" PRId64"";
+static const char * const primastring = "$a#+$b";
 
-static const char *gfnstring = "$a^$b+1";
+static const char * const gfnstring = "$a^$b+1";
 
-static const char *phiabstring  = "Phi($a,$b)";
-static const char *phiabcstring = "Phi($a,$b^$c)";
+static const char * const phiabstring  = "Phi($a,$b)";
+static const char * const phiabcstring = "Phi($a,$b^$c)";
 
-static const char *xyyxpstring = "$a^$b+$b^$a";
-static const char *xyyxmstring = "$a^$b-$b^$a";
-static const char* lifchitzstring = "$a^$a$b*$c^$c";
+static const char * const xyyxpstring = "$a^$b+$b^$a";
+static const char * const xyyxmstring = "$a^$b-$b^$a";
+static const char * const lifchitzstring = "$a^$a$b*$c^$c";
 
-static const char *ckstring = "(%d^$a$b)^2-2";
+static const char * const ckstring = "(%d^$a$b)^2-2";
 
-static const char *wagstaffstring = "(2^$a+1)/3";
+static const char * const wagstaffstring = "(2^$a+1)/3";
 
-static const char *fkabcdstring = "%" PRIu64"*%d^$a%" PRId64" [%d]";
-static const char *fnabcdstring = "$a*%d^%d%" PRId64" [%" PRIu64"]";
+static const char * const fkabcdstring = "%" PRIu64"*%d^$a%" PRId64" [%d]";
+static const char * const fnabcdstring = "$a*%d^%d%" PRId64" [%" PRIu64"]";
 
-static const char *dgt1string1 = "(%" PRIu64"*%d^$a%" PRId64")/%d [%d]";
-static const char *dgt1string2 = "(%" PRIu64"*%d^$a%" PRId64")/%d";
-static const char *dgt1string3 = "(%d^$a%" PRId64")/%d [%d]";
-static const char *dgt1string4 = "(%d^$a%" PRId64")/%d";
+static const char * const dgt1string1 = "(%" PRIu64"*%d^$a%" PRId64")/%d [%d]";
+static const char * const dgt1string2 = "(%" PRIu64"*%d^$a%" PRId64")/%d";
+static const char * const dgt1string3 = "(%d^$a%" PRId64")/%d [%d]";
+static const char * const dgt1string4 = "(%d^$a%" PRId64")/%d";
 
-static const char *hcwstring = "$a^$b*$b^$a$c";
+static const char * const hcwstring = "$a^$b*$b^$a$c";
 
-#define ABC_UNKNOWN      0
-#define ABC_CW_FBP      11
-#define ABC_CW_FBM      12
-#define ABC_CW_FBA      13
-#define ABC_CW_VBP      21
-#define ABC_CW_VBM      22
-#define ABC_CW_VBA      23
-#define ABC_FKP         31
-#define ABC_FKM         32
-#define ABC_FKA         33
-#define ABC_FKB         34
-#define ABC_FBP         41
-#define ABC_FBM         42
-#define ABC_FBA         43
-#define ABC_FNP         51
-#define ABC_FNM         52
-#define ABC_FNA         53
-#define ABC_VP          61
-#define ABC_VM          62
-#define ABC_VA          63
-#define ABC_GFN         71
-#define ABC_XYYXP       81
-#define ABC_XYYXM       82
-#define ABC_LIFCHITZ    83
-#define ABC_PHI_AB      91
-#define ABC_PHI_ABC     92
-
-#define ABC_PRIMP      101
-#define ABC_PRIMM      102
-#define ABC_PRIMA      103
-#define ABC_FACTP      111
-#define ABC_FACTM      112
-#define ABC_FACTA      113
-#define ABC_MF         114
-
-#define ABC_CK         121
-#define ABC_WAGSTAFF   122
-
-#define ABC_DGT1A      131
-#define ABC_DGT1B      132
-#define ABC_DGT1C      133
-#define ABC_DGT1D      134
-
-#define ABC_HCW        141
-
-#define ABCD_FK        201
-#define ABCD_FN        202
-
-#define ABC_GENERIC    998
-#define NOT_ABC        999
-
-ABCParser::ABCParser(int32_t serverType, string fileName)
+ABCParser::ABCParser(const int32_t serverType, const string fileName) : ii_ServerType(serverType), is_ABCFile(fileName)
 {
-   ii_ABCFormat = ABC_UNKNOWN;
-   ii_ServerType = serverType;
-
-   is_ABCFile = fileName.c_str();
-
-   ip_Socket = 0;
+   ip_Socket = nullptr;
 
    ii_ABCFormat = DetermineABCFormat();
 
    if (ii_ABCFormat == ABC_UNKNOWN && ip_ABCFile)
    {
       fclose(ip_ABCFile);
-      ip_ABCFile = 0;
+      ip_ABCFile = nullptr;
    }
 }
 
-ABCParser::ABCParser(Socket *theSocket, int32_t serverType)
+ABCParser::ABCParser(Socket *theSocket, const int32_t serverType) : ii_ServerType(serverType), is_ABCFile("")
 {
-   char  *theMessage;
-
    ip_Socket = theSocket;
 
-   ii_ABCFormat = ABC_UNKNOWN;
-   ii_ServerType = serverType;
+   ip_ABCFile = nullptr;
 
-   theMessage = ip_Socket->Receive();
+   const string theMessage = ip_Socket->Receive();
 
-   if (theMessage)
-      ii_ABCFormat = DetermineABCFormat(theMessage);
+   if (theMessage.empty())
+   {
+      ii_ABCFormat = ABC_UNKNOWN;
+      return;
+   }
+
+   ii_ABCFormat = DetermineABCFormat(theMessage);
 
    if (ii_ABCFormat != ABC_UNKNOWN)
    {
@@ -157,8 +103,6 @@ ABCParser::ABCParser(Socket *theSocket, int32_t serverType)
       else
          ip_Socket->Send("OK: ABC Format Identified");
    }
-
-   ip_ABCFile = 0;
 }
 
 ABCParser::~ABCParser()
@@ -167,7 +111,7 @@ ABCParser::~ABCParser()
       fclose(ip_ABCFile);
 }
 
-bool  ABCParser::IsValidFormat(void)
+bool  ABCParser::IsValidFormat(void) const
 {
    if (ii_ABCFormat == ABC_UNKNOWN)
       return false;
@@ -234,7 +178,7 @@ bool  ABCParser::IsValidFormat(void)
           return true;
 
    if (ii_ServerType == ST_GENERIC)
-      if (ii_ABCFormat == ABC_GENERIC || ii_ABCFormat == NOT_ABC)
+      if (ii_ABCFormat == NOT_ABC)
          return true;
    
    if (ii_ServerType == ST_WAGSTAFF) 
@@ -245,7 +189,7 @@ bool  ABCParser::IsValidFormat(void)
 }
 
 // Determine which ABC file format is being used
-int32_t  ABCParser::DetermineABCFormat(void)
+abctype_t   ABCParser::DetermineABCFormat(void)
 {
    char     abcLine[200];
 
@@ -262,7 +206,7 @@ int32_t  ABCParser::DetermineABCFormat(void)
       return ABC_UNKNOWN;
    }
 
-   int32_t serverType = DetermineABCFormat(abcLine);
+   const abctype_t serverType = DetermineABCFormat(abcLine);
 
    if (il_theK < 0)
    {
@@ -285,9 +229,9 @@ int32_t  ABCParser::DetermineABCFormat(void)
    return serverType;
 }
 
-int32_t  ABCParser::DetermineABCFormat(string abcHeader)
+abctype_t   ABCParser::DetermineABCFormat(const string abcHeader)
 {
-   char     ch, *pos;
+   char     ch;
    char     tempHeader[200];
 
    ib_ABCDFormat = false;
@@ -345,7 +289,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
    }
 
    strcpy(tempHeader, abcHeader.c_str() + 4);
-   pos = strchr(tempHeader, ' ');
+   char * const pos = strchr(tempHeader, ' ');
    if (pos) *pos = 0;
 
    if (sscanf(tempHeader, dgt1string2, &il_theK, &ii_theB, &il_theC, &ii_theD) == 4) return ABC_DGT1B;
@@ -505,7 +449,7 @@ int32_t  ABCParser::DetermineABCFormat(string abcHeader)
 
 rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &theB, int32_t &theN, int64_t &theC, int32_t &theD)
 {
-   char     abcLine[200], *theMessage;
+   char     abcLine[200];
    char     tempName[BUFFER_SIZE];
 
    if (!ip_ABCFile && !ip_Socket)
@@ -518,7 +462,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
          if (fgets(abcLine, sizeof(abcLine), ip_ABCFile) == NULL)
          {
             fclose(ip_ABCFile);
-            ip_ABCFile = 0;
+            ip_ABCFile = nullptr;
             return RT_EOF;
          }
 
@@ -541,7 +485,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
             if (!ParseCandidateLine(abcLine))
             {
                fclose(ip_ABCFile);
-               ip_ABCFile = 0;
+               ip_ABCFile = nullptr;
                printf("Unable to parse line [%s] from ABC file.  Processing stopped\n", abcLine);
                return RT_EOF;
             }
@@ -549,7 +493,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
       }
       else
       {
-         theMessage = ip_Socket->Receive();
+         const char * const theMessage = ip_Socket->Receive();
 
          if (!theMessage)
             return RT_EOF;
@@ -690,7 +634,7 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
    return RT_CANDIDATE;
 }
 
-bool  ABCParser::ParseCandidateLine(string abcLine)
+bool  ABCParser::ParseCandidateLine(const string abcLine)
 {
    char tempLine[200];
    int32_t value32;
@@ -884,6 +828,11 @@ bool  ABCParser::ParseCandidateLine(string abcLine)
          if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
          il_theK = il_theC = ii_theB = 1;
          return true;
+
+      case NOT_ABC:
+         return true;
+
+      default:
+         return false;
    }
-   return false;
 }

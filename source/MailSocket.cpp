@@ -1,23 +1,17 @@
 #include "MailSocket.h"
 
-MailSocket::MailSocket(Log *theLog, string serverName, int32_t portID, string emailID) : Socket(theLog, "mail")
+MailSocket::MailSocket(Log *theLog, string serverName, int32_t portID, string emailID) : Socket(theLog, "mail", true), is_ServerName(serverName), ii_PortID(portID), is_EmailID(emailID)
 {
-   is_ServerName = serverName;
-   is_EmailID = emailID;
-
-   ii_PortID = portID;
-   ib_IsMail = true;
 }
 
 bool     MailSocket::Open()
 {
    struct sockaddr_in   sin;
-   uint32_t             addr;
 
    if (ib_IsOpen)
       return true;
 
-   addr = GetAddress(is_ServerName.c_str());
+   const uint32_t addr = GetAddress(is_ServerName.c_str());
    if (!addr)
       return false;
 

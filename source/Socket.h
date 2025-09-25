@@ -37,7 +37,7 @@
 class Socket
 {
 public:
-   Socket(Log *theLog, string socketDescription);
+   Socket(Log *theLog, string socketDescription) : Socket(theLog, socketDescription, false) {};
 
    ~Socket(void);
 
@@ -48,7 +48,7 @@ public:
    void     Close(void);
 
    // Return a flag indicating if the socket is open
-   bool     GetIsOpen(void) { return ib_IsOpen; };
+   bool     GetIsOpen(void) const { return ib_IsOpen; };
 
    // Send a string of data to the server
    bool     Send(const char* fmt, ...);
@@ -65,7 +65,7 @@ public:
    // Clear the communication buffer
    void     ClearBuffer(void);
 
-   int32_t  GetSocketID(void) { return (int32_t) ii_SocketID; };
+   int32_t  GetSocketID(void) const { return (int32_t) ii_SocketID; };
 
    void     SetAutoNewLine(bool autoNewLine) { ib_AutoNewLine = autoNewLine; };
 
@@ -76,6 +76,8 @@ public:
    SharedMemoryItem  *GetThreadWaiter(void);
 
 protected:
+   Socket(Log *theLog, string socketDescription, const bool isMail);
+
    // Get the IP address for the server name
    int32_t  GetAddress(string serverName);
 
@@ -90,7 +92,7 @@ protected:
 
    // Whether or not the socket is open
    bool     ib_IsOpen;
-   bool     ib_IsMail;
+   const bool   ib_IsMail;
 
    bool     ib_AutoNewLine;
 

@@ -8,12 +8,11 @@
 #define SEND_BUFFER_SIZE    4000
 #define READ_BUFFER_SIZE   10000
 
-Socket::Socket(Log *theLog, string socketDescription)
+Socket::Socket(Log *theLog, string socketDescription, const bool isMail) : ib_IsMail(isMail)
 {
    ip_Log = theLog;
 
    ib_IsOpen = false;
-   ib_IsMail = false;
    ib_IsReadBuffering = false;
    ib_IsSendBuffering = false;
 

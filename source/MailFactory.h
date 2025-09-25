@@ -11,7 +11,7 @@ class MailFactory
 public:
    MailFactory(void) {};
 
-   Mail   *GetInstance(globals_t *globals, string smtpServer, int32_t smtpPort);
+   Mail   *GetInstance(const globals_t * const globals, const string &smtpServer, const int32_t smtpPort) const;
 };
 
 #endif // #ifndef _MailFactory_

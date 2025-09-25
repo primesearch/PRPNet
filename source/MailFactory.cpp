@@ -2,7 +2,7 @@
 #include "PrimeMail.h"
 #include "WWWWMail.h"
 
-Mail   *MailFactory::GetInstance(globals_t *globals, string smtpServer, int32_t smtpPort)
+Mail   *MailFactory::GetInstance(const globals_t * const globals, const string &smtpServer, const int32_t smtpPort) const
 {
    Mail   *pMail;
 

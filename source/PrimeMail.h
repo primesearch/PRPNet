@@ -7,19 +7,19 @@
 class PrimeMail : public Mail
 {
 public:
-   PrimeMail(globals_t *globals, string serverName, uint32_t portID);
+   PrimeMail(const globals_t * const globals, const string &serverName, const uint32_t portID);
 
    void     MailSpecialResults(void);
 
-   void     MailLowWorkNotification(int32_t daysLeft);
+   void     MailLowWorkNotification(const int32_t daysLeft);
 
 private:
-   bool     NotifyUser(string toEmailID, string candidateName, 
-                       int64_t testID, double decimalLength);
+   bool     NotifyUser(const string &toEmailID, const string &candidateName,
+                       const int64_t testID, const double decimalLength);
 
-   void     AppendGFNDivisibilityData(int32_t theB, int64_t theC,
-                                      int32_t checkedGFNDivisibility, string candidateName,
-                                      string testedNumber);
+   void     AppendGFNDivisibilityData(const int32_t theB, const int64_t theC,
+                                      const int32_t checkedGFNDivisibility, const string &candidateName,
+                                      const string &testedNumber);
 
 };
 

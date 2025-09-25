@@ -1,7 +1,7 @@
 #include "PrimeMail.h"
 #include "SQLStatement.h"
 
-PrimeMail::PrimeMail(globals_t *globals, string serverName, uint32_t portID)
+PrimeMail::PrimeMail(const globals_t * const globals, const string &serverName, const uint32_t portID)
                      : Mail(globals, serverName, portID)
 {
 }
@@ -13,19 +13,19 @@ void  PrimeMail::MailSpecialResults(void)
    char     candidateName[NAME_LENGTH+1], emailID[ID_LENGTH+1];
    double   decimalLength;
    int64_t  testID = 0;
-   const char *selectSQL = "select Candidate.CandidateName, " \
-                           "       Candidate.DecimalLength, " \
-                           "       CandidateTest.TestID, " \
-                           "       CandidateTest.EmailID " \
-                           "  from Candidate, " \
-                           "       CandidateTest " \
-                           " where Candidate.CandidateName = CandidateTest.CandidateName " \
-                           "   and CandidateTest.EmailSent = 0 " \
-                           "   and Candidate.MainTestResult > 0";
-   const char *updateSQL = "update CandidateTest " \
-                           "   set EmailSent = 1 " \
-                           " where CandidateName = ? " \
-                           "   and TestId = ?";
+   const string selectSQL = "select Candidate.CandidateName, " \
+                            "       Candidate.DecimalLength, " \
+                            "       CandidateTest.TestID, " \
+                            "       CandidateTest.EmailID " \
+                            "  from Candidate, " \
+                            "       CandidateTest " \
+                            " where Candidate.CandidateName = CandidateTest.CandidateName " \
+                            "   and CandidateTest.EmailSent = 0 " \
+                            "   and Candidate.MainTestResult > 0";
+   const string updateSQL = "update CandidateTest " \
+                            "   set EmailSent = 1 " \
+                            " where CandidateName = ? " \
+                            "   and TestId = ?";
 
    selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
@@ -56,29 +56,27 @@ void  PrimeMail::MailSpecialResults(void)
    delete selectStatement;
 }
 
-void  PrimeMail::MailLowWorkNotification(int32_t daysLeft)
+void  PrimeMail::MailLowWorkNotification(const int32_t daysLeft)
 {
-   bool  success;
-
-   success = NewMessage(is_FromEmailID.c_str(), "PRPNet Running Dry");
+   const bool success = NewMessage(is_FromEmailID.c_str(), "PRPNet Running Dry");
    if (success)
    {
       ip_Socket->StartBuffering();
       ip_Socket->SetAutoNewLine(false);
 
       AppendLine(0, "There PRPNet server for project %s has an estimated %d days left of work.", is_ProjectName.c_str(), daysLeft);
-      
+
       ip_Socket->SetAutoNewLine(true);
       SendMessage();
    }
 }
 
-bool  PrimeMail::NotifyUser(string toEmailID, string candidateName, 
-                            int64_t testID, double decimalLength)
+bool  PrimeMail::NotifyUser(const string &toEmailID, const string &candidateName,
+                            const int64_t testID, const double decimalLength)
 {
    SQLStatement *testStatment;
    SQLStatement *srStatement;
-   char     resultText[10];
+   const char   *resultText;
    char     machineID[ID_LENGTH+1], instanceID[ID_LENGTH+1], whichTest[NAME_LENGTH+1];
    char     testedNumber[NAME_LENGTH+1];
    char     prpingProgram[NAME_LENGTH+1], provingProgram[NAME_LENGTH+1];
@@ -86,22 +84,22 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
    int64_t  theK, theC;
    int32_t  theB, count;
    double   secondsForTest;
-   const char *testResultSelect = "select Candidate.k, Candidate.b, Candidate.c, " \
-                                  "       CandidateTest.MachineID, " \
-                                  "       CandidateTest.InstanceID, " \
-                                  "       TestIndex, WhichTest, TestedNumber, " \
-                                  "       TestResult, PRPingProgram, " \
-                                  "       ProvingProgram, SecondsForTest, CheckedGFNDivisibility " \
-                                  "  from Candidate, CandidateTest, CandidateTestResult "
-                                  " where CandidateTest.CandidateName = Candidate.CandidateName " \
-                                  "   and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
-                                  "   and CandidateTest.TestID = CandidateTestResult.TestID " \
-                                  "   and CandidateTest.CandidateName = ? " \
-                                  "   and CandidateTest.TestID = ? " \
-                                  "order by TestIndex";
-   const char *srStatSelect = "select count(*) from CandidateGroupStats "
-                              " where k = ? and b = ? and c = ? " \
-                              "   and PRPandPrimesFound = 0";
+   const string testResultSelect = "select Candidate.k, Candidate.b, Candidate.c, " \
+                                   "       CandidateTest.MachineID, " \
+                                   "       CandidateTest.InstanceID, " \
+                                   "       TestIndex, WhichTest, TestedNumber, " \
+                                   "       TestResult, PRPingProgram, " \
+                                   "       ProvingProgram, SecondsForTest, CheckedGFNDivisibility " \
+                                   "  from Candidate, CandidateTest, CandidateTestResult "
+                                   " where CandidateTest.CandidateName = Candidate.CandidateName " \
+                                   "   and CandidateTest.CandidateName = CandidateTestResult.CandidateName " \
+                                   "   and CandidateTest.TestID = CandidateTestResult.TestID " \
+                                   "   and CandidateTest.CandidateName = ? " \
+                                   "   and CandidateTest.TestID = ? " \
+                                   "order by TestIndex";
+   const string srStatSelect = "select count(*) from CandidateGroupStats "
+                               " where k = ? and b = ? and c = ? " \
+                               "   and PRPandPrimesFound = 0";
 
    testStatment = new SQLStatement(ip_Log, ip_DBInterface, testResultSelect);
    testStatment->BindInputParameter(candidateName, NAME_LENGTH);
@@ -127,12 +125,15 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
    }
 
    if (testResult == R_PRP)
-      strcpy(resultText, "PRP");
+      resultText = "PRP";
    else
-      strcpy(resultText, "Prime");
+      resultText = "Prime";
 
    if (!NewMessage(toEmailID, "Candidate %s was found to be %s by PRPNet!", candidateName.c_str(), resultText))
+   {
+      delete testStatment;
       return false;
+   }
 
    ip_Socket->StartBuffering();
    ip_Socket->SetAutoNewLine(false);
@@ -166,11 +167,6 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
 
    while (testStatment->FetchRow(false))
    {
-      if (testResult == R_PRP)
-         strcpy(resultText, "PRP");
-      else
-         strcpy(resultText, "prime");
-
       if (!strcmp(whichTest, TWIN_PREFIX))
       {
          switch (testResult)
@@ -239,16 +235,16 @@ bool  PrimeMail::NotifyUser(string toEmailID, string candidateName,
    return true;
 }
 
-void  PrimeMail::AppendGFNDivisibilityData(int32_t theB, int64_t theC,
-                                           int32_t checkedGFNDivisibility,
-                                           string candidateName, string testedNumber)
+void  PrimeMail::AppendGFNDivisibilityData(const int32_t theB, const int64_t theC,
+                                           const int32_t checkedGFNDivisibility,
+                                           const string &candidateName, const string &testedNumber)
 {
-   SQLStatement *gfnStatement = 0;
+   SQLStatement *gfnStatement;
    bool     foundGFNDivisor;
    char     gfn[50];
-   const char *gfnDivisorSelect = "select GFN from CandidateGFNDivisor " \
-                                  " where CandidateName = ? " \
-                                  "   and TestedNumber = ?";
+   const string gfnDivisorSelect = "select GFN from CandidateGFNDivisor " \
+                                   " where CandidateName = ? " \
+                                   "   and TestedNumber = ?";
 
    if (theB != 2 || theC != 1)
       return;
@@ -272,9 +268,9 @@ void  PrimeMail::AppendGFNDivisibilityData(int32_t theB, int64_t theC,
 
       if (!foundGFNDivisor)
          AppendLine(2, "The client searched for GFN divisors for the number %s, but did not find any.", testedNumber.c_str());
+
+      delete gfnStatement;
    }
    else
       AppendLine(2, "The client did not run a test to search for GFN divisors.");
-
-   delete gfnStatement;
 }

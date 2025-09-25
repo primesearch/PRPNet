@@ -7,15 +7,15 @@
 class WWWWMail : public Mail
 {
 public:
-   WWWWMail(globals_t *globals, string serverName, uint32_t portID);
+   WWWWMail(const globals_t * const globals, const string &serverName, const uint32_t portID);
 
    void     MailSpecialResults(void);
 
-   void     MailLowWorkNotification(int32_t daysLeft);
+   void     MailLowWorkNotification(const int32_t daysLeft);
 
 private:
-   bool     NotifyUser(string toEmailID, int64_t prime, int32_t remainder, int32_t quotient,
-                       int32_t duplicate, string machineID, string instanceID, string searchingProgram);
+   bool     NotifyUser(const string &toEmailID, const int64_t prime, const int32_t remainder, const int32_t quotient,
+                       const int32_t duplicate, const string &machineID, const string &instanceID, const string &searchingProgram);
 };
 
 #endif // #ifndef _WWWWMail_

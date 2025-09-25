@@ -11,30 +11,20 @@
 class Mail
 {
 public:
-   Mail(globals_t *globals, string serverName, uint32_t portID);
+   Mail(const globals_t * const globals, const string &serverName, const uint32_t portID);
 
    virtual ~Mail();
 
    void     SetDBInterface(DBInterface *dbInterface) { ip_DBInterface = dbInterface; };
 
-   virtual void MailSpecialResults(void) {};
+   virtual void MailSpecialResults(void) = 0;
 
-   virtual void MailLowWorkNotification(int32_t daysLeft) {};
+   virtual void MailLowWorkNotification(const int32_t daysLeft) = 0;
 
 protected:
-   uint32_t GetLine(void);
+   bool     NewMessage(const string &toEmailID, const string &subject, ...);
 
-   bool     SendHeader(string toEmailID, string theSubject);
-
-   bool     SendHeader(string header, string text, uint32_t expectedRC);
-
-   bool     PrepareMessage(string toEmailID);
-
-   void     encodeBase64(string inString, string &outString);
-
-   bool     NewMessage(string toEmailID, string subject, ...);
-
-   void     AppendLine(int32_t newLines, string fmt, ...);
+   void     AppendLine(int32_t newLines, const string &line, ...);
 
    bool     SendMessage(void);
 
@@ -43,19 +33,31 @@ protected:
 
    MailSocket  *ip_Socket;
 
-   string   is_HostName;
-   string   is_FromEmailID;
-   string   is_FromPassword;
+   const string     is_FromEmailID;
+   const string     is_ProjectName;
+   const int32_t    ii_ServerType;
 
-   uint32_t ii_DestIDCount;
-   string   is_DestID[10];
-   string   is_ProjectName;
+private:
+   uint32_t GetLine(void);
 
-   int32_t  ii_ServerType;
-   string   ii_ServerName;
-   int32_t  ii_ServerPortID;
+   bool     SendHeader(const string &toEmailID, const string &theSubject);
 
-   // This is set to 1 if a socket could be opened with the SMTP server
+   bool     SendHeader(const string &header, const string &text, const uint32_t expectedRC);
+
+   bool     PrepareMessage(const string &toEmailID);
+
+   static void encodeBase64(const string &inString, string &outString);
+
+   const string     is_HostName;
+   const string     is_FromPassword;
+
+   uint32_t         ii_DestIDCount;
+   string           is_DestID[10];
+
+   const string     ii_ServerName;
+   const int32_t    ii_ServerPortID;
+
+   // This is set to true if a socket could be opened with the SMTP server
    bool     ib_Enabled;
 
    bool     ib_SMTPAuthentication;

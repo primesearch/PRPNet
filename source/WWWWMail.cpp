@@ -1,7 +1,7 @@
 #include "WWWWMail.h"
 #include "SQLStatement.h"
 
-WWWWMail::WWWWMail(globals_t *globals, string serverName, uint32_t portID)
+WWWWMail::WWWWMail(const globals_t * const globals, const string &serverName, const uint32_t portID)
                    : Mail(globals, serverName, portID)
 {
 }
@@ -14,24 +14,24 @@ void  WWWWMail::MailSpecialResults(void)
    int32_t  remainder = 0, quotient = 0, duplicate = 0;
    char     emailID[ID_LENGTH+1], machineID[ID_LENGTH+1], instanceID[ID_LENGTH+1];
    char     searchingProgram[ID_LENGTH+1];
-   const char *selectSQL = "select WWWWRangeTest.LowerLimit, WWWWRangeTest.UpperLimit, " \
-                           "       WWWWRangeTest.TestID, WWWWRangeTest.EmailID, " \
-                           "       WWWWRangeTest.MachineID, WWWWRangeTest.InstanceID, " \
-                           "       WWWWRangeTest.SearchingProgram, WWWWRangeTestResult.Duplicate, " \
-                           "       WWWWRangeTestResult.Prime, WWWWRangeTestResult.Remainder, " \
-                           "       WWWWRangeTestResult.Quotient " \
-                           "  from WWWWRangeTest, WWWWRangeTestResult "
-                           " where WWWWRangeTest.LowerLimit = WWWWRangeTestResult.LowerLimit " \
-                           "   and WWWWRangeTest.UpperLimit = WWWWRangeTestResult.UpperLimit " \
-                           "   and WWWWRangeTest.TestID = WWWWRangeTestResult.TestID " \
-                           "   and WWWWRangeTestResult.EmailSent = 0 " \
-                           "order by WWWWRangeTest.TestID";
-   const char *updateSQL = "update WWWWRangeTestResult " \
-                           "   set EmailSent = 1 " \
-                           " where LowerLimit = ? " \
-                           "   and UpperLimit = ? " \
-                           "   and TestId = ? " \
-                           "   and Prime = ? ";
+   const string selectSQL = "select WWWWRangeTest.LowerLimit, WWWWRangeTest.UpperLimit, " \
+                            "       WWWWRangeTest.TestID, WWWWRangeTest.EmailID, " \
+                            "       WWWWRangeTest.MachineID, WWWWRangeTest.InstanceID, " \
+                            "       WWWWRangeTest.SearchingProgram, WWWWRangeTestResult.Duplicate, " \
+                            "       WWWWRangeTestResult.Prime, WWWWRangeTestResult.Remainder, " \
+                            "       WWWWRangeTestResult.Quotient " \
+                            "  from WWWWRangeTest, WWWWRangeTestResult "
+                            " where WWWWRangeTest.LowerLimit = WWWWRangeTestResult.LowerLimit " \
+                            "   and WWWWRangeTest.UpperLimit = WWWWRangeTestResult.UpperLimit " \
+                            "   and WWWWRangeTest.TestID = WWWWRangeTestResult.TestID " \
+                            "   and WWWWRangeTestResult.EmailSent = 0 " \
+                            "order by WWWWRangeTest.TestID";
+   const string updateSQL = "update WWWWRangeTestResult " \
+                            "   set EmailSent = 1 " \
+                            " where LowerLimit = ? " \
+                            "   and UpperLimit = ? " \
+                            "   and TestId = ? " \
+                            "   and Prime = ? ";
 
    selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    selectStatement->BindSelectedColumn(&lowerLimit);
@@ -73,27 +73,25 @@ void  WWWWMail::MailSpecialResults(void)
    delete selectStatement;
 }
 
-void  WWWWMail::MailLowWorkNotification(int32_t daysLeft)
+void  WWWWMail::MailLowWorkNotification(const int32_t daysLeft)
 {
-   bool  success;
-
-   success = NewMessage(is_FromEmailID.c_str(), "PRPNet Running Dry");
+   const bool success = NewMessage(is_FromEmailID.c_str(), "PRPNet Running Dry");
    if (success)
    {
       ip_Socket->StartBuffering();
       ip_Socket->SetAutoNewLine(false);
 
       AppendLine(0, "There PRPNet server for project %s has an estimated %d days left of work.", is_ProjectName.c_str(), daysLeft);
-      
+
       ip_Socket->SetAutoNewLine(true);
       SendMessage();
    }
 }
 
-bool  WWWWMail::NotifyUser(string toEmailID, int64_t prime, int32_t remainder, int32_t quotient,
-                           int32_t duplicate, string machineID, string instanceID, string searchingProgram)
+bool  WWWWMail::NotifyUser(const string &toEmailID, const int64_t prime, const int32_t remainder, const int32_t quotient,
+                           const int32_t duplicate, const string &machineID, const string &instanceID, const string &searchingProgram)
 {
-   const char  *searchType;
+   const char *searchType;
    bool   success;
 
    if (ii_ServerType == ST_WIEFERICH)    searchType = "Wieferich";

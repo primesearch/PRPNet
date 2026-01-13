@@ -239,6 +239,16 @@ abctype_t   ABCParser::DetermineABCFormat(const string abcHeader)
    ii_theB = ii_theN = ii_theD = 0;
    il_theC = 0;
 
+   if (abcHeader.length() > sizeof(tempHeader) - 1)
+   {
+      if (ip_Socket)
+         ip_Socket->Send("ABC header [%s] is too long", abcHeader.c_str());
+      else
+         printf("ABC header [%s] is too long\n", abcHeader.c_str());
+
+      return ABC_UNKNOWN;
+   }
+
    strcpy(tempHeader, abcHeader.c_str());
 
    if (!memcmp(tempHeader, "ABCD ", 5))
@@ -274,16 +284,6 @@ abctype_t   ABCParser::DetermineABCFormat(const string abcHeader)
          ip_Socket->Send("ABC header [%s] does not appear to be of the correct format", tempHeader);
       else
          printf("ABC header [%s] does not appear to be of the correct format\n", tempHeader);
-
-      return ABC_UNKNOWN;
-   }
-
-   if (strlen(tempHeader) > sizeof(tempHeader))
-   {
-      if (ip_Socket)
-         ip_Socket->Send("ABC header [%s] is too long", tempHeader);
-      else
-         printf("ABC header [%s] is too long\n", tempHeader);
 
       return ABC_UNKNOWN;
    }

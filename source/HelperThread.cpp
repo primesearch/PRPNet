@@ -126,9 +126,9 @@ void  HelperThread::HandleClient(void)
    // Support for 5.2 and later (first supported by 4.2, but 5.2 client is first to use it.
    if (!memcmp(theMessage, "FROM 5.", 7))
    {
-      if (sscanf(theMessage, "FROM %s %s %s %s %s %s", clientVersion, emailID, machineID, userID, teamID, instanceID) != 6)
+      if (sscanf(theMessage, "FROM %49s %s %s %s %s %s", clientVersion, emailID, machineID, userID, teamID, instanceID) != 6)
       {
-         if (sscanf(theMessage, "FROM %s %s %s %s %s", clientVersion, emailID, machineID, userID, teamID) != 5)
+         if (sscanf(theMessage, "FROM %49s %s %s %s %s", clientVersion, emailID, machineID, userID, teamID) != 5)
          {
             ip_Log->LogMessage("The FROM message [%s] did not specify required information.  The connection was dropped.", theMessage);
             return;
@@ -138,7 +138,7 @@ void  HelperThread::HandleClient(void)
    }
    else
    {
-      if (sscanf(theMessage, "FROM %s %s %s %s %s", emailID, machineID, userID, clientVersion, teamID) != 5)
+      if (sscanf(theMessage, "FROM %s %s %s %49s %s", emailID, machineID, userID, clientVersion, teamID) != 5)
       {
          ip_Log->LogMessage("The FROM message [%s] did not specify required information.  The connection was dropped.", theMessage);
          return;

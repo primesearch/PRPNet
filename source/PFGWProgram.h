@@ -18,10 +18,14 @@ public:
 
    void        DetermineVersion(void);
 
+   testresult_t   PRPTest(char* fileName);
+
+   testresult_t   GFNDivisibilityTest(char* fileName);
+
 private:
    testresult_t   ParseTestResults(testtype_t testType);
 
-   void        AddGFNToList(string divisor);
+   void        AddGFNToList(int32_t n, int64_t k, char *divisor);
 
    void        DetermineDecimalLength(void);
 };

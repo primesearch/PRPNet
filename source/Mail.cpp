@@ -17,7 +17,7 @@ Mail::Mail(const globals_t * const globals, const string &serverName, const uint
    ip_Socket = new MailSocket(ip_Log, serverName, portID, globals->s_EmailID);
 
    ii_DestIDCount = 0;
-   for (uint32_t i=0; i<globals->i_DestIDCount; i++)
+   for (int32_t i=0; i<globals->i_DestIDCount; i++)
    {
       if (is_FromEmailID != globals->s_DestID[i])
       {
@@ -43,7 +43,7 @@ Mail::~Mail()
    delete ip_Socket;
 }
 
-bool     Mail::NewMessage(const string &toEmailID, const string &subject, ...)
+bool     Mail::NewMessage(const string &toEmailID, const string subject, ...)
 {
    char     theSubject[BUFFER_SIZE];
    va_list  args;
@@ -78,7 +78,7 @@ bool     Mail::NewMessage(const string &toEmailID, const string &subject, ...)
    return true;
 }
 
-void    Mail::AppendLine(int32_t newLines, const string &line, ...)
+void    Mail::AppendLine(int32_t newLines, const string line, ...)
 {
    char     theLine[2000];
    va_list  args;

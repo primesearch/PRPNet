@@ -268,7 +268,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ClientSocket.cpp" />
+    <ClCompile Include="DMDivisorWorker.cpp" />
+    <ClCompile Include="DMDivisorWorkUnitTest.cpp" />
+    <ClCompile Include="DMDivisorProgram.cpp" />
     <ClCompile Include="GeneferProgram.cpp" />
+    <ClCompile Include="GFNDivisorWorker.cpp" />
+    <ClCompile Include="GFNDivisorWorkUnitTest.cpp" />
+    <ClCompile Include="GFNDivisorProgram.cpp" />
     <ClCompile Include="LLRProgram.cpp" />
     <ClCompile Include="Log.cpp">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -313,8 +319,15 @@
     <ClInclude Include="ClientSocket.h" />
     <ClInclude Include="CycloProgram.h" />
     <ClInclude Include="defs.h" />
+    <ClInclude Include="dmdivisor.h" />
+    <ClInclude Include="DMDivisorWorker.h" />
+    <ClInclude Include="DMDivisorWorkUnitTest.h" />
+    <ClInclude Include="DMDivisorProgram.h" />
     <ClInclude Include="GeneferProgram.h" />
-    <ClInclude Include="gfn.h" />
+    <ClInclude Include="gfndivisor.h" />
+    <ClInclude Include="GFNDivisorWorker.h" />
+    <ClInclude Include="GFNDivisorWorkUnitTest.h" />
+    <ClInclude Include="GFNDivisorProgram.h" />
     <ClInclude Include="LLRProgram.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="MainWorkUnitTest.h" />

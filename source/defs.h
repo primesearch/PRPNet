@@ -8,7 +8,7 @@
 
 #define _defs_
 
-#define PRPNET_VERSION "5.9.1"
+#define PRPNET_VERSION "6.0.0"
 
 #if defined(__unix__) || defined(__unix) || defined(__APPLE__)
    #include <inttypes.h>
@@ -57,6 +57,9 @@ enum sgtype_t { SG_NM1 = 1, SG_NP1 } ;
 
 #define ST_CYCLOTOMIC       31
 #define ST_CAROLKYNEA       32
+
+#define ST_GFNDIVISOR       41
+#define ST_DMDIVISOR        42
 
 #define ST_GENERIC          99
 

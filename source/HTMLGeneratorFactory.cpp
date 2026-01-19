@@ -16,6 +16,8 @@
 #include "HyperCullenWoodallHTML.h"
 #include "GenericHTML.h"
 #include "WagstaffHTML.h"
+#include "DMDivisorHTMLGenerator.h"
+#include "GFNDivisorHTMLGenerator.h"
 
 HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
 {
@@ -94,6 +96,14 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
          
       case ST_WAGSTAFF:
          htmlGenerator = new WagstaffHTML(globals);
+         break;
+
+      case ST_DMDIVISOR:
+         htmlGenerator = new DMDivisorHTMLGenerator(globals);
+         break;
+
+      case ST_GFNDIVISOR:
+         htmlGenerator = new GFNDivisorHTMLGenerator(globals);
          break;
 
       default:

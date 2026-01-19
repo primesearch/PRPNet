@@ -4,6 +4,8 @@
 #include "HelperThread.h"
 #include "PrimeHelperThread.h"
 #include "WWWWHelperThread.h"
+#include "DMDivisorHelperThread.h"
+#include "GFNDivisorHelperThread.h"
 
 #ifdef WIN32
    static DWORD WINAPI ServerThreadEntryPoint(LPVOID threadInfo);
@@ -82,6 +84,10 @@ static void  *ServerThreadEntryPoint(void *threadInfo)
                 globals->i_ServerType == ST_WALLSUNSUN ||
                 globals->i_ServerType == ST_WOLSTENHOLME)
                helperThread = new WWWWHelperThread();
+            else if (globals->i_ServerType == ST_GFNDIVISOR)
+               helperThread = new GFNDivisorHelperThread();
+            else if (globals->i_ServerType == ST_DMDIVISOR)
+               helperThread = new DMDivisorHelperThread();
             else
                helperThread = new PrimeHelperThread();
             

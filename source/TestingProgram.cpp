@@ -3,7 +3,6 @@
 TestingProgram::TestingProgram(Log *theLog, string programName)
 {
    ip_Log = theLog;
-
    is_ExeName = programName;
 
    if (programName.find("./") == string::npos)
@@ -74,5 +73,17 @@ bool  TestingProgram::ValidateExe(void)
    }
 
    DetermineVersion();
+   return true;
+}
+
+bool TestingProgram::DoesFileExist(char* fileName)
+{
+   FILE* fp;
+
+   fp = fopen(fileName, "r");
+   if (!fp)
+      return false;
+
+   fclose(fp);
    return true;
 }

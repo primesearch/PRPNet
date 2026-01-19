@@ -14,6 +14,8 @@ typedef struct workunit_t
    uint32_t    i_n;
    int64_t     l_c;
    uint32_t    i_d;
+   uint64_t    l_minK;
+   uint64_t    l_maxK;
    int64_t     l_LowerLimit;
    int64_t     l_UpperLimit;
    int32_t     i_DecimalLength;

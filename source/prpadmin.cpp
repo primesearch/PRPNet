@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "defs.h"
+#include "mersenne.h"
 
 #ifdef WIN32
   #include <io.h>
@@ -32,6 +33,7 @@ void     AdminMenu(void);
 bool     OpenAdminSocket(void);
 void     CloseAdminSocket(void);
 char    *PromptForValue(const char *prompt, uint32_t verifyFile);
+uint64_t PromptForIntegerValue(const char* prompt, uint64_t maxAllowedValue);
 bool     VerifyCommand(const char *theCommand);
 void     SendABCFile(const char *abcFileName);
 void     SendFactorFile(const char *factorFileName);
@@ -41,6 +43,8 @@ void     SetQuitting(int a);
 void     PipeInterrupt(int a);
 void     ProcessCommandLine(int count, char *arg[]);
 void     DeleteData(char deleteWhich, char* deleteValue, char deletePrimes, char deleteStats);
+void     AddGFNRange(uint32_t nMin, uint32_t nMax, uint64_t kMin, uint64_t kMax);
+void     AddDMRange(uint32_t n, uint64_t kMin, uint32_t rangeCount, uint64_t rangeSize);
 void     Usage(char *exeName);
 bool     ConfirmBatch(int countSent, bool allDone);
 
@@ -49,7 +53,9 @@ void      AdminMenu(void)
    int   menuitem = -1;
    char  response[500], *theMessage;
    char  deleteValue[30], deletePrimes[2], deleteStats[2];
-   int32_t ranges;
+   int32_t ranges, idx;
+   uint32_t n, nMin, nMax, rangeCount;
+   uint64_t kMin, kMax;
 
    while (true)
    {
@@ -63,7 +69,10 @@ void      AdminMenu(void)
          printf(" 4. Add new candidates from ABC file\n");
          printf(" 5. Remove candidates based upon factors file\n");
          printf(" 6. Add search ranges\n");
+         printf(" 7. Add GFN Search ranges\n");
+         printf(" 8. Add Double-Mersenne Search ranges\n");
          printf("11. Expire work unit\n");
+         printf("12. Expire GFN/DM work unit\n");
          printf("21. Delete candidates for k <=\n");
          printf("22. Delete candidates for b <=\n");
          printf("23. Delete candidates for n <=\n");
@@ -130,10 +139,78 @@ void      AdminMenu(void)
             }
             break;
 
+         case 7:
+            nMin = (uint32_t) PromptForIntegerValue("Enter min N: ", INT32_MAX);
+            nMax = (uint32_t)PromptForIntegerValue("Enter max N: ", INT32_MAX);
+            kMin = PromptForIntegerValue("Enter min K: ", INT64_MAX);
+            kMax = PromptForIntegerValue("Enter max K: ", INT64_MAX);
+
+            if (nMin > nMax)
+            {
+               printf("Error: min N > max N\n");
+               break;
+            }
+
+            if (kMin > kMax)
+            {
+               printf("Error: min K > max K\n");
+               break;
+            }
+
+            if (OpenAdminSocket())
+            {
+               AddGFNRange(nMin, nMax, kMin, kMax);
+               CloseAdminSocket();
+            }
+            break;
+
+         case 8:
+            n = (uint32_t) PromptForIntegerValue("Enter N: ", INT32_MAX);
+            kMin = PromptForIntegerValue("Enter min K: ", INT64_MAX);
+            rangeCount = (uint32_t) PromptForIntegerValue("Enter number of ranges: ", INT32_MAX);
+
+            for (idx=0; ; idx++)
+            {
+               if (n == dmdList[idx].n)
+                  break;
+
+               if (dmdList[idx].n == 0)
+               {
+                  printf("Error:  specified n is not supported\n");
+                  break;
+               }
+            }
+
+            if (kMin % dmdList[idx].rangeSize != 0)
+            {
+               printf("Error: min K must be divisible by %" PRId64"\n", dmdList[idx].rangeSize);
+               break;
+            }
+
+            if (OpenAdminSocket())
+            {
+               AddDMRange(n, kMin, rangeCount, dmdList[idx].rangeSize);
+               CloseAdminSocket();
+            }
+            break;
+
          case 11:
             snprintf(response, sizeof(response), PromptForValue("Enter candidate (or low end of wwww range) to expire: ", false));
 
             if (strlen(response) && OpenAdminSocket())
+            {
+               ExpireWorkunit(response);
+               CloseAdminSocket();
+            }
+            break;
+
+         case 12:
+            n = (uint32_t)PromptForIntegerValue("Enter N: ", INT32_MAX);
+            kMin = PromptForIntegerValue("Enter K: ", INT64_MAX);
+
+            snprintf(response, sizeof(response), "%u %" PRIu64"", n, kMin);
+
+            if (OpenAdminSocket())
             {
                ExpireWorkunit(response);
                CloseAdminSocket();
@@ -227,11 +304,36 @@ void      AdminMenu(void)
    CloseAdminSocket();
 }
 
-char   *PromptForValue(const char *prompt, uint32_t verifyFile)
+uint64_t PromptForIntegerValue(const char *prompt, uint64_t maxAllowedValue)
+{
+   static char response[200];
+   uint64_t value = 0;
+
+   while (value == 0)
+   {
+      printf("%s", prompt);
+
+      fgets(response, sizeof(response), stdin);
+
+      StripCRLF(response);
+
+      value = atoll(response);
+
+      if (value == 0)
+         printf("Value is not an integer\n");
+
+      if (value > maxAllowedValue)
+         printf("max allowed value is %" PRIu64"\n", maxAllowedValue);
+   }
+
+   return value;
+}
+
+char* PromptForValue(const char* prompt, uint32_t verifyFile)
 {
    static char response[200];
    char  readBuf[500];
-   FILE *fPtr;
+   FILE* fPtr;
 
    printf("%s", prompt);
 
@@ -567,6 +669,55 @@ void  DeleteData(char deleteWhich, char* deleteValue, char deletePrimes, char de
 
    g_Socket->Send("DELETE %c %s %c %c", deleteWhich, deleteValue, deletePrimes, deleteStats);
 
+   theMessage = g_Socket->Receive(120);
+   while (theMessage && !endLoop)
+   {
+      if (!memcmp(theMessage, "End of Message", 14))
+         endLoop = true;
+      else
+         if (memcmp(theMessage, "keepalive", 9))
+            g_Log->LogMessage(theMessage);
+
+      if (!endLoop)
+         theMessage = g_Socket->Receive(30);
+   }
+}
+
+void  AddGFNRange(uint32_t nMin, uint32_t nMax, uint64_t kMin, uint64_t kMax)
+{
+   char* theMessage;
+   int32_t     endLoop = false;
+
+   if (!VerifyCommand("ADD_GFN_RANGE"))
+      return;
+
+   g_Socket->Send("ADD_GFN_RANGE %u %u %" PRIu64" %" PRIu64"", nMin, nMax, kMin, kMax);
+
+   theMessage = g_Socket->Receive(120);
+   while (theMessage && !endLoop)
+   {
+      if (!memcmp(theMessage, "End of Message", 14))
+         endLoop = true;
+      else
+         if (memcmp(theMessage, "keepalive", 9))
+            g_Log->LogMessage(theMessage);
+
+      if (!endLoop)
+         theMessage = g_Socket->Receive(30);
+   }
+
+}
+
+void  AddDMRange(uint32_t n, uint64_t kMin, uint32_t rangeCount, uint64_t rangeSize)
+{
+   char* theMessage;
+   int32_t     endLoop = false;
+
+   if (!VerifyCommand("ADD_DM_RANGE"))
+      return;
+
+   g_Socket->Send("ADD_DM_RANGE %u %" PRIu64" %u %u" , n, kMin, rangeCount, rangeSize);
+ 
    theMessage = g_Socket->Receive(120);
    while (theMessage && !endLoop)
    {

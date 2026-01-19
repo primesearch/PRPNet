@@ -26,11 +26,11 @@ PrimeWorkUnitTest::PrimeWorkUnitTest(Log *theLog, int32_t serverType, string wor
 
 PrimeWorkUnitTest::~PrimeWorkUnitTest()
 {
-   gfn_t   *gfnPtr;
+   gfndivisor_t   *gfnPtr;
 
    while (ip_FirstGFN)
    {
-      gfnPtr = (gfn_t *) ip_FirstGFN->m_NextGFN;
+      gfnPtr = (gfndivisor_t *) ip_FirstGFN->m_NextGFNDivisor;
       delete ip_FirstGFN;
       ip_FirstGFN = gfnPtr;
    }
@@ -276,7 +276,7 @@ testresult_t   PrimeWorkUnitTest::CheckForGFNDivisibility(void)
 void  PrimeWorkUnitTest::SendResults(Socket *theSocket)
 {
    TestingProgram *testingProgram;
-   gfn_t          *gfnPtr;
+   gfndivisor_t          *gfnPtr;
 
    // If this is not the main test, i.e. a sub-test, and the test wasn't done,
    // then don't return it to the server.
@@ -305,8 +305,8 @@ void  PrimeWorkUnitTest::SendResults(Socket *theSocket)
          gfnPtr = ip_FirstGFN;
          while (gfnPtr)
          {
-            theSocket->Send("GFN: %s", gfnPtr->s_Divisor.c_str());
-            gfnPtr = (gfn_t *) gfnPtr->m_NextGFN;
+            theSocket->Send("GFN: %s", gfnPtr->s_Divisor);
+            gfnPtr = (gfndivisor_t *) gfnPtr->m_NextGFNDivisor;
          }
       }
    }
@@ -316,7 +316,7 @@ void  PrimeWorkUnitTest::SendResults(Socket *theSocket)
 
 void     PrimeWorkUnitTest::Save(FILE *saveFile)
 {
-   gfn_t          *gfnPtr;
+   gfndivisor_t          *gfnPtr;
 
    fprintf(saveFile, "%s: %s %s %s %s %s %s %d %d %d %lf %d\n", GetResultPrefix().c_str(),
            is_ChildName.c_str(), is_Residue.c_str(),
@@ -331,8 +331,8 @@ void     PrimeWorkUnitTest::Save(FILE *saveFile)
    gfnPtr = ip_FirstGFN;
    while (gfnPtr)
    {
-      fprintf(saveFile, "%s GFN: %s\n", GetResultPrefix().c_str(), gfnPtr->s_Divisor.c_str());
-      gfnPtr = (gfn_t *) gfnPtr->m_NextGFN;
+      fprintf(saveFile, "%s GFN: %s\n", GetResultPrefix().c_str(), gfnPtr->s_Divisor);
+      gfnPtr = (gfndivisor_t *) gfnPtr->m_NextGFNDivisor;
    }
 
    fprintf(saveFile, "End GFN\n");
@@ -340,12 +340,12 @@ void     PrimeWorkUnitTest::Save(FILE *saveFile)
 
 void     PrimeWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
 {
-   gfn_t   *gfnPrevious = 0, *gfnNext;
+   gfndivisor_t   *gfnPrevious = 0, *gfnNext;
    char     line[BUFFER_SIZE], temp[20], *ptr;
    int      countScanned;
    int      hasGFNs, searchedForGFNDivisors;
    char     childName[50], residue[50], program[50], programVersion[50];
-   char     prover[50], proverVersion[50], tempDivisor[BUFFER_SIZE];
+   char     prover[50], proverVersion[50];
 
    strcpy(line, lineIn.c_str());
 
@@ -386,11 +386,11 @@ void     PrimeWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
          exit(-1);
       }
 
-      gfnNext = new gfn_t;
+      gfnNext = new gfndivisor_t;
       if (!gfnPrevious)
          ip_FirstGFN = gfnNext;
       else
-         gfnPrevious->m_NextGFN = gfnNext;
+         gfnPrevious->m_NextGFNDivisor = gfnNext;
 
       ptr = strstr(line, ": ");
       if (!ptr)
@@ -399,10 +399,9 @@ void     PrimeWorkUnitTest::Load(FILE *saveFile, string lineIn, string prefix)
          exit(-1);
       }
     
-      sscanf(ptr+2, "%s", tempDivisor);
+      sscanf(ptr+2, "%s", gfnNext->s_Divisor);
 
-      gfnNext->s_Divisor = tempDivisor;
-      gfnNext->m_NextGFN = NULL;
+      gfnNext->m_NextGFNDivisor = NULL;
       gfnPrevious = gfnNext;
    }
 }

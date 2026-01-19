@@ -378,12 +378,28 @@ void     CandidateTestResult::LogResults(int32_t socketID, CandidateTestResult *
 void     CandidateTestResult::InsertUserPrime(double decimalLength, bool showOnWebPage,
                                               int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD)
 {
-   SQLStatement *sqlStatement;
-   int64_t theTime;
+   SQLStatement  *sqlStatement;
+   int64_t        theTime;
+   int32_t        theCount = 0;
+   const char* selectSQL = "select count(*) from UserPrimes where CandidateName = ? and TestedNumber = ?";
    const char *insertSQL = "insert into UserPrimes " \
                            "( UserID, CandidateName, TestedNumber, TestResult, MachineID, InstanceID, TeamID, " \
                            "  DecimalLength, DateReported, ShowOnWebPage, k, b, n, c, d) " \
                            "values ( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )";
+
+   if (!ib_HaveSQLError)
+   {
+      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
+      sqlStatement->BindInputParameter(is_ParentName, NAME_LENGTH);
+      sqlStatement->BindInputParameter(is_ChildName, NAME_LENGTH);
+
+      sqlStatement->BindSelectedColumn(&theCount);
+
+      sqlStatement->FetchRow(true);
+
+      if (theCount > 0)
+         return;
+   }
 
    theTime = time(NULL);
 

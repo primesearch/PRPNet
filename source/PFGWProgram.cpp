@@ -129,6 +129,8 @@ testresult_t   PFGWProgram::ParseTestResults(testtype_t testType)
    FILE       *fp;
    testresult_t rCode;
    int         tryCount = 0;
+   int32_t     theN;
+   int64_t     theK;
 
    id_Seconds = 0;
 
@@ -200,13 +202,12 @@ testresult_t   PFGWProgram::ParseTestResults(testtype_t testType)
          pos = strstr(line, "is a Factor of");
          if (pos)
          {
+            sscanf(line, "%" PRId64"*2^%u+1", &theK, &theN);
             ptr = strchr(line, '!');
             *ptr = 0;
 
             ip_Log->LogMessage("%s: %s", is_Suffix.c_str(), line);
-
-            pos[14] = 0;
-            AddGFNToList(&pos[15]);
+            AddGFNToList(theN, theK, line);
          }
       } while (fgets(line, sizeof(line), fp));
 
@@ -289,26 +290,26 @@ testresult_t   PFGWProgram::ParseTestResults(testtype_t testType)
    return TR_COMPLETED;
 }
 
-void  PFGWProgram::AddGFNToList(string divisor)
+void  PFGWProgram::AddGFNToList(int32_t n, int64_t k, char* divisor)
 {
-   gfn_t   *gfnPtr, *listPtr;
+   gfndivisor_t   *gfndPtr, *listPtr;
 
-   gfnPtr = (gfn_t *) malloc(sizeof(gfn_t));
-   gfnPtr->m_NextGFN = 0;
-   gfnPtr->s_Divisor = divisor;
+   gfndPtr = (gfndivisor_t *) malloc(sizeof(gfndivisor_t));
+   gfndPtr->m_NextGFNDivisor = 0;
+   strcpy(gfndPtr->s_Divisor, divisor);
 
    if (!ip_FirstGFN)
    {
-      ip_FirstGFN = gfnPtr;
+      ip_FirstGFN = gfndPtr;
       return;
    }
 
    listPtr = ip_FirstGFN;
 
-   while (listPtr->m_NextGFN)
-      listPtr = (gfn_t *) listPtr->m_NextGFN;
+   while (listPtr->m_NextGFNDivisor)
+      listPtr = (gfndivisor_t *) listPtr->m_NextGFNDivisor;
 
-   listPtr->m_NextGFN = gfnPtr;
+   listPtr->m_NextGFNDivisor = gfndPtr;
 }
 
 void  PFGWProgram::DetermineVersion(void)
@@ -413,4 +414,57 @@ void  PFGWProgram::DetermineDecimalLength(void)
    if (ii_DecimalLength > 0)
       ii_DecimalLength -= (int32_t) (is_WorkUnitName.length() + 2);
 
+}
+
+testresult_t  PFGWProgram::PRPTest(char *fileName)
+{
+   char  command[200], line[200];
+   FILE* fp;
+   bool  isCompleted = false;
+
+   snprintf(command, 200, "%s %s", is_ExeName.c_str(), fileName);
+
+   system(command);
+
+   fp = fopen("pfgw.ini", "r");
+   if (!fp)
+   {
+      printf("Could not open pfgw.ini.  File not found.\n");
+      exit(0);
+   }
+
+   while (fgets(line, sizeof(line), fp) != 0)
+   {
+      if (!memcmp(line, "CurFileProcessing=false", 23))
+         isCompleted = true;
+   }
+
+   if (!isCompleted)
+   {
+      ip_Log->LogMessage("%s: Could not find completion line in pfgw.ini.  Assuming user stopped with ^C",
+         is_Suffix.c_str(), fileName);
+#ifdef WIN32
+      SetQuitting(1);
+#else
+      raise(SIGINT);
+#endif
+      return TR_CANCELLED;
+   }
+
+   return TR_COMPLETED;
+}
+
+testresult_t PFGWProgram::GFNDivisibilityTest(char *fileName)
+{
+   char  command[200];
+
+   is_OutFileName = "gfn.out";
+
+   snprintf(command, 200, "%s -gxo -l%s %s", is_ExeName.c_str(), "gfn.out", fileName);
+
+   ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
+
+   system(command);
+
+   return ParseTestResults(TT_GFN);
 }

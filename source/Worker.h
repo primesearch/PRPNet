@@ -14,7 +14,7 @@
 #include "TestingProgramFactory.h"
 #include "WorkUnitTestFactory.h"
 #include "workunit.h"
-#include "gfn.h"
+#include "gfndivisor.h"
 
 // Return options
 #define RO_UNDEFINED       0

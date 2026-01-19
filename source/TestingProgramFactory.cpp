@@ -7,13 +7,15 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
    char    line[2001];
    string  cpuAffinity = "";
 
-   ip_LLRProgram = NULL;
-   ip_PhrotProgram = NULL;
-   ip_PFGWProgram = NULL;
-   ip_GeneferProgram = NULL;
-   ip_CycloProgram = NULL;
-   ip_WWWWProgram = NULL;
-   ip_PRSTProgram = NULL;
+   ip_LLRProgram = nullptr;
+   ip_PhrotProgram = nullptr;
+   ip_PFGWProgram = nullptr;
+   ip_GeneferProgram = nullptr;
+   ip_CycloProgram = nullptr;
+   ip_WWWWProgram = nullptr;
+   ip_PRSTProgram = nullptr;
+   ip_DMDivisorProgram = nullptr;
+   ip_GFNDivisorProgram = nullptr;
 
    fp = fopen(configFile.c_str(), "r");
 
@@ -32,7 +34,7 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
          ip_PFGWProgram = new PFGWProgram(theLog, line+8);
       else if (!memcmp(line, "wwwwexe=", 8) && strlen(line) > 8)
          ip_WWWWProgram = new WWWWProgram(theLog, line+8);
-      else if (!memcmp(line, "cycloexe=", 8) && strlen(line) > 8)
+      else if (!memcmp(line, "cycloexe=", 9) && strlen(line) > 9)
          ip_CycloProgram = new CycloProgram(theLog, line+9);
       else if (!memcmp(line, "geneferexe=", 11) && strlen(line) > 11)
       {
@@ -41,6 +43,10 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
          
          ip_GeneferProgram->AddProgram(line+11);
       }
+      else if (!memcmp(line, "dmdsieveexe=", 12) && strlen(line) > 12)
+         ip_DMDivisorProgram = new DMDivisorProgram(theLog, line + 12);
+      else if (!memcmp(line, "gfndsieveexe=", 13) && strlen(line) > 13)
+         ip_GFNDivisorProgram = new GFNDivisorProgram(theLog, line + 13);
       else if (!memcmp(line, "normalpriority=", 15) && strlen(line) > 15)
          normalPriority = atoi(line+15);
       else if (!memcmp(line, "cpuaffinity=", 12) && strlen(line) > 12)
@@ -58,13 +64,15 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
 
 TestingProgramFactory::~TestingProgramFactory()
 {
-   if (ip_LLRProgram)     delete ip_LLRProgram;
-   if (ip_PhrotProgram)   delete ip_PhrotProgram;
-   if (ip_PFGWProgram)    delete ip_PFGWProgram;
-   if (ip_PRSTProgram)    delete ip_PRSTProgram;
-   if (ip_GeneferProgram) delete ip_GeneferProgram;
-   if (ip_CycloProgram)   delete ip_CycloProgram;
-   if (ip_WWWWProgram)    delete ip_WWWWProgram;
+   if (ip_LLRProgram)        delete ip_LLRProgram;
+   if (ip_PhrotProgram)      delete ip_PhrotProgram;
+   if (ip_PFGWProgram)       delete ip_PFGWProgram;
+   if (ip_PRSTProgram)       delete ip_PRSTProgram;
+   if (ip_GeneferProgram)    delete ip_GeneferProgram;
+   if (ip_CycloProgram)      delete ip_CycloProgram;
+   if (ip_WWWWProgram)       delete ip_WWWWProgram;
+   if (ip_DMDivisorProgram)  delete ip_DMDivisorProgram;
+   if (ip_GFNDivisorProgram) delete ip_GFNDivisorProgram;
 }
 
 bool     TestingProgramFactory::ValidatePrograms(void)
@@ -72,43 +80,55 @@ bool     TestingProgramFactory::ValidatePrograms(void)
    if (ip_LLRProgram && !ip_LLRProgram->ValidateExe())
    {
       delete ip_LLRProgram;
-      ip_LLRProgram = 0;
+      ip_LLRProgram = nullptr;
    }
 
    if (ip_PRSTProgram && !ip_PRSTProgram->ValidateExe())
    {
       delete ip_PRSTProgram;
-      ip_PRSTProgram = 0;
+      ip_PRSTProgram = nullptr;
    }
 
    if (ip_PhrotProgram && !ip_PhrotProgram->ValidateExe())
    {
       delete ip_PhrotProgram;
-      ip_PhrotProgram = 0;
+      ip_PhrotProgram = nullptr;
    }
 
    if (ip_PFGWProgram && !ip_PFGWProgram->ValidateExe())
    {
       delete ip_PFGWProgram;
-      ip_PFGWProgram = 0;
+      ip_PFGWProgram = nullptr;
    }
 
    if (ip_GeneferProgram && !ip_GeneferProgram->ValidateExe())
    {
       delete ip_GeneferProgram;
-      ip_GeneferProgram = 0;
+      ip_GeneferProgram = nullptr;
    }
    
    if (ip_CycloProgram && !ip_CycloProgram->ValidateExe())
    {
       delete ip_CycloProgram;
-      ip_CycloProgram = 0;
+      ip_CycloProgram = nullptr;
    }
 
    if (ip_WWWWProgram && !ip_WWWWProgram->ValidateExe())
    {
       delete ip_WWWWProgram;
-      ip_WWWWProgram = 0;
+      ip_WWWWProgram = nullptr;
+   }
+
+   if (ip_GFNDivisorProgram && !ip_GFNDivisorProgram->ValidateExe())
+   {
+      delete ip_GFNDivisorProgram;
+      ip_GFNDivisorProgram = nullptr;
+   }
+
+   if (ip_DMDivisorProgram && !ip_DMDivisorProgram->ValidateExe())
+   {
+      delete ip_DMDivisorProgram;
+      ip_DMDivisorProgram = nullptr;
    }
 
    if (!ip_LLRProgram && !ip_PhrotProgram && !ip_PFGWProgram && !ip_GeneferProgram && !ip_PRSTProgram && !ip_CycloProgram && !ip_WWWWProgram)
@@ -122,13 +142,15 @@ bool     TestingProgramFactory::ValidatePrograms(void)
 
 void     TestingProgramFactory::SendPrograms(Socket *theSocket)
 {
-   if (ip_LLRProgram)      ip_LLRProgram->SendStandardizedName(theSocket, false);
-   if (ip_PRSTProgram)     ip_PRSTProgram->SendStandardizedName(theSocket, false);
-   if (ip_LLRProgram)      ip_LLRProgram->SendStandardizedName(theSocket, false);
-   if (ip_PFGWProgram)     ip_PFGWProgram->SendStandardizedName(theSocket, false);
-   if (ip_GeneferProgram)  ip_GeneferProgram->SendStandardizedName(theSocket, false);
-   if (ip_CycloProgram)    ip_CycloProgram->SendStandardizedName(theSocket, false);
-   if (ip_WWWWProgram)     ip_WWWWProgram->SendStandardizedName(theSocket, false);
+   if (ip_LLRProgram)         ip_LLRProgram->SendStandardizedName(theSocket, false);
+   if (ip_PRSTProgram)        ip_PRSTProgram->SendStandardizedName(theSocket, false);
+   if (ip_LLRProgram)         ip_LLRProgram->SendStandardizedName(theSocket, false);
+   if (ip_PFGWProgram)        ip_PFGWProgram->SendStandardizedName(theSocket, false);
+   if (ip_GeneferProgram)     ip_GeneferProgram->SendStandardizedName(theSocket, false);
+   if (ip_CycloProgram)       ip_CycloProgram->SendStandardizedName(theSocket, false);
+   if (ip_WWWWProgram)        ip_WWWWProgram->SendStandardizedName(theSocket, false);
+   if (ip_GFNDivisorProgram)  ip_GFNDivisorProgram->SendStandardizedName(theSocket, false);
+   if (ip_DMDivisorProgram)   ip_DMDivisorProgram->SendStandardizedName(theSocket, false);
 }
 
 void     TestingProgramFactory::SetNumber(int32_t serverType, string suffix, string workUnitName,

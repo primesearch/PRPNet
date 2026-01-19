@@ -1,0 +1,44 @@
+// This file contains rates for factor removal for dmdsieve/dmdsievecl before
+// sieving stops and DM divisibility testing begins.
+//
+// This file can contain a variable number of lines.  The format is as follows:
+//    rate=<n>:<factorsPerSecond>:<secondsPerFactor>:<minutesForRate>
+//
+//    n -> the n for using this row
+//    factorsPerSecond -> passes a value with the -4 switch to dmdsieve/dmdsievecl
+//    secondsPerFactor -> passes a value with the -5 switch to dmdsieve/dmdsievecl
+//    minutesForRate -> passes a value with the -6 switch to dmdsieve/dmdsievecl
+//
+// When updating this file, the rates should be based upon how quickly dmdsieve/dmdsievecl
+// can do a DM divisibility test. 
+//
+// Note: n should be ascending to guarantee consistent behaviors
+//
+// Note: If n is not in this file, the default value from dmdsieve/dmdsievecl will be 
+//       used.  That default value might be 0.  These are the values hard-coded into
+//       dmdsieve/dmdsievecl v1.8.7.
+//
+// Note: minutesForRate will default to 1 if factorsPerSecond > 0.
+
+rate=00013:5000000:0:1
+rate=00017:4000000:0:1
+rate=00019:3000000:0:1
+rate=00031:1000000:0:1
+rate=00061:0400000:0:1
+rate=00089:0200000:0:1
+rate=00107:0100000:0:1
+rate=00127:0080000:0:1
+rate=00521:0020000:0:1
+rate=00607:0009000:0:1
+rate=01279:0001800:0:1
+rate=02203:0000500:0:1
+rate=02281:0000400:0:1
+rate=03217:0000200:0:1
+rate=04253:0000080:0:1
+rate=04423:0000070:0:1
+rate=09689:0000010:0:1
+rate=09941:0000009:0:1
+rate=11213:0000008:0:1
+rate=19937:0000004:0:1
+rate=21701:0000002:0:1
+rate=23209:0000002:0:1

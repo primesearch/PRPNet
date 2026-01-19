@@ -16,6 +16,8 @@
 #include "HyperCullenWoodallStatsUpdater.h"
 #include "WWWWStatsUpdater.h"
 #include "WagstaffStatsUpdater.h"
+#include "DMDivisorStatsUpdater.h"
+#include "GFNDivisorStatsUpdater.h"
 
 StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *theLog, int32_t serverType, bool needsDoubleCheck)
 {
@@ -94,6 +96,14 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
       case ST_WALLSUNSUN:
       case ST_WOLSTENHOLME:
          theUpdater = new WWWWStatsUpdater();
+         break;
+
+      case ST_GFNDIVISOR:
+         theUpdater = new GFNDivisorStatsUpdater();
+         break;
+
+      case ST_DMDIVISOR:
+         theUpdater = new DMDivisorStatsUpdater();
          break;
 
       default:

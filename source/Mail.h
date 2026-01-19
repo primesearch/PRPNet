@@ -22,9 +22,9 @@ public:
    virtual void MailLowWorkNotification(const int32_t daysLeft) = 0;
 
 protected:
-   bool     NewMessage(const string &toEmailID, const string &subject, ...);
+   bool     NewMessage(const string &toEmailID, const string subject, ...);
 
-   void     AppendLine(int32_t newLines, const string &line, ...);
+   void     AppendLine(int32_t newLines, const string line, ...);
 
    bool     SendMessage(void);
 

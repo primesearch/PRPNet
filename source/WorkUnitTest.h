@@ -12,7 +12,7 @@
 #include "Socket.h"
 #include "TestingProgramFactory.h"
 #include "workunit.h"
-#include "gfn.h"
+#include "gfndivisor.h"
 #include "wwww.h"
 
 enum wutstate_t { WUT_NOTSTARTED = 1, WUT_INPROGRESS, WUT_COMPLETED };
@@ -30,6 +30,8 @@ public:
    string   GetProgramVersion(void)    { return is_ProgramVersion;  };
    double   GetSeconds(void)           { return id_Seconds;         };
    int32_t  GetDecimalLength(void)     { return ii_DecimalLength;   };
+   bool     DoesFileExist(char* fileName);
+   void     DeleteIfExists(char* fileName);
 
    virtual bool     TestWorkUnit(WorkUnitTest *masterWorkUnit) { return false; };
    virtual void     SendResults(Socket *theSocket) {};

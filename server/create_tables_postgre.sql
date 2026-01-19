@@ -17,6 +17,13 @@ drop table WWWWGroupStats cascade;
 drop table WWWWRangeTestResult cascade;
 drop table WWWWRangeTest cascade;
 drop table WWWWRange cascade;
+drop table GFNDivisor cascade;
+drop table GFNDRangeTest cascade;
+drop table GFNDRange cascade;
+drop table DMDivisor cascade;
+drop table DMDRangeTest cascade;
+drop table DMDRange cascade;
+
 
 create table UserStats (
    UserID                  varchar(200)      not null,
@@ -257,3 +264,78 @@ create table WWWWGroupStats (
    NearWWWWPrimes          int               default 0
 );
 
+create table GFNDRange (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   rangeStatus             int               default 0 not null,
+   divisors                int               default 0 not null,
+   lastUpdateTime          bigint
+);
+
+create unique index pk_GFNDRange on GFNDRange (n, kMin);
+
+create table GFNDRangeTest (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   testID                  bigint            not null,
+   emailID                 varchar(200),
+   userID                  varchar(200),
+   machineID               varchar(200),
+   instanceID              varchar(200),
+   secondsToTestRange      double            default 0,
+   searchingProgram        varchar(50),
+   searchingProgramVersion varchar(50)
+);
+
+create unique index pk_GFNDRangeTest on GFNDRangeTest (n, kMin, testId);
+
+create table GFNDivisor (
+   divisor                 varchar(200),
+   emailID                 varchar(200),
+   userID                  varchar(200),
+   machineID               varchar(200),
+   instanceID              varchar(200),
+   dateReported            bigint            not null
+);
+
+create unique index pk_GFNDivisor on GFNDivisor (divisor);
+
+create table DMDRange (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   rangeStatus             int               default 0 not null,
+   divisors                int               default 0 not null,
+   lastUpdateTime          bigint,
+);
+
+create unique index pk_DMDRange on DMDRange (n, kMin);
+
+create table DMDRangeTest (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   testID                  bigint            not null,
+   emailID                 varchar(200),
+   userID                  varchar(200),
+   machineID               varchar(200),
+   instanceID              varchar(200),
+   secondsToTestRange      double            default 0,
+   searchingProgram        varchar(50),
+   searchingProgramVersion varchar(50)
+);
+
+create unique index pk_DMDRangeTest on DMDRangeTest (n, kMin, testId);
+
+create table DMDivisor (
+   divisor                 varchar(200),
+   emailID                 varchar(200),
+   userID                  varchar(200),
+   machineID               varchar(200),
+   instanceID              varchar(200),
+   dateReported            bigint            not null
+);
+
+create unique index pk_DMDivisor on DMDivisor (divisor);

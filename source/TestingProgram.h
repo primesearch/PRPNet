@@ -9,7 +9,7 @@
 #include <signal.h>
 #include "defs.h"
 #include "Log.h"
-#include "gfn.h"
+#include "gfndivisor.h"
 #include "Socket.h"
 
 #ifdef WIN32
@@ -52,7 +52,7 @@ public:
 
    int32_t     GetDecimalLength(void) { return ii_DecimalLength; };
 
-   gfn_t      *GetGFNList(void) { return ip_FirstGFN; };
+   gfndivisor_t      *GetGFNList(void) { return ip_FirstGFN; };
 
    bool        ValidateExe(void);
 
@@ -67,6 +67,10 @@ public:
    virtual string GetStandardizedName(void) { return ""; };
 
    virtual void DetermineVersion(void) {};
+
+   bool         DoesFileExist(char* fileName);
+
+   void         SetSuffix(string suffix) { is_Suffix = suffix; };
 
 protected:
    Log        *ip_Log;
@@ -105,7 +109,7 @@ protected:
    bool        ib_TestFailure;
    bool        ib_DeleteCheckpoint;
 
-   gfn_t      *ip_FirstGFN;
+   gfndivisor_t      *ip_FirstGFN;
 };
 
 #endif // #ifndef _TestingProgram_

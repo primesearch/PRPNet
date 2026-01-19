@@ -12,6 +12,8 @@
 #include "GeneferProgram.h"
 #include "CycloProgram.h"
 #include "WWWWProgram.h"
+#include "GFNDivisorProgram.h"
+#include "DMDivisorProgram.h"
 
 class TestingProgramFactory
 {
@@ -32,22 +34,26 @@ public:
    TestingProgram *GetPrimalityTestingProgram(int32_t serverType,
                                               uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD);
 
-   LLRProgram     *GetLLRProgram(void)     { return ip_LLRProgram;     };
-   PFGWProgram    *GetPFGWProgram(void)    { return ip_PFGWProgram;    };
-   PhrotProgram   *GetPhrotProgram(void)   { return ip_PhrotProgram;   };
-   GeneferProgram *GetGeneferProgram(void) { return ip_GeneferProgram; };
-   CycloProgram   *GetCycloProgram(void)   { return ip_CycloProgram;   };
-   WWWWProgram    *GetWWWWProgram(void)    { return ip_WWWWProgram;    };
+   LLRProgram        *GetLLRProgram(void)        { return ip_LLRProgram;        };
+   PFGWProgram       *GetPFGWProgram(void)       { return ip_PFGWProgram;       };
+   PhrotProgram      *GetPhrotProgram(void)      { return ip_PhrotProgram;      };
+   GeneferProgram    *GetGeneferProgram(void)    { return ip_GeneferProgram;    };
+   CycloProgram      *GetCycloProgram(void)      { return ip_CycloProgram;      };
+   WWWWProgram       *GetWWWWProgram(void)       { return ip_WWWWProgram;       };
+   GFNDivisorProgram *GetGFNDivisorProgram(void) { return ip_GFNDivisorProgram; };
+   DMDivisorProgram  *GetDMDivisorProgram(void)  { return ip_DMDivisorProgram;  };
 
 private:
 
-   LLRProgram     *ip_LLRProgram;
-   PFGWProgram    *ip_PFGWProgram;
-   PhrotProgram   *ip_PhrotProgram;
-   GeneferProgram *ip_GeneferProgram;
-   CycloProgram   *ip_CycloProgram;
-   PRSTProgram    *ip_PRSTProgram;
-   WWWWProgram    *ip_WWWWProgram;
+   LLRProgram        *ip_LLRProgram;
+   PFGWProgram       *ip_PFGWProgram;
+   PhrotProgram      *ip_PhrotProgram;
+   GeneferProgram    *ip_GeneferProgram;
+   CycloProgram      *ip_CycloProgram;
+   PRSTProgram       *ip_PRSTProgram;
+   WWWWProgram       *ip_WWWWProgram;
+   GFNDivisorProgram *ip_GFNDivisorProgram;
+   DMDivisorProgram  *ip_DMDivisorProgram;
 };
 
 #endif // #ifndef _TestingProgramFactory_

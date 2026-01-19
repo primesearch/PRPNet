@@ -90,6 +90,24 @@
     <ClCompile Include="PRSTProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GFNDivisorProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DMDivisorProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DMDivisorWorkUnitTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GFNDivisorWorkUnitTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GFNDivisorWorker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DMDivisorWorker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="client.h">
@@ -102,9 +120,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneferProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gfn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LLRProgram.h">
@@ -177,6 +192,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PRSTProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GFNDivisorProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DMDivisorProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dmdivisor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GFNDivisorWorkUnitTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DMDivisorWorkUnitTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfndivisor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GFNDivisorWorker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DMDivisorWorker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

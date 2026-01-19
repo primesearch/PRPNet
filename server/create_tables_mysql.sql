@@ -17,6 +17,12 @@ drop table if exists WWWWGroupStats;
 drop table if exists WWWWRangeTestResult;
 drop table if exists WWWWRangeTest;
 drop table if exists WWWWRange;
+drop table if exists GFNDivisor;
+drop table if exists GFNDRangeTest;
+drop table if exists GFNDRange;
+drop table if exists DMDRangeTest;
+drop table if exists DMDivisor;
+drop table if exists DMDRange;
 
 create table UserStats (
    UserID                  varchar(200)   collate latin1_bin,
@@ -241,4 +247,76 @@ create table WWWWGroupStats (
    LeadingEdge             bigint         default 0,
    WWWWPrimes              int            default 0,
    NearWWWWPrimes          int            default 0
+) ENGINE=InnoDB;
+
+create table GFNDRange (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   rangeStatus             int               default 0 not null,
+   divisors                int               default 0 not null,
+   lastUpdateTime          bigint,
+   primary key (n, kMin)
+) ENGINE=InnoDB;
+
+create table GFNDRangeTest (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   testID                  bigint            not null,
+   emailID                 varchar(200)      collate latin1_bin,
+   userID                  varchar(200)      collate latin1_bin,
+   machineID               varchar(200)      collate latin1_bin,
+   instanceID              varchar(200)      collate latin1_bin,
+   secondsToTestRange      double            default 0,
+   searchingProgram        varchar(50)       collate latin1_bin,
+   searchingProgramVersion varchar(50)       collate latin1_bin,
+   primary key (n, kMin, testID),
+   foreign key (n, kMin) references GFNDRange (n, kMin) on delete restrict
+) ENGINE=InnoDB;
+
+create table GFNDivisor (
+   divisor                 varchar(200)      collate latin1_bin,
+   emailID                 varchar(200)      collate latin1_bin,
+   userID                  varchar(200)      collate latin1_bin,
+   machineID               varchar(200)      collate latin1_bin,
+   instanceID              varchar(200)      collate latin1_bin,
+   dateReported            bigint            not null,
+   primary key (divisor)
+) ENGINE=InnoDB;
+
+create table DMDRange (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   divisors                int               default 0 not null,
+   rangeStatus             int               default 0 not null,
+   lastUpdateTime          bigint,
+   primary key (n, kMin)
+) ENGINE=InnoDB;
+
+create table DMDRangeTest (
+   n                       int               not null,
+   kMin                    bigint            not null,
+   kMax                    bigint            not null,
+   testID                  bigint            not null,
+   emailID                 varchar(200)      collate latin1_bin,
+   userID                  varchar(200)      collate latin1_bin,
+   machineID               varchar(200)      collate latin1_bin,
+   instanceID              varchar(200)      collate latin1_bin,
+   secondsToTestRange      double            default 0,
+   searchingProgram        varchar(50)       collate latin1_bin,
+   searchingProgramVersion varchar(50)       collate latin1_bin,
+   primary key (n, kMin, testID),
+   foreign key (n, kMin) references DMDRange (n, kMin) on delete restrict
+) ENGINE=InnoDB;
+
+create table DMNDivisor (
+   divisor                 varchar(200)      collate latin1_bin,
+   emailID                 varchar(200)      collate latin1_bin,
+   userID                  varchar(200)      collate latin1_bin,
+   machineID               varchar(200)      collate latin1_bin,
+   instanceID              varchar(200)      collate latin1_bin,
+   dateReported            bigint            not null,
+   primary key (divisor)
 ) ENGINE=InnoDB;

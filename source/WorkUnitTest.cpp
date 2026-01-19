@@ -1,5 +1,4 @@
 #include "WorkUnitTest.h"
-#include "gfn.h"
 
 WorkUnitTest::WorkUnitTest(Log *theLog, int32_t serverType, string workSuffix, workunit_t *wu)
 {
@@ -13,4 +12,29 @@ WorkUnitTest::WorkUnitTest(Log *theLog, int32_t serverType, string workSuffix, w
    iwut_Result = R_UNKNOWN;
    ip_NextWorkUnitTest = NULL;
    id_Seconds = 0.0;
+}
+
+bool WorkUnitTest::DoesFileExist(char* fileName)
+{
+   FILE* fp;
+
+   fp = fopen(fileName, "r");
+   if (!fp)
+      return false;
+
+   fclose(fp);
+   return true;
+}
+
+void WorkUnitTest::DeleteIfExists(char* fileName)
+{
+   FILE* fp;
+
+   fp = fopen(fileName, "r");
+   if (!fp)
+      return;
+
+   fclose(fp);
+
+   unlink(fileName);
 }

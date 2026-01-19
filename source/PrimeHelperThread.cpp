@@ -4,7 +4,7 @@
 #include "LengthCalculator.h"
 #include "SQLStatement.h"
 #include "StatsUpdaterFactory.h"
-#include "StatsUpdater.h"
+#include "PrimeStatsUpdater.h"
 #include "PrimeWorkSender.h"
 #include "PrimeWorkReceiver.h"
 
@@ -66,7 +66,7 @@ void      PrimeHelperThread::AdminABCFile(void)
    ABCParser *abcParser;
    LengthCalculator *lengthCalculator;
    StatsUpdaterFactory *suf;
-   StatsUpdater *su;
+   PrimeStatsUpdater *su;
    int32_t    totalEntries, newEntries, badEntries, dupEntries, failedInserts;
    int32_t    countFound;
    int64_t    theK, theC;
@@ -85,7 +85,7 @@ void      PrimeHelperThread::AdminABCFile(void)
    }
 
    suf = new StatsUpdaterFactory();
-   su = suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ip_Globals->b_NeedsDoubleCheck);
+   su = (PrimeStatsUpdater *) suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ip_Globals->b_NeedsDoubleCheck);
    delete suf;
 
    selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);

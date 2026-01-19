@@ -7,7 +7,6 @@ This is a list of future features to be considered for PRPNet.
 
 3)  Complete support for Cunningham Chain searches.
 
-4)  Add ability to delete by k < or n < from prpadmin.
+4)  Complete support for GFN divisor and DM divisor searches.
 
-If you have anything else you would like to see added, please contact me at
-rogue@wi.rr.com.
+If you have anything else you would like to see added, please contact me at roguemgr@gmail.com.

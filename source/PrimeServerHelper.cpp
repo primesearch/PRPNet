@@ -3,6 +3,7 @@
 #include "ABCParser.h"
 #include "LengthCalculator.h"
 #include "StatsUpdaterFactory.h"
+#include "PrimeStatsUpdater.h"
 
 int32_t   PrimeServerHelper::ComputeHoursRemaining(void)
 {
@@ -174,7 +175,7 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    SQLStatement* selectStatement;
    LengthCalculator* lengthCalculator;
    StatsUpdaterFactory* suf;
-   StatsUpdater* su;
+   PrimeStatsUpdater* su;
    int32_t    totalEntries, newEntries, badEntries, dupEntries, failedInserts;
    int32_t    countFound;
    int64_t    theK, theC;
@@ -196,7 +197,7 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    }
 
    suf = new StatsUpdaterFactory();
-   su = suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ib_NeedsDoubleCheck);
+   su = (PrimeStatsUpdater *) suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ib_NeedsDoubleCheck);
    delete suf;
 
    selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);

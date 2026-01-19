@@ -1,0 +1,36 @@
+// This file contains rates for factor removal for gfndsieve/gfndsievecl before
+// sieving stops and PRP testing begins.
+//
+// This file can contain a variable number of lines.  The format is as follows:
+//    rate=<n>:<factorsPerSecond>:<secondsPerFactor>:<minutesForRate>
+//
+//    n -> the n for using this row
+//    factorsPerSecond -> passes a value with the -4 switch to gfndsieve/gfndsievecl
+//    secondsPerFactor -> passes a value with the -5 switch to gfndsieve/gfndsievecl
+//    minutesForRate -> passes a value with the -6 switch to gfndsieve/gfndsievecl
+//
+// When updating this file, the rates should be based upon how quickly gfndsieve/gfndsievecl
+// can do a DM divisibility test. 
+//
+// Note: The search will stop when input n > the n on the rate.
+//
+// Note: If n is above the max n in this file, the default value from gfndsieve/gfndsievecl
+//       will be used. That default value in  might be 0.  These are the values hard-coded
+//       into gfndsieve/gfndsievecl v2.4.1.
+//
+// Note: minutesForRate will default to 1 if factorsPerSecond > 0.
+
+rate=005000:71:0:1
+rate=010000:36:0:1
+rate=015000:18:0:1
+rate=020000:10:0:1
+rate=025000:07:0:1
+rate=030000:05:0:1
+rate=035000:04:0:1
+rate=040000:02:0:1
+rate=050000:01:0:5
+rate=060000:01:0:5
+rate=070000:00:2:5
+rate=080000:00:2:5
+rate=090000:00:2:5
+rate=100000:00:3:5

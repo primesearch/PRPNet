@@ -1,6 +1,8 @@
 #include "ServerHelperFactory.h"
 #include "PrimeServerHelper.h"
 #include "WWWWServerHelper.h"
+#include "DMDivisorServerHelper.h"
+#include "GFNDivisorServerHelper.h"
 
 ServerHelper  *ServerHelperFactory::GetServerHelper(globals_t *globals, DBInterface *dbInterface)
 {
@@ -33,6 +35,14 @@ ServerHelper  *ServerHelperFactory::GetServerHelper(globals_t *globals, DBInterf
       case ST_WALLSUNSUN:
       case ST_WOLSTENHOLME:
          serverHelper = new WWWWServerHelper(dbInterface, globals);
+         break;
+
+      case ST_GFNDIVISOR:
+         serverHelper = new GFNDivisorServerHelper(dbInterface, globals);
+         break;
+
+      case ST_DMDIVISOR:
+         serverHelper = new DMDivisorServerHelper(dbInterface, globals);
          break;
 
       default:

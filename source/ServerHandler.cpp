@@ -4,6 +4,8 @@
 #include "ServerHandler.h"
 #include "PrimeWorker.h"
 #include "WWWWWorker.h"
+#include "DMDivisorWorker.h"
+#include "GFNDivisorWorker.h"
 
 ServerHandler::ServerHandler(globals_t *globals, string serverConfiguration)
 {
@@ -266,6 +268,12 @@ Worker  *ServerHandler::AllocateWorker(int32_t serverType)
       case ST_WALLSUNSUN:
       case ST_WOLSTENHOLME:
          return new WWWWWorker(ip_Log, ip_TestingProgramFactory, ip_Socket, ii_MaxWorkUnits, is_WorkSuffix);
+
+      case ST_GFNDIVISOR:
+         return new GFNDivisorWorker(ip_Log, ip_TestingProgramFactory, ip_Socket, ii_MaxWorkUnits, is_WorkSuffix);
+
+      case ST_DMDIVISOR:
+         return new DMDivisorWorker(ip_Log, ip_TestingProgramFactory, ip_Socket, ii_MaxWorkUnits, is_WorkSuffix);
 
       case 0:
       case ST_SIERPINSKIRIESEL:

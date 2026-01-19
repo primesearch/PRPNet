@@ -11,7 +11,7 @@
 #include "WorkUnitTest.h"
 #include "TestingProgramFactory.h"
 #include "workunit.h"
-#include "gfn.h"
+#include "gfndivisor.h"
 
 class WorkUnitTest;
 
@@ -28,7 +28,7 @@ public:
    string   GetResidue(void)    { return is_Residue;    };
    string   GetProver(void)     { return is_Prover;     };
    bool     DidSearchForGFNDivisors(void) { return ib_SearchedForGFNDivisors; };
-   gfn_t   *GetGFNList(void)    { return ip_FirstGFN;    };
+   gfndivisor_t   *GetGFNList(void)    { return ip_FirstGFN;    };
 
    bool     TestWorkUnit(WorkUnitTest *masterWorkUnit);
    void     SendResults(Socket *theSocket);
@@ -55,7 +55,7 @@ protected:
 
    bool     ib_HadTestFailure;
    bool     ib_SearchedForGFNDivisors;
-   gfn_t   *ip_FirstGFN;
+   gfndivisor_t   *ip_FirstGFN;
 
 private:
    testresult_t   DoPRPTest(void);

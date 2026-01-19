@@ -523,7 +523,9 @@ void  ProcessDelayFile(string delayFile)
                if (gp_Globals->i_ServerType == ST_WIEFERICH ||
                    gp_Globals->i_ServerType == ST_WILSON ||
                    gp_Globals->i_ServerType == ST_WALLSUNSUN ||
-                   gp_Globals->i_ServerType == ST_WOLSTENHOLME) break;
+                   gp_Globals->i_ServerType == ST_WOLSTENHOLME ||
+                   gp_Globals->i_ServerType == ST_GFNDIVISOR ||
+                   gp_Globals->i_ServerType == ST_DMDIVISOR) break;
             }
 
             if (ii == 0)
@@ -595,6 +597,8 @@ bool     ValidateConfiguration(string smtpServer)
        gp_Globals->i_ServerType != ST_CAROLKYNEA       &&
        gp_Globals->i_ServerType != ST_HYPERCW          &&
        gp_Globals->i_ServerType != ST_GENERIC          &&
+       gp_Globals->i_ServerType != ST_GFNDIVISOR       &&
+       gp_Globals->i_ServerType != ST_DMDIVISOR        &&
        gp_Globals->i_ServerType != ST_WIEFERICH        &&
        gp_Globals->i_ServerType != ST_WILSON           &&
        gp_Globals->i_ServerType != ST_WALLSUNSUN       &&
@@ -629,6 +633,11 @@ bool     ValidateConfiguration(string smtpServer)
        gp_Globals->i_ServerType == ST_WOLSTENHOLME)
    {
       gp_Globals->s_SortSequence = "LowerPrime";
+   }
+   else if (gp_Globals->i_ServerType == ST_GFNDIVISOR ||
+      gp_Globals->i_ServerType == ST_DMDIVISOR)
+   {
+      gp_Globals->s_SortSequence = "n,minK";
    }
    else if (!length || length > 15 || !(length & 0x01))
    {

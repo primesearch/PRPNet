@@ -76,7 +76,7 @@ bool  TestingProgram::ValidateExe(void)
    return true;
 }
 
-bool TestingProgram::DoesFileExist(char* fileName)
+bool TestingProgram::DoesFileExist(const char* fileName)
 {
    FILE* fp;
 

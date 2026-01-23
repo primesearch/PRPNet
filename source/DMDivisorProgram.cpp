@@ -39,10 +39,10 @@ testresult_t   DMDivisorProgram::Execute(int32_t serverType, uint32_t n, uint64_
             if (gfnN == n)
             {
                if (factorsPerSecond > 0)
-                  sprintf(rate, "-4%u", factorsPerSecond);
+                  snprintf(rate, sizeof(rate), "-4%u", factorsPerSecond);
 
                if (secondsPerFactor > 0)
-                  sprintf(rate, "-5%u -6%u", secondsPerFactor, minutesForRate);
+                  snprintf(rate, sizeof(rate),  "-5%u -6%u", secondsPerFactor, minutesForRate);
             }
          }
       }

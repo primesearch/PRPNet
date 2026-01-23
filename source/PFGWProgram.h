@@ -18,9 +18,9 @@ public:
 
    void        DetermineVersion(void);
 
-   testresult_t   PRPTest(char* fileName);
+   testresult_t   PRPTest(const char* fileName);
 
-   testresult_t   GFNDivisibilityTest(char* fileName);
+   testresult_t   GFNDivisibilityTest(const char* fileName);
 
 private:
    testresult_t   ParseTestResults(testtype_t testType);

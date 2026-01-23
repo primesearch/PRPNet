@@ -14,7 +14,7 @@ WorkUnitTest::WorkUnitTest(Log *theLog, int32_t serverType, string workSuffix, w
    id_Seconds = 0.0;
 }
 
-bool WorkUnitTest::DoesFileExist(char* fileName)
+bool WorkUnitTest::DoesFileExist(const char* fileName)
 {
    FILE* fp;
 
@@ -26,7 +26,7 @@ bool WorkUnitTest::DoesFileExist(char* fileName)
    return true;
 }
 
-void WorkUnitTest::DeleteIfExists(char* fileName)
+void WorkUnitTest::DeleteIfExists(const char* fileName)
 {
    FILE* fp;
 

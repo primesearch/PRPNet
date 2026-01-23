@@ -416,7 +416,7 @@ void  PFGWProgram::DetermineDecimalLength(void)
 
 }
 
-testresult_t  PFGWProgram::PRPTest(char *fileName)
+testresult_t  PFGWProgram::PRPTest(const char *fileName)
 {
    char  command[200], line[200];
    FILE* fp;
@@ -454,7 +454,7 @@ testresult_t  PFGWProgram::PRPTest(char *fileName)
    return TR_COMPLETED;
 }
 
-testresult_t PFGWProgram::GFNDivisibilityTest(char *fileName)
+testresult_t PFGWProgram::GFNDivisibilityTest(const char *fileName)
 {
    char  command[200];
 

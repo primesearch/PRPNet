@@ -10,7 +10,7 @@ else
    UNAME_S := $(shell uname -s)
    
    ifeq ($(UNAME_S),Darwin)
-      LFLAGS_CLIENT=-lpthread -lstdc++
+      LFLAGS_CLIENT=-lpthread 
       LFLAGS_SERVER=-framework Carbon -lpthread -liodbc -lstdc++
       if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
    else
@@ -36,10 +36,12 @@ THREADOBJECTS=SharedMemoryItem.o ServerThread.o HelperThread.o WorkSender.o Work
 	PrimeWorkSender.o WWWWWorkSender.o PrimeWorkReceiver.o WWWWWorkReceiver.o \
 	PrimeHelperThread.o WWWWHelperThread.o CandidateTestResult.o KeepAliveThread.o
 PROGRAMOBJECTS=TestingProgram.o TestingProgramFactory.o PFGWProgram.o LLRProgram.o \
-	PhrotProgram.o GeneferProgram.o WWWWProgram.o CycloProgram.o PRSTProgram.o
-WORKEROBJECTS=ServerHandler.o Worker.o PrimeWorker.o WWWWWorker.o
+	PhrotProgram.o GeneferProgram.o WWWWProgram.o CycloProgram.o PRSTProgram.o \
+	DMDivisorProgram.o GFNDivisorProgram.o
+WORKEROBJECTS=ServerHandler.o Worker.o PrimeWorker.o WWWWWorker.o DMDivisorWorker.o GFNDivisorWorker.o
 WORKUNITOBJECTS=WorkUnitTestFactory.o WorkUnitTest.o MainWorkUnitTest.o \
-	TwinWorkUnitTest.o SophieGermainWorkUnitTest.o WWWWWorkUnitTest.o PrimeWorkUnitTest.o
+	TwinWorkUnitTest.o SophieGermainWorkUnitTest.o WWWWWorkUnitTest.o PrimeWorkUnitTest.o \
+	DMDivisorWorkUnitTest.o GFNDivisorWorkUnitTest.o
 
 
 ADMINOBJECTS=prpadmin.o Log.o Socket.o ClientSocket.o ABCParser.o SharedMemoryItem.o

@@ -38,9 +38,9 @@ public:
    void     SetNumber(int32_t serverType, string suffix, string workUnitName,
                       uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD);
 
-   virtual testresult_t   Execute(testtype_t testType) { return TR_CANCELLED; };
+   testresult_t   Execute(testtype_t testType) { return TR_CANCELLED; };
 
-   virtual testresult_t   ParseTestResults(testtype_t testType) { return TR_CANCELLED; };
+   testresult_t   ParseTestResults(testtype_t testType) { return TR_CANCELLED; };
 
    string      GetInternalProgramName(void) { return is_InternalProgramName; };
 
@@ -68,7 +68,7 @@ public:
 
    virtual void DetermineVersion(void) {};
 
-   bool         DoesFileExist(char* fileName);
+   bool         DoesFileExist(const char* fileName);
 
    void         SetSuffix(string suffix) { is_Suffix = suffix; };
 

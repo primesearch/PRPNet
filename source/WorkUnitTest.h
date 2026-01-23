@@ -30,8 +30,8 @@ public:
    string   GetProgramVersion(void)    { return is_ProgramVersion;  };
    double   GetSeconds(void)           { return id_Seconds;         };
    int32_t  GetDecimalLength(void)     { return ii_DecimalLength;   };
-   bool     DoesFileExist(char* fileName);
-   void     DeleteIfExists(char* fileName);
+   bool     DoesFileExist(const char* fileName);
+   void     DeleteIfExists(const char* fileName);
 
    virtual bool     TestWorkUnit(WorkUnitTest *masterWorkUnit) { return false; };
    virtual void     SendResults(Socket *theSocket) {};

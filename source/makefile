@@ -8,9 +8,9 @@ ifeq ($(OS),Windows_NT)
    LFLAGS_SERVER=-lpthread -liodbc -lstdc++
 else
    UNAME_S := $(shell uname -s)
-   
+
    ifeq ($(UNAME_S),Darwin)
-      LFLAGS_CLIENT=-lpthread 
+      LFLAGS_CLIENT=-lpthread
       LFLAGS_SERVER=-framework Carbon -lpthread -liodbc -lstdc++
       if test -f /usr/lib/libxnet.so; then LIBS=-lxnet $LIBS
    else
@@ -19,29 +19,18 @@ else
    endif
 endif
 
-HTMLOBJECTS=HTMLGeneratorFactory.o PrimeHTMLGenerator.o CullenWoodallHTML.o HyperCullenWoodallHTML.o \
-	SierpinskiRieselHTML.o FixedBKCHTML.o FixedBNCHTML.o GFNHTML.o LeylandHTML.o LifchitzHTML.o \
-	PrimorialHTML.o FactorialHTML.o MultiFactorialHTML.o SophieGermainHTML.o WWWWHTMLGenerator.o \
-   CyclotomicHTML.o GenericHTML.o HTMLGenerator.o CarolKyneaHTML.o WagstaffHTML.o MultiFactorialHTML.o
-STATSOBJECTS=StatsUpdaterFactory.o StatsUpdater.o MultiFactorialStatsUpdater.o FactorialStatsUpdater.o \
-	PrimorialStatsUpdater.o FixedBKCStatsUpdater.o FixedBNCStatsUpdater.o \
-	GFNStatsUpdater.o SierpinskiRieselStatsUpdater.o CullenWoodallStatsUpdater.o \
-	SophieGermainStatsUpdater.o PrimeStatsUpdater.o WWWWStatsUpdater.o LeylandStatsUpdater.o LifchitzStatsUpdater.o HyperCullenWoodallStatsUpdater.o \
-	CyclotomicStatsUpdater.o GenericStatsUpdater.o CarolKyneaStatsUpdater.o WagstaffStatsUpdater.o MultiFactorialStatsUpdater.o
-MAILOBJECTS=MailFactory.o Mail.o PrimeMail.o WWWWMail.o
-HELPEROBJECTS=ServerHelperFactory.o PrimeServerHelper.o WWWWServerHelper.o
+HTMLOBJECTS=HTMLGeneratorFactory.o $(patsubst %.cpp,%.o,$(wildcard *HTMLGenerator.cpp)) $(patsubst %.cpp,%.o,$(wildcard *HTML.cpp))
+STATSOBJECTS=StatsUpdaterFactory.o $(patsubst %.cpp,%.o,$(wildcard *StatsUpdater.cpp))
+MAILOBJECTS=MailFactory.o $(patsubst %.cpp,%.o,$(wildcard *Mail.cpp))
+HELPEROBJECTS=ServerHelperFactory.o $(patsubst %.cpp,%.o,$(wildcard *ServerHelper.cpp))
 SOCKETOBJECTS=Socket.o ServerSocket.o MailSocket.o HelperSocket.o
 DBOBJECTS=DBInterface.o SQLStatement.o
-THREADOBJECTS=SharedMemoryItem.o ServerThread.o HelperThread.o WorkSender.o WorkReceiver.o \
-	PrimeWorkSender.o WWWWWorkSender.o PrimeWorkReceiver.o WWWWWorkReceiver.o \
-	PrimeHelperThread.o WWWWHelperThread.o CandidateTestResult.o KeepAliveThread.o
-PROGRAMOBJECTS=TestingProgram.o TestingProgramFactory.o PFGWProgram.o LLRProgram.o \
-	PhrotProgram.o GeneferProgram.o WWWWProgram.o CycloProgram.o PRSTProgram.o \
-	DMDivisorProgram.o GFNDivisorProgram.o
-WORKEROBJECTS=ServerHandler.o Worker.o PrimeWorker.o WWWWWorker.o DMDivisorWorker.o GFNDivisorWorker.o
-WORKUNITOBJECTS=WorkUnitTestFactory.o WorkUnitTest.o MainWorkUnitTest.o \
-	TwinWorkUnitTest.o SophieGermainWorkUnitTest.o WWWWWorkUnitTest.o PrimeWorkUnitTest.o \
-	DMDivisorWorkUnitTest.o GFNDivisorWorkUnitTest.o
+THREADOBJECTS=SharedMemoryItem.o ServerThread.o CandidateTestResult.o KeepAliveThread.o \
+	$(patsubst %.cpp,%.o,$(wildcard *WorkSender.cpp)) $(patsubst %.cpp,%.o,$(wildcard *WorkReceiver.cpp)) \
+	$(patsubst %.cpp,%.o,$(wildcard *HelperThread.cpp))
+PROGRAMOBJECTS=TestingProgramFactory.o $(patsubst %.cpp,%.o,$(wildcard *Program.cpp))
+WORKEROBJECTS=ServerHandler.o $(patsubst %.cpp,%.o,$(wildcard *Worker.cpp))
+WORKUNITOBJECTS=WorkUnitTestFactory.o $(patsubst %.cpp,%.o,$(wildcard *WorkUnitTest.cpp))
 
 
 ADMINOBJECTS=prpadmin.o Log.o Socket.o ClientSocket.o ABCParser.o SharedMemoryItem.o
@@ -79,11 +68,11 @@ prpadmin: $(ADMINOBJECTS)
 prpclient: $(CLIENTOBJECTS)
 	$(CC) -o $@ $^ $(LFLAGS_CLIENT)
 
-prpserver: $(SERVEROBJECTS) 
+prpserver: $(SERVEROBJECTS)
 	$(CC) -o $@ $^ $(LFLAGS_SERVER)
 
 clean_objs:
 	rm -f $(ADMINOBJECTS) $(CLIENTOBJECTS) $(SERVEROBJECTS) *.log
-   
+
 clean:
 	rm -f *.o prpclient prpserver prpadmin

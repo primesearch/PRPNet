@@ -456,7 +456,8 @@ testresult_t  PFGWProgram::PRPTest(const char *fileName)
 
 testresult_t PFGWProgram::GFNDivisibilityTest(const char *fileName)
 {
-   char  command[200];
+   char  command[200], line[200];
+   bool  isCompleted = false;
 
    is_OutFileName = "gfn.out";
 
@@ -465,6 +466,24 @@ testresult_t PFGWProgram::GFNDivisibilityTest(const char *fileName)
    ip_Log->Debug(DEBUG_WORK, "Command line: %s", command);
 
    system(command);
+
+   FILE *fp = fopen("pfgw.ini", "r");
+   if (!fp)
+   {
+      printf("Could not open pfgw.ini.  File not found.\n");
+      exit(0);
+   }
+
+   while (fgets(line, sizeof(line), fp) != 0)
+   {
+      if (!memcmp(line, "CurFileProcessing=false", 23))
+         isCompleted = true;
+   }
+
+   fclose(fp);
+
+   if (!isCompleted)
+      return TR_CANCELLED;
 
    return ParseTestResults(TT_GFN);
 }

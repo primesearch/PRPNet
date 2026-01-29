@@ -36,6 +36,7 @@ bool  GFNDivisorWorkUnitTest::TestWorkUnit(WorkUnitTest* masterWorkUnit)
    GFNDivisorProgram* gfndProgram;
    PFGWProgram* pfgwProgram;
    Log* testLog;
+   time_t startTime, endTime;
    testresult_t   testResult;
 
    gfndProgram = ip_TestingProgramFactory->GetGFNDivisorProgram();
@@ -46,6 +47,8 @@ bool  GFNDivisorWorkUnitTest::TestWorkUnit(WorkUnitTest* masterWorkUnit)
    gfndProgram->SetSuffix(is_WorkSuffix);
    pfgwProgram->SetSuffix(is_WorkSuffix);
    iwut_State = WUT_INPROGRESS;
+
+   startTime = time(nullptr);
 
    if (!DoesFileExist("gfnd.pfgw") && !DoesFileExist("gfnd_prp.pfgw"))
    {
@@ -70,26 +73,32 @@ bool  GFNDivisorWorkUnitTest::TestWorkUnit(WorkUnitTest* masterWorkUnit)
       testResult = pfgwProgram->PRPTest("gfnd.pfgw");
       if (testResult != TR_COMPLETED)
          return false;
-   }
-
-   if (DoesFileExist("pfgw.log"))
-   {
-      if (DoesFileExist("gfnd_prp.pfgw"))
-      {
-         printf("Both pfgw.log and gfnd_prp.pfgw exist.  Uncertain what the next step is.  Exiting\n");
-         exit(-1);
-      }
 
       unlink("gfnd.pfgw");
-      rename("pfgw.log", "gfnd_prp.pfgw");
    }
 
-   testResult = pfgwProgram->GFNDivisibilityTest("gfnd_prp.pfgw");
-   if (testResult != TR_COMPLETED)
-      return false;
+   // Although unlikely, it is possible that no PRPs are found in the range, so if
+   // the program is terminated between finishing PRP testing and updating the .save
+   // file, then the PRP test might be run a second time on gfnd.pfgw
+   if (DoesFileExist("pfgw.log"))
+   {
+      if (!DoesFileExist("gfnd_prp.pfgw"))
+         rename("pfgw.log", "gfnd_prp.pfgw");
+   }
+
+   if (DoesFileExist("gfnd_prp.pfgw"))
+   {
+      testResult = pfgwProgram->GFNDivisibilityTest("gfnd_prp.pfgw");
+      if (testResult != TR_COMPLETED)
+         return false;
+
+      unlink("gfnd_prp.pfgw");
+   }
+
+   endTime = time(nullptr);
 
    ip_FirstGFNDivisor = pfgwProgram->GetGFNList();
-   id_Seconds = gfndProgram->GetSeconds();
+   id_Seconds += (double) (endTime - startTime);
 
    testLog = new Log(0, "test_results.log", 0, false);
    testLog->LogMessage("Server: %s, N: %u  Range: %" PRIu64":%" PRIu64"  Program: %s  Time: %.0lf seconds",
@@ -110,7 +119,6 @@ bool  GFNDivisorWorkUnitTest::TestWorkUnit(WorkUnitTest* masterWorkUnit)
    DeleteIfExists("pfgw.ini");
    DeleteIfExists("gfnd.log");
    DeleteIfExists("pfgw-prime.log");
-   DeleteIfExists("gfnd_prp.pfgw");
 
    iwut_State = WUT_COMPLETED;
    return true;

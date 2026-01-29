@@ -209,7 +209,7 @@ void  GFNDivisorHTMLGenerator::ServerStats(void)
 
    do
    {
-      ip_Socket->Send("<tr class=\"%s\">", (rangeStatus > 1 ? "untested" : "tested"));
+      ip_Socket->Send("<tr class=\"%s\">", (rangeStatus < 2 ? "untested" : "tested"));
 
       TD_32BIT(n);
       TD_64BIT(kMin);
@@ -238,7 +238,7 @@ void     GFNDivisorHTMLGenerator::SendLinks()
 
    ip_Socket->Send("<div><a href=\"server_stats.html\">Server Statistics</a></div>");
    ip_Socket->Send("<div><a href=\"pending_work.html\">Pending Work</a></div>");
-   ip_Socket->Send("<div><a href=\"found_divisors.html\">Found Divisors</a></div>");
+   ip_Socket->Send("<div><a href=\"divisors.html\">Found Divisors</a></div>");
    ip_Socket->Send("</nav><div style=\"clear: both;\"></div>");
 }
 

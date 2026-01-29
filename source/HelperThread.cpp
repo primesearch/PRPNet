@@ -123,32 +123,15 @@ void  HelperThread::HandleClient(void)
       return;
    }
 
-   // Support for 5.2 and later (first supported by 4.2, but 5.2 client is first to use it.
-   if (!memcmp(theMessage, "FROM 5.", 7))
+   if (strchr(theMessage, '?') != NULL || strchr(theMessage, '%') != NULL || strchr(theMessage, '*') != NULL)
    {
-      if (sscanf(theMessage, "FROM %49s %s %s %s %s %s", clientVersion, emailID, machineID, userID, teamID, instanceID) != 6)
-      {
-         if (sscanf(theMessage, "FROM %49s %s %s %s %s", clientVersion, emailID, machineID, userID, teamID) != 5)
-         {
-            ip_Log->LogMessage("The FROM message [%s] did not specify required information.  The connection was dropped.", theMessage);
-            return;
-         }
-         strcpy(instanceID, machineID);
-      }
-   }
-   else
-   {
-      if (sscanf(theMessage, "FROM %s %s %s %49s %s", emailID, machineID, userID, clientVersion, teamID) != 5)
-      {
-         ip_Log->LogMessage("The FROM message [%s] did not specify required information.  The connection was dropped.", theMessage);
-         return;
-      }
-      strcpy(instanceID, machineID);
+      ip_Log->LogMessage("The FROM message [%s] contains '?', '%' or '*'.  The connection was dropped.", theMessage);
+      return;
    }
 
-   if (memcmp(clientVersion, "4.3", 3) < 0)
+   if (sscanf(theMessage, "FROM %49s %s %s %s %s %s", clientVersion, emailID, machineID, userID, teamID, instanceID) != 6)
    {
-      ip_Log->LogMessage("The client is too old.  The connection was dropped.", theMessage);
+      ip_Log->LogMessage("The FROM message [%s] did not specify required information.  The connection was dropped.", theMessage);
       return;
    }
 
@@ -158,10 +141,7 @@ void  HelperThread::HandleClient(void)
       return;
    }
 
-   if (memcmp(clientVersion, "5.0", 3) < 0)
-      ip_Socket->Send("Connected to server %s", PRPNET_VERSION);
-   else
-      ip_Socket->Send("Connected to server %s %d", PRPNET_VERSION, ii_ServerType);
+   ip_Socket->Send("Connected to server %s %d", PRPNET_VERSION, ii_ServerType);
 
    theMessage = ip_Socket->Receive(20);
    if (!theMessage)
@@ -170,36 +150,6 @@ void  HelperThread::HandleClient(void)
    // Clear out the team name placeholder
    if (!strcmp(teamID, NO_TEAM))
       teamID[0] = 0;
-
-   if (strchr(userID, '?') != NULL)
-   {
-      ip_Socket->Send("ERROR: userid contains an invalid character.  The connection was dropped.");
-      return;
-   }
-
-   if (strchr(teamID, '?') != NULL)
-   {
-      ip_Socket->Send("ERROR: teamid contains an invalid character.  The connection was dropped.");
-      return;
-   }
-
-   if (strchr(emailID, '?') != NULL)
-   {
-      ip_Socket->Send("ERROR: emailid contains an invalid character.  The connection was dropped.");
-      return;
-   }
-
-   if (strchr(machineID, '?') != NULL)
-   {
-      ip_Socket->Send("ERROR: machineid contains an invalid character.  The connection was dropped.");
-      return;
-   }
-
-   if (strchr(instanceID, '?') != NULL)
-   {
-      ip_Socket->Send("ERROR: instanceid contains an invalid character.  The connection was dropped.");
-      return;
-   }
 
    is_UserID = userID;
    is_TeamID = teamID;

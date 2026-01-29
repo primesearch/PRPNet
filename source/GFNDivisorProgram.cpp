@@ -81,8 +81,6 @@ testresult_t   GFNDivisorProgram::ParseTestResults()
    int32_t     tryCount;
    FILE* fp;
 
-   id_Seconds = 0;
-
    strcpy(fileName, "gfndsieve.log");
 
    Sleep(100);

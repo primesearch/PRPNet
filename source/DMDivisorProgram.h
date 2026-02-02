@@ -24,6 +24,7 @@ public:
 
 private:
    bool        GetLineWithTestResult(char* line, uint32_t lineLength);
+   void        AddDMDivisorToList(char* divisor);
 
    testresult_t   ParseTestResults();
 

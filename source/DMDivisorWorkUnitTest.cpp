@@ -8,6 +8,7 @@ DMDivisorWorkUnitTest::DMDivisorWorkUnitTest(Log* theLog, int32_t serverType, st
    is_ProgramVersion = "na";
    ip_TestingProgramFactory = testingProgramFactory;
 
+   ii_n = wu->i_n;
    il_MinK = wu->l_minK;
    il_MaxK = wu->l_maxK;
 
@@ -34,6 +35,7 @@ bool  DMDivisorWorkUnitTest::TestWorkUnit(WorkUnitTest* masterWorkUnit)
    dmdivisor_t* dmdPtr;
    DMDivisorProgram* dmDivisorProgram;
    Log* testLog;
+   time_t startTime, endTime;
    testresult_t   testResult;
 
    dmDivisorProgram = ip_TestingProgramFactory->GetDMDivisorProgram();
@@ -43,6 +45,7 @@ bool  DMDivisorWorkUnitTest::TestWorkUnit(WorkUnitTest* masterWorkUnit)
    dmDivisorProgram->SetSuffix(is_WorkSuffix);
 
    iwut_State = WUT_INPROGRESS;
+   startTime = time(nullptr);
 
    testResult = dmDivisorProgram->Execute(ii_ServerType, ii_n, il_MinK, il_MaxK);
    if (testResult != TR_COMPLETED)
@@ -50,13 +53,15 @@ bool  DMDivisorWorkUnitTest::TestWorkUnit(WorkUnitTest* masterWorkUnit)
 
    iwut_State = WUT_COMPLETED;
 
+   endTime = time(nullptr);
+
    LogMessage(masterWorkUnit);
 
    ip_FirstDMDivisor = dmDivisorProgram->GetDMDivisorList();
-   id_Seconds = dmDivisorProgram->GetSeconds();
+   id_Seconds += (double)(endTime - startTime);
 
    testLog = new Log(0, "test_results.log", 0, false);
-   testLog->LogMessage("Server: %s, N: %u  Range: %" PRIu64":%" PRIu64"  Program: %s  Time: %.0lf seconds",
+   testLog->LogMessage("Server: %s, n: %u  Range: %" PRIu64":%" PRIu64"  Program: %s  Time: %.0lf seconds",
       is_WorkSuffix.c_str(), ii_n, il_MinK, il_MaxK, is_Program.c_str(), id_Seconds);
 
    dmdPtr = ip_FirstDMDivisor;
@@ -77,7 +82,7 @@ void  DMDivisorWorkUnitTest::SendResults(Socket* theSocket)
    dmdPtr = ip_FirstDMDivisor;
    while (dmdPtr)
    {
-      theSocket->Send("Found: %u %" PRIu64" %s", dmdPtr->n, dmdPtr->k, dmdPtr->s_Divisor);
+      theSocket->Send("DMDivisor: %s", dmdPtr->s_Divisor);
       dmdPtr = (dmdivisor_t*)dmdPtr->m_NextDMDivisor;
    }
 }
@@ -121,12 +126,18 @@ void     DMDivisorWorkUnitTest::Load(FILE* saveFile, string lineIn, string prefi
    strcpy(tempLine, lineIn.c_str());
    ptr = strstr(tempLine, ": ");
 
+   if (ptr == nullptr)
+   {
+      printf("Unable to parse line [%s] from save file.  Exiting\n", tempLine);
+      exit(-1);
+   }
+
    countScanned = sscanf(ptr + 2, "%s %s %u %lf %u",
       program, programVersion, (int*)&iwut_State, &id_Seconds, &divisorCount);
 
    if (countScanned != 5)
    {
-      printf("Unable to parse line [%s] from save file.  Exiting\n", tempLine);
+      printf("Missing details on line [%s] from save file.  Exiting\n", tempLine);
       exit(-1);
    }
 

@@ -3,8 +3,42 @@
 
 int32_t   DMDivisorServerHelper::ComputeHoursRemaining(void)
 {
-   return 999;
+   int64_t  minTime, nowTime, completedRanges, totalRanges;
+   const char* selectSQL1 = "select min(lastUpdateTime), count(*) " \
+      "  from DMDRange ";
+   const char* selectSQL2 = "select count(*) " \
+      "  from DMDRange " \
+      " where DMDRange.rangeStatus = 2";
+
+   SQLStatement* selectStatement1 = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1);
+   selectStatement1->BindSelectedColumn(&minTime);
+   selectStatement1->BindSelectedColumn(&totalRanges);
+
+   SQLStatement* selectStatement2 = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2);
+   selectStatement2->BindSelectedColumn(&completedRanges);
+
+   int64_t hours = 1000000;
+
+   if (selectStatement1->FetchRow(true) && selectStatement2->FetchRow(true))
+   {
+      if (totalRanges == 0)
+         return 0;
+
+      if (completedRanges > 0)
+      {
+         nowTime = time(NULL);
+         hours = ((nowTime - minTime) / completedRanges);
+         hours *= (totalRanges - completedRanges);
+         hours /= 3600;
+      }
+   }
+
+   delete selectStatement1;
+   delete selectStatement2;
+
+   return (int32_t)hours;
 }
+
 
 void  DMDivisorServerHelper::ExpireTests(bool canExpire, int32_t delayCount, delay_t* delays)
 {
@@ -33,7 +67,8 @@ void  DMDivisorServerHelper::ExpireTests(bool canExpire, int32_t delayCount, del
       "   and testId = ?";
    const char* updateSQL = "update DMDRange " \
       "   set rangeStatus = 0 " \
-      " where kMin = ? " \
+      " where n = ? " \
+      "   and kMin = ? " \
       "   and kMax = ?";
 
    if (!canExpire)

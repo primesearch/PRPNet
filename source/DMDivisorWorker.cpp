@@ -93,11 +93,9 @@ bool     DMDivisorWorker::GetWork(void)
          wu = new workunit_t;
          wu->m_FirstWorkUnitTest = 0;
 
-         toScan = 3;
-         wasScanned = sscanf(readBuf, "WorkUnit: %u %" PRIu64" %" PRIu64"",
-            &wu->i_n,
-            &wu->l_minK,
-            &wu->l_maxK);
+         toScan = 4;
+         wasScanned = sscanf(readBuf, "WorkUnit: %u %" PRIu64" %" PRIu64" %" PRIu64"",
+            &wu->i_n, &wu->l_minK, &wu->l_maxK, &wu->l_TestID);
 
          if (toScan == wasScanned)
          {
@@ -313,10 +311,10 @@ void  DMDivisorWorker::Load(string saveFileName)
       {
          wu = new workunit_t;
          wu->m_FirstWorkUnitTest = 0;
-         countScanned = sscanf(line, "Start WorkUnit %u %" PRIu64" %" PRIu64"",
-            &wu->i_n, &wu->l_minK, &wu->l_maxK);
+         countScanned = sscanf(line, "Start WorkUnit %u %" PRIu64" %" PRIu64" %" PRIu64"",
+            &wu->i_n, &wu->l_minK, &wu->l_maxK, &wu->l_TestID);
 
-         if (countScanned != 3)
+         if (countScanned != 4)
          {
             printf("'Start WorkUnit' was not in the correct format.  Exiting\n");
             exit(-1);

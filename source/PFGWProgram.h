@@ -25,7 +25,7 @@ public:
 private:
    testresult_t   ParseTestResults(testtype_t testType);
 
-   void        AddGFNToList(int32_t n, int64_t k, char *divisor);
+   void        AddGFNDivisorToList(int32_t n, int64_t k, char *divisor);
 
    void        DetermineDecimalLength(void);
 };

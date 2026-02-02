@@ -191,8 +191,8 @@ bool     DMDivisorWorkSender::SendWork(int32_t n, int64_t kMin, int64_t kMax)
    SQLStatement* sqlStatement;
    SharedMemoryItem* threadWaiter;
    const char* insertSQL = "insert into DMDRangeTest " \
-      "( n, kMin, kMax, TestID, EmailID, MachineID, InstanceID, UserID, TeamID ) " \
-      "values ( ?,?,?,?,?,?,?,?,? )";
+      "( n, kMin, kMax, TestID, EmailID, MachineID, InstanceID, UserID ) " \
+      "values ( ?,?,?,?,?,?,?,? )";
 
    lastUpdateTime = (int64_t)time(NULL);
 
@@ -205,7 +205,6 @@ bool     DMDivisorWorkSender::SendWork(int32_t n, int64_t kMin, int64_t kMax)
    sqlStatement->BindInputParameter(is_MachineID, ID_LENGTH);
    sqlStatement->BindInputParameter(is_InstanceID, ID_LENGTH);
    sqlStatement->BindInputParameter(is_UserID, ID_LENGTH);
-   sqlStatement->BindInputParameter(is_TeamID, ID_LENGTH);
 
    if (!sqlStatement->Execute())
    {

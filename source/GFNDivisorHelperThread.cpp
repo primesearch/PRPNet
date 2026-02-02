@@ -122,10 +122,10 @@ void      GFNDivisorHelperThread::ExpireWorkunitTest(void)
    int64_t kMin;
    bool  success;
    SQLStatement* sqlStatement;
-   const char* deleteSQL = "delete from DMDRangeTest " \
+   const char* deleteSQL = "delete from GFNDRangeTest " \
       " where n = ? and kMin = ?" \
       "   and SearchingProgram is null";
-   const char* updateSQL = "update DMDRange " \
+   const char* updateSQL = "update GFNDRange " \
       "   set rangeStatus = 0 " \
       " where n = ? and kMin = ?";
 

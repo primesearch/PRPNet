@@ -52,7 +52,7 @@ public:
 
    int32_t     GetDecimalLength(void) { return ii_DecimalLength; };
 
-   gfndivisor_t      *GetGFNList(void) { return ip_FirstGFN; };
+   gfndivisor_t      *GetGFNList(void) { return ip_FirstGFNDivisor; };
 
    bool        ValidateExe(void);
 
@@ -109,7 +109,7 @@ protected:
    bool        ib_TestFailure;
    bool        ib_DeleteCheckpoint;
 
-   gfndivisor_t      *ip_FirstGFN;
+   gfndivisor_t      *ip_FirstGFNDivisor;
 };
 
 #endif // #ifndef _TestingProgram_

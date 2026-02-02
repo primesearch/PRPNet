@@ -181,7 +181,7 @@ void      AdminMenu(void)
                }
             }
 
-            if (kMin % dmdList[idx].rangeSize != 0)
+            if (kMin != 1 && kMin % dmdList[idx].rangeSize != 0)
             {
                printf("Error: min K must be divisible by %" PRId64"\n", dmdList[idx].rangeSize);
                break;
@@ -716,7 +716,7 @@ void  AddDMRange(uint32_t n, uint64_t kMin, uint32_t rangeCount, uint64_t rangeS
    if (!VerifyCommand("ADD_DM_RANGE"))
       return;
 
-   g_Socket->Send("ADD_DM_RANGE %u %" PRIu64" %u %u" , n, kMin, rangeCount, rangeSize);
+   g_Socket->Send("ADD_DM_RANGE %u %" PRIu64" %u %" PRIu64"" , n, kMin, rangeCount, rangeSize);
  
    theMessage = g_Socket->Receive(120);
    while (theMessage && !endLoop)

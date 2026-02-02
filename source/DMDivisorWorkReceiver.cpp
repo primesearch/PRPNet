@@ -102,7 +102,7 @@ int32_t  DMDivisorWorkReceiver::ReceiveWorkUnit(string theMessage)
    success = sqlStatement->FetchRow(true);
    delete sqlStatement;
 
-   snprintf(name, 60, "%u %" PRIu64" %" PRIu64"", n, kMin, kMax);
+   snprintf(name, 60, "%u_%" PRIu64"_%" PRIu64"", n, kMin, kMax);
 
    // Verify whether or not the test exists.  It might have expired or the client
    // might be trying to send bad results.
@@ -204,12 +204,13 @@ int32_t  DMDivisorWorkReceiver::ProcessWorkUnit(int32_t n, int64_t kMin, int64_t
    int64_t   endMin, endMax, theK, endTestID;
    bool      abandoned = false, haveStats = false, success;
    int32_t   gotTerminator;
-   int32_t   theN, endN, finds = 0;
+   int32_t   finds = 0;
    double    secondsToTestRange;
    char      theDivisor[ID_LENGTH];
    SQLStatement* sqlStatement;
    const char* updateRange = "update DMDRange " \
       "   set rangeStatus = 2, " \
+      "       divisors = ?, " \
       "       LastUpdateTime = ? " \
       " where n = ? " \
       "   and kMin = ?" \
@@ -261,15 +262,11 @@ int32_t  DMDivisorWorkReceiver::ProcessWorkUnit(int32_t n, int64_t kMin, int64_t
          }
          haveStats = true;
       }
-      else if (!memcmp(theMessage, "Found: ", 7))
+      else if (!memcmp(theMessage, "DMDivisor: ", 11))
       {
-         if (sscanf(theMessage + 7, "%u %" PRIu64" %s", &theN, &theK, &theDivisor) != 3)
-         {
-            ip_Log->LogMessage("%d: Could not parse [%s]", ip_Socket->GetSocketID(), theMessage);
-            return CT_PARSE_ERROR;
-         }
+         strcpy(theDivisor, theMessage + 11);
 
-         if (!ProcessFind(theN, theK, theDivisor))
+         if (!ProcessFind(theDivisor))
             return CT_SQL_ERROR;
 
          finds++;
@@ -392,52 +389,47 @@ void     DMDivisorWorkReceiver::LogResults(int32_t n, int64_t kMin, int64_t kMax
    delete testLog;
 }
 
-bool     DMDivisorWorkReceiver::ProcessFind(int32_t n, int64_t k, char* divisor)
+bool     DMDivisorWorkReceiver::ProcessFind(char* divisor)
 {
    Log* findLog;
-   bool     success, duplicate;
+   bool     success;
    int32_t  matchingCount;
    SQLStatement* insertStatement;
    SQLStatement* selectStatement;
-   const char* selectSQL = "select from DMDivisor" \
-      " where n = ? " \
-      "   and k = ? " \
-      "   and divisor = ? ";
+   const char* selectSQL = "select count(*) from DMDivisor" \
+      " where divisor = ? ";
    const char* insertSQL = "insert into DMDivisor " \
-      " ( n, k, divisor, emailID, userID, machineID, instanceID, dateReported ) " \
-      " values ( ?, ?, ?, ?, ?, ?, ?, ? )";
+      " ( divisor, emailID, userID, machineID, instanceID, dateReported ) " \
+      " values ( ?, ?, ?, ?, ?, ? )";
 
    selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
-   selectStatement->BindInputParameter(n);
-   selectStatement->BindInputParameter(k);
    selectStatement->BindInputParameter(divisor, ID_LENGTH, true);
    selectStatement->BindSelectedColumn(&matchingCount);
    selectStatement->FetchRow(true);
    delete selectStatement;
 
-   duplicate = (matchingCount > 0);
+   if (matchingCount == 0)
+   {
+      insertStatement = new SQLStatement(ip_Log, ip_DBInterface, insertSQL);
+      insertStatement->BindInputParameter(divisor, ID_LENGTH, true);
+      insertStatement->BindInputParameter(is_EmailID, ID_LENGTH);
+      insertStatement->BindInputParameter(is_UserID, ID_LENGTH);
+      insertStatement->BindInputParameter(is_MachineID, ID_LENGTH);
+      insertStatement->BindInputParameter(is_InstanceID, ID_LENGTH);
+      insertStatement->BindInputParameter((int64_t)time(NULL));
+      success = insertStatement->Execute();
 
-   insertStatement = new SQLStatement(ip_Log, ip_DBInterface, insertSQL);
-   insertStatement->BindInputParameter(n);
-   insertStatement->BindInputParameter(k);
-   insertStatement->BindInputParameter(divisor, ID_LENGTH, true);
-   insertStatement->BindInputParameter(is_EmailID, ID_LENGTH);
-   insertStatement->BindInputParameter(is_UserID, ID_LENGTH);
-   insertStatement->BindInputParameter(is_MachineID, ID_LENGTH);
-   insertStatement->BindInputParameter(is_InstanceID, ID_LENGTH);
-   insertStatement->BindInputParameter((int64_t)time(NULL));
-   success = insertStatement->Execute();
+      delete insertStatement;
 
-   delete insertStatement;
+      if (!success) return false;
 
-   if (!success) return false;
+      findLog = new Log(0, "dm_factors.log", 0, false);
 
-   findLog = new Log(0, "dm_finds.log", 0, false);
+      findLog->LogMessage("%s found by user %s on machine %s, instance %s",
+         divisor, is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
 
-   findLog->LogMessage("%s found by user %s on machine %s, instance %s",
-      divisor, is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
-
-   delete findLog;
+      delete findLog;
+   }
 
    return true;
 }

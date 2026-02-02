@@ -27,7 +27,7 @@ private:
 
    void     LogResults(int32_t n, int64_t kMin, int64_t kMax, int32_t finds);
 
-   bool     ProcessFind(int32_t n, int64_t k, char* divisor);
+   bool     ProcessFind(char* divisor);
 
    char     ic_Program[50];
    char     ic_ProgramVersion[50];

@@ -175,12 +175,18 @@ void     GFNDivisorWorkUnitTest::Load(FILE* saveFile, string lineIn, string pref
    strcpy(tempLine, lineIn.c_str());
    ptr = strstr(tempLine, ": ");
 
+   if (ptr == nullptr)
+   {
+      printf("Unable to parse line [%s] from save file.  Exiting\n", tempLine);
+      exit(-1);
+   }
+
    countScanned = sscanf(ptr + 2, "%s %s %u %lf %u",
       program, programVersion, (int*)&iwut_State, &id_Seconds, &divisorCount);
 
    if (countScanned != 5)
    {
-      printf("Unable to parse line [%s] from save file.  Exiting\n", tempLine);
+      printf("Missing details on line [%s] from save file.  Exiting\n", tempLine);
       exit(-1);
    }
 

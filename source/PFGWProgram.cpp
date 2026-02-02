@@ -2,7 +2,7 @@
 
 void     PFGWProgram::SendStandardizedName(Socket *theSocket, uint32_t returnWorkUnit)
 {
-   ip_FirstGFN = NULL;
+   ip_FirstGFNDivisor = NULL;
 
    theSocket->Send(GetStandardizedName().c_str());
 }
@@ -19,7 +19,7 @@ testresult_t   PFGWProgram::Execute(testtype_t testType)
    unlink(is_InFileName.c_str());
    unlink("pfgw.ini");
 
-   ip_FirstGFN = NULL;
+   ip_FirstGFNDivisor = NULL;
 
    tryCount = 1;
    while ((fp = fopen(is_InFileName.c_str(), "wt")) == NULL)
@@ -207,14 +207,14 @@ testresult_t   PFGWProgram::ParseTestResults(testtype_t testType)
             *ptr = 0;
 
             ip_Log->LogMessage("%s: %s", is_Suffix.c_str(), line);
-            AddGFNToList(theN, theK, line);
+            AddGFNDivisorToList(theN, theK, line);
          }
       } while (fgets(line, sizeof(line), fp));
 
       fclose(fp);
       
       if (rCode == TR_CANCELLED)
-         ip_FirstGFN = NULL;
+         ip_FirstGFNDivisor = NULL;
       return rCode;
    }
 
@@ -290,7 +290,7 @@ testresult_t   PFGWProgram::ParseTestResults(testtype_t testType)
    return TR_COMPLETED;
 }
 
-void  PFGWProgram::AddGFNToList(int32_t n, int64_t k, char* divisor)
+void  PFGWProgram::AddGFNDivisorToList(int32_t n, int64_t k, char* divisor)
 {
    gfndivisor_t   *gfndPtr, *listPtr;
 
@@ -298,13 +298,13 @@ void  PFGWProgram::AddGFNToList(int32_t n, int64_t k, char* divisor)
    gfndPtr->m_NextGFNDivisor = 0;
    strcpy(gfndPtr->s_Divisor, divisor);
 
-   if (!ip_FirstGFN)
+   if (!ip_FirstGFNDivisor)
    {
-      ip_FirstGFN = gfndPtr;
+      ip_FirstGFNDivisor = gfndPtr;
       return;
    }
 
-   listPtr = ip_FirstGFN;
+   listPtr = ip_FirstGFNDivisor;
 
    while (listPtr->m_NextGFNDivisor)
       listPtr = (gfndivisor_t *) listPtr->m_NextGFNDivisor;

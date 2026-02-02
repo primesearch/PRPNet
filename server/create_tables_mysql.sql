@@ -311,7 +311,7 @@ create table DMDRangeTest (
    foreign key (n, kMin) references DMDRange (n, kMin) on delete restrict
 ) ENGINE=InnoDB;
 
-create table DMNDivisor (
+create table DMDivisor (
    divisor                 varchar(200)      collate latin1_bin,
    emailID                 varchar(200)      collate latin1_bin,
    userID                  varchar(200)      collate latin1_bin,

@@ -13,7 +13,7 @@ TestingProgram::TestingProgram(Log *theLog, string programName)
    is_ProgramVersion = "unknown";
    ib_IsPRP = ib_IsPrime = ib_TestFailure = false;
    is_Residue.clear();
-   ip_FirstGFN = 0;
+   ip_FirstGFNDivisor = 0;
    is_CpuAffinity = "";
    ii_NormalPriority = 0;
    ii_GpuAffinity = -1;
@@ -31,7 +31,7 @@ void  TestingProgram::SetNumber(int32_t serverType, string suffix, string workUn
 
    ib_IsPRP = ib_IsPrime = ib_TestFailure = false;
    is_Residue.clear();
-   ip_FirstGFN = 0;
+   ip_FirstGFNDivisor = 0;
 
    il_k = theK;
    ii_b = theB;

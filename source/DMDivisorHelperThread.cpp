@@ -25,8 +25,8 @@ void  DMDivisorHelperThread::ProcessRequest(string theMessage)
       if (VerifyAdminPassword(tempMessage + 17))
          AdminStatsUpdate(true);
 
-   if (!memcmp(tempMessage, "ADD_DM_RANGE ", 16))
-      if (VerifyAdminPassword(tempMessage + 16))
+   if (!memcmp(tempMessage, "ADD_DM_RANGE ", 13))
+      if (VerifyAdminPassword(tempMessage + 13))
          AdminAddRanges();
 
    if (!memcmp(tempMessage, "EXPIRE_WORKUNIT ", 16))
@@ -59,7 +59,7 @@ void      DMDivisorHelperThread::AdminAddRanges(void)
    char* readBuf;
    uint32_t ranges, rangesLeft;
    int32_t  n;
-   int64_t  kMin, kMax = 0, kRangeMin, rangeSize;
+   int64_t  kMin, kRangeMin = 0, kRangeMax = 0, rangeSize;
 
    readBuf = ip_Socket->Receive();
 
@@ -72,8 +72,8 @@ void      DMDivisorHelperThread::AdminAddRanges(void)
    }
    insertStatement = new SQLStatement(ip_Log, ip_DBInterface, insertSQL);
    insertStatement->BindInputParameter(n, false);
-   insertStatement->BindInputParameter(kMin, false);
-   insertStatement->BindInputParameter(kMax, false);
+   insertStatement->BindInputParameter(kRangeMin, false);
+   insertStatement->BindInputParameter(kRangeMax, false);
 
    kRangeMin = kMin;
 
@@ -81,6 +81,9 @@ void      DMDivisorHelperThread::AdminAddRanges(void)
    while (rangesLeft > 0)
    {
       int64_t kRangeMax = kRangeMin + rangeSize;
+
+      if (kRangeMin == 1)
+         kRangeMax--;
 
       insertStatement->SetInputParameterValue(n, true);
       insertStatement->SetInputParameterValue(kRangeMin);
@@ -115,7 +118,7 @@ void      DMDivisorHelperThread::AdminAddRanges(void)
    delete su;
    delete suf;
 
-   ip_Socket->Send("Added %d new ranges for %d from %" PRIu64" to %" PRIu64" ", ranges, n, kMin, kMax);
+   ip_Socket->Send("Added %d new ranges for %d from %" PRIu64" to %" PRIu64" ", ranges, n, kMin, kRangeMax);
    ip_Socket->Send("End of Message");
 
    ip_Log->LogMessage("ADMIN:  %d new ranges added through the admin process", ranges);

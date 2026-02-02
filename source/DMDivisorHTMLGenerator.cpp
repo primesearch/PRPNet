@@ -71,9 +71,7 @@ void     DMDivisorHTMLGenerator::PendingTests(void)
 
    ip_Socket->Send("<table id=\"pending-tests-table\"><thead><tr>");
 
-   TH_CLMN_HDR("n");
-   TH_CLMN_HDR("Min k");
-   TH_CLMN_HDR("Max k");
+   TH_CLMN_HDR("Range");
    TH_CLMN_HDR("User");
    TH_CLMN_HDR("Machine");
    TH_CLMN_HDR("Instance");
@@ -119,29 +117,26 @@ void     DMDivisorHTMLGenerator::PendingTests(void)
 void     DMDivisorHTMLGenerator::DivisorsFound(void)
 {
    SQLStatement* sqlStatement;
-   int64_t    dateReported, k;
-   int32_t    n;
+   int64_t    dateReported;
    int32_t    divisorCount = 0;
    char       divisor[ID_LENGTH + 1], userID[ID_LENGTH + 1], prevUserID[ID_LENGTH + 1];
    char       machineID[ID_LENGTH + 1], instanceID[ID_LENGTH + 1];
 
-   const char* theSelect = "select n, k, divisor, userID, machineID, instanceID, dateReported " \
-      "  from DMDivisor " \
-      "order by n, k, divisor";
+   const char* theSelect = "select divisor, userID, machineID, instanceID, dateReported " \
+      " from DMDivisor " \
+      "order by divisor";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect);
 
-   sqlStatement->BindSelectedColumn(&n);
-   sqlStatement->BindSelectedColumn(&k);
    sqlStatement->BindSelectedColumn(divisor, ID_LENGTH);
    sqlStatement->BindSelectedColumn(userID, ID_LENGTH);
    sqlStatement->BindSelectedColumn(machineID, ID_LENGTH);
    sqlStatement->BindSelectedColumn(instanceID, ID_LENGTH);
    sqlStatement->BindSelectedColumn(&dateReported);
 
-   ip_Socket->Send("<article><h2>GFN Divisors Found</h2>");
+   ip_Socket->Send("<article><h2>DM Divisors Found</h2>");
 
-   if (!CheckIfRecordsWereFound(sqlStatement, "No GFN divisors found"))
+   if (!CheckIfRecordsWereFound(sqlStatement, "No DM divisors found"))
       return;
 
    ip_Socket->StartBuffering();
@@ -213,8 +208,7 @@ void  DMDivisorHTMLGenerator::ServerStats(void)
 
    do
    {
-      if (ip_Socket->Send("<tr class=\"%s\">", (rangeStatus > 1 ? "untested" : "tested")))
-         break;
+      ip_Socket->Send("<tr class=\"%s\">", (rangeStatus < 2 ? "untested" : "tested"));
 
       TD_32BIT(n);
       TD_64BIT(kMin);

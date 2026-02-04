@@ -204,7 +204,7 @@ int32_t  DMDivisorWorkReceiver::ProcessWorkUnit(int32_t n, int64_t kMin, int64_t
    int64_t   endMin, endMax, theK, endTestID;
    bool      abandoned = false, haveStats = false, success;
    int32_t   gotTerminator;
-   int32_t   finds = 0;
+   int32_t   finds = 0, endN;
    double    secondsToTestRange;
    char      theDivisor[ID_LENGTH];
    SQLStatement* sqlStatement;

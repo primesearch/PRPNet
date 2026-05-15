@@ -18,6 +18,10 @@ public:
 
    testresult_t   Execute(int32_t serverType, uint32_t n, uint64_t minK, uint64_t maxK);
 
+   testresult_t   Execute(testtype_t testType) { return TR_CANCELLED; };
+
+   testresult_t   ParseTestResults(testtype_t testType) { return TR_CANCELLED; };
+
    void        DetermineVersion(void);
 
    dmdivisor_t* GetDMDivisorList(void) { return ip_FirstDMDivisor; };

@@ -38,9 +38,9 @@ public:
    void     SetNumber(int32_t serverType, string suffix, string workUnitName,
                       uint64_t theK, uint32_t theB, uint32_t theN, int64_t theC, uint32_t theD);
 
-   testresult_t   Execute(testtype_t testType) { return TR_CANCELLED; };
+   virtual testresult_t   Execute(testtype_t testType) = 0;
 
-   testresult_t   ParseTestResults(testtype_t testType) { return TR_CANCELLED; };
+   virtual testresult_t   ParseTestResults(testtype_t testType) = 0;
 
    string      GetInternalProgramName(void) { return is_InternalProgramName; };
 

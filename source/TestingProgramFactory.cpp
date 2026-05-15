@@ -183,7 +183,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
       return ip_PFGWProgram;
    }
 
-   if ((serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL))
+   if ((serverType == ST_PRIMORIAL || serverType == ST_FACTORIAL || serverType == ST_MULTIFACTORIAL))
    {
       if (ip_PRSTProgram) return ip_PRSTProgram;
 
@@ -193,7 +193,7 @@ TestingProgram *TestingProgramFactory::GetPRPTestingProgram(int32_t serverType, 
    if (serverType == ST_LEYLAND || serverType == ST_LIFCHITZ || serverType == ST_HYPERCW)
       return ip_PFGWProgram;
    
-   if (serverType == ST_CAROLKYNEA || serverType == ST_MULTIFACTORIAL || serverType == ST_GENERIC)
+   if (serverType == ST_CAROLKYNEA || serverType == ST_GENERIC)
       return ip_PFGWProgram;
 
    if (serverType == ST_CYCLOTOMIC)

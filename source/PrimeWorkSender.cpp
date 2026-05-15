@@ -67,9 +67,9 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
 
    is_ClientVersion = clientVersion;
 
-   if ((ii_ServerType == ST_MULTIFACTORIAL) && !ib_HasPFGW)
+   if ((ii_ServerType == ST_MULTIFACTORIAL) && !(ib_HasPFGW || ib_HasPRST))
    {
-      ip_Socket->Send("ERROR:  The client must run PFGW to use this server.");
+      ip_Socket->Send("ERROR:  The client must run PFGW or PRST to use this server.");
       ip_Socket->Send("End of Message");
       return;
    }

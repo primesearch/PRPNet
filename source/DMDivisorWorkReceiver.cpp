@@ -201,7 +201,7 @@ int32_t  DMDivisorWorkReceiver::ReceiveWorkUnit(int32_t n, int64_t kMin, int64_t
 int32_t  DMDivisorWorkReceiver::ProcessWorkUnit(int32_t n, int64_t kMin, int64_t kMax, int64_t testID)
 {
    char* theMessage;
-   int64_t   endMin, endMax, theK, endTestID;
+   int64_t   endMin, endMax, endTestID;
    bool      abandoned = false, haveStats = false, success;
    int32_t   gotTerminator;
    int32_t   finds = 0, endN;

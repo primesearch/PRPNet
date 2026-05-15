@@ -1,5 +1,9 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
+Version 5.9.2:  May 4, 2026 - New Release
+          all:  Fixed issue for PRP testing created by 5.9.1 release.
+		        Added support for prst to test multi-factorials.
+				
 Version 5.9.1:  January 18, 2026 - New Release
           all:  Add support for GFN divisor and DM divisor searches.
     prpserver:  Removed support for clients older then 5.3.

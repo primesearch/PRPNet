@@ -491,29 +491,23 @@ bool     PrimeWorkReceiver::BadProgramVersion(string version)
 bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t mainTestResult)
 {
    SQLStatement *sqlStatement;
-   int64_t     theK, theC;
-   int32_t     theB, theN, theD;
    bool        success;
-   const char *selectSQL = "select k, b, c, d, n " \
+   int32_t     theN;
+   char        candidateGroupId[ID_LENGTH + 1];
+   const char *selectSQL = "select candidateGroupId, n " \
                            "  from Candidate " \
-                           " where CandidateName = ?";
+                           " where candidateName = ?";
    const char *updateSQL = "update CandidateGroupStats " \
-                           "   set CountInProgress = CountInProgress - 1, " \
-                           "       CountUntested = CountUntested - 1, " \
-                           "       CountTested = CountTested + 1 " \
-                           " where k = %" PRIu64 " " \
-                           "   and b = %d " \
-                           "   and c = %d " \
-                           "   and d = %d " \
+                           "   set countInProgress = countInProgress - 1, " \
+                           "       countUntested = countUntested - 1, " \
+                           "       countTested = countTested + 1 " \
+                           " where candidateGroupId = ? "
                            "   and CountInProgress > 0 ";
 
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL);
    sqlStatement->BindInputParameter(candidateName, NAME_LENGTH);
-   sqlStatement->BindSelectedColumn(&theK);
-   sqlStatement->BindSelectedColumn(&theB);
-   sqlStatement->BindSelectedColumn(&theC);
-   sqlStatement->BindSelectedColumn(&theD);
+   sqlStatement->BindSelectedColumn(candidateGroupId, ID_LENGTH);
    sqlStatement->BindSelectedColumn(&theN);
     
    success = sqlStatement->FetchRow(true);
@@ -523,7 +517,8 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t main
    if (!success)
       return false;
 
-   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL, theK, theB, theC, theD);
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, updateSQL);
+   sqlStatement->BindInputParameter(candidateGroupId, ID_LENGTH);
 
    // It is okay if no rows are updated as we don't want CountInProgress to go negative
    success = sqlStatement->Execute();
@@ -543,7 +538,7 @@ bool     PrimeWorkReceiver::UpdateGroupStats(string candidateName, result_t main
       return success;
 
    SierpinskiRieselStatsUpdater *sp = (SierpinskiRieselStatsUpdater *) ip_StatsUpdater;
-   success = sp->SetSierspinkiRieselPrimeN(theK, theB, theC, theD, theN); 
+   success = sp->SetSierspinkiRieselPrimeN(candidateGroupId, theN);
 
    if (!success)
       ip_DBInterface->Rollback();

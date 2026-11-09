@@ -13,6 +13,9 @@ static const char * const cwfbastring = "$a*%d^$a$%c";
 static const char * const cwvb_string = "$a*$b^$a%" PRId64"";
 static const char * const cwvbastring = "$a*$b^$a$c";
 
+// Dual Cullen/Woodall form from gcwsieve
+static const char* const dcwstring = "%u^$a$b";
+
 // Fixed k forms for k*b^n+/-c
 static const char * const fk_string = "%" PRIu64"*$a^$b%" PRId64"";
 static const char * const fkastring = "%" PRIu64"*$a^$b$%c";
@@ -138,7 +141,8 @@ bool  ABCParser::IsValidFormat(void) const
 
    if (ii_ServerType == ST_CULLENWOODALL)
       if (ii_ABCFormat == ABC_CW_FBP || ii_ABCFormat == ABC_CW_FBM || ii_ABCFormat == ABC_CW_FBA ||
-          ii_ABCFormat == ABC_CW_VBP || ii_ABCFormat == ABC_CW_VBM || ii_ABCFormat == ABC_CW_VBA)
+          ii_ABCFormat == ABC_CW_VBP || ii_ABCFormat == ABC_CW_VBM || ii_ABCFormat == ABC_CW_VBA ||
+          ii_ABCFormat == ABC_DUAL_CW)
          return true;
     
    if (ii_ServerType == ST_PRIMORIAL) 
@@ -327,6 +331,10 @@ abctype_t   ABCParser::DetermineABCFormat(const string abcHeader)
          return ABC_CW_VBP;
       if (il_theC < 0)
          return ABC_CW_VBM;
+   }
+
+   if (sscanf(tempHeader, dcwstring, &ii_theB) == 1) {
+      return ABC_DUAL_CW;
    }
 
    if (!strncmp(tempHeader, cwvbastring, strlen(cwvbastring))) return ABC_CW_VBA;
@@ -573,7 +581,10 @@ rowtype_t  ABCParser::GetNextCandidate(string &theName, int64_t &theK, int32_t &
          break;
 
       case ST_CULLENWOODALL:
-         snprintf(tempName, BUFFER_SIZE, "%d*%d^%d%+" PRId64"", ii_theN, ii_theB, ii_theN, il_theC);
+         if (il_theK > 1)
+            snprintf(tempName, BUFFER_SIZE, "%" PRId64"*%d^%d%+" PRId64"", il_theK, ii_theB, ii_theN, il_theC);
+         else
+            snprintf(tempName, BUFFER_SIZE, "%d^%d%+" PRId64"", ii_theB, ii_theN, il_theC);
          break;
 
       case ST_PRIMORIAL:
@@ -660,32 +671,51 @@ bool  ABCParser::ParseCandidateLine(const string abcLine)
 
       case ABC_CW_FBP:
          if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
+         if (ii_theN == 1)
+            return false;
          il_theK = ii_theN;
          return true;
 
       case ABC_CW_FBM:
          if (sscanf(tempLine, "%d", &ii_theN) != 1) return false;
+         if (ii_theN == 1)
+            return false;
          il_theK = ii_theN;
          return true;
 
       case ABC_CW_FBA:
          if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
+         if (ii_theN == 1)
+            return false;
          il_theK = ii_theN;
          return true;
 
       case ABC_CW_VBP:
          if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theB) != 2) return false;
+         if (ii_theN == 1)
+            return false;
          il_theK = ii_theN;
          return true;
 
       case ABC_CW_VBM:
          if (sscanf(tempLine, "%d %d", &ii_theN, &ii_theB) != 2) return false;
+         if (ii_theN == 1)
+            return false;
          il_theK = ii_theN;
          return true;
 
       case ABC_CW_VBA:
          if (sscanf(tempLine, "%d %d %" PRId64"", &ii_theN, &ii_theB, &il_theC) != 3) return false;
+         if (ii_theN == 1)
+            return false;
          il_theK = ii_theN;
+         return true;
+
+      case ABC_DUAL_CW:
+         if (sscanf(tempLine, "%d %" PRId64"", &ii_theN, &il_theC) != 2) return false;
+         if (ii_theN == 1)
+            return false;
+         il_theK = 1;
          return true;
 
       case ABC_FKP:

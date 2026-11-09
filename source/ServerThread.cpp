@@ -3,7 +3,6 @@
 #include "HelperSocket.h"
 #include "HelperThread.h"
 #include "PrimeHelperThread.h"
-#include "WWWWHelperThread.h"
 #include "DMDivisorHelperThread.h"
 #include "GFNDivisorHelperThread.h"
 
@@ -79,12 +78,7 @@ static void  *ServerThreadEntryPoint(void *threadInfo)
          }
          else
          {
-            if (globals->i_ServerType == ST_WIEFERICH ||
-                globals->i_ServerType == ST_WILSON ||
-                globals->i_ServerType == ST_WALLSUNSUN ||
-                globals->i_ServerType == ST_WOLSTENHOLME)
-               helperThread = new WWWWHelperThread();
-            else if (globals->i_ServerType == ST_GFNDIVISOR)
+            if (globals->i_ServerType == ST_GFNDIVISOR)
                helperThread = new GFNDivisorHelperThread();
             else if (globals->i_ServerType == ST_DMDIVISOR)
                helperThread = new DMDivisorHelperThread();

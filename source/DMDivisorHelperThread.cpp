@@ -110,7 +110,7 @@ void      DMDivisorHelperThread::AdminAddRanges(void)
    suf = new StatsUpdaterFactory();
    su = suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ip_Globals->b_NeedsDoubleCheck);
 
-   if (!su->RollupGroupStats(true))
+   if (!su->RollupCandidateGroupStats(true))
       ip_DBInterface->Rollback();
    else
       ip_DBInterface->Commit();

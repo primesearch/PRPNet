@@ -37,12 +37,11 @@ uint64_t PromptForIntegerValue(const char* prompt, uint64_t maxAllowedValue);
 bool     VerifyCommand(const char *theCommand);
 void     SendABCFile(const char *abcFileName);
 void     SendFactorFile(const char *factorFileName);
-void     SendRanges(int32_t ranges);
 void     ExpireWorkunit(const char *workunit);
 void     SetQuitting(int a);
 void     PipeInterrupt(int a);
 void     ProcessCommandLine(int count, char *arg[]);
-void     DeleteData(char deleteWhich, char* deleteValue, char deletePrimes, char deleteStats);
+void     DeleteData(char deleteWhich, char* deleteValue, char deletePrimes);
 void     AddGFNRange(uint32_t nMin, uint32_t nMax, uint64_t kMin, uint64_t kMax);
 void     AddDMRange(uint32_t n, uint64_t kMin, uint32_t rangeCount, uint64_t rangeSize);
 void     Usage(char *exeName);
@@ -52,8 +51,8 @@ void      AdminMenu(void)
 {
    int   menuitem = -1;
    char  response[500], *theMessage;
-   char  deleteValue[30], deletePrimes[2], deleteStats[2];
-   int32_t ranges, idx;
+   char  deleteValue[30], deletePrimes[2];
+   int32_t  idx;
    uint32_t n, nMin, nMax, rangeCount;
    uint64_t kMin, kMax;
 
@@ -68,7 +67,6 @@ void      AdminMenu(void)
       {
          printf(" 4. Add new candidates from ABC file\n");
          printf(" 5. Remove candidates based upon factors file\n");
-         printf(" 6. Add search ranges\n");
          printf(" 7. Add GFN Search ranges\n");
          printf(" 8. Add Double-Mersenne Search ranges\n");
          printf("11. Expire work unit\n");
@@ -123,18 +121,6 @@ void      AdminMenu(void)
             if (strlen(response) && OpenAdminSocket())
             {
                SendFactorFile(response);
-               CloseAdminSocket();
-            }
-            break;
-
-
-         case 6:
-            snprintf(response, sizeof(response), PromptForValue("Enter number of ranges to add: ", false));
-            ranges = atol(response);
-
-            if (strlen(response) && ranges > 0 && OpenAdminSocket())
-            {
-               SendRanges(ranges);
                CloseAdminSocket();
             }
             break;
@@ -225,13 +211,8 @@ void      AdminMenu(void)
                snprintf(deletePrimes, sizeof(deletePrimes), PromptForValue("Also delete primes (y/n): ", false));
 
                if (strlen(deletePrimes)) {
-                  snprintf(deleteStats, sizeof(deleteStats), PromptForValue("Also delete candidate group stats (y/n): ", false));
-
-                  if (strlen(deleteStats) && OpenAdminSocket())
-                  {
-                     DeleteData('k', deleteValue, *deletePrimes, *deleteStats);
-                     CloseAdminSocket();
-                  }
+                  DeleteData('k', deleteValue, *deletePrimes);
+                  CloseAdminSocket();
                }
             }
             break;
@@ -244,13 +225,8 @@ void      AdminMenu(void)
                snprintf(deletePrimes, sizeof(deletePrimes), PromptForValue("Also delete primes (y/n): ", false));
 
                if (strlen(deletePrimes)) {
-                  snprintf(deleteStats, sizeof(deleteStats), PromptForValue("Also delete candidate group stats (y/n): ", false));
-
-                  if (strlen(deleteStats) && OpenAdminSocket())
-                  {
-                     DeleteData('b', deleteValue, *deletePrimes, *deleteStats);
-                     CloseAdminSocket();
-                  }
+                  DeleteData('b', deleteValue, *deletePrimes);
+                  CloseAdminSocket();
                }
             }
             break;
@@ -263,13 +239,8 @@ void      AdminMenu(void)
                snprintf(deletePrimes, sizeof(deletePrimes), PromptForValue("Also delete primes (y/n): ", false));
 
                if (strlen(deletePrimes)) {
-                  snprintf(deleteStats, sizeof(deleteStats), PromptForValue("Also delete candidate group stats (y/n): ", false));
-
-                  if (strlen(deleteStats) && OpenAdminSocket())
-                  {
-                     DeleteData('n', deleteValue, *deletePrimes, *deleteStats);
-                     CloseAdminSocket();
-                  }
+                  DeleteData('n', deleteValue, *deletePrimes);
+                  CloseAdminSocket();
                }
             }
             break;
@@ -611,30 +582,6 @@ void  SendFactorFile(const char *factorFileName)
    }
 }
 
-void  SendRanges(int32_t ranges)
-{
-   char       *theMessage;
-   int32_t     endLoop = false;
-
-   if (!VerifyCommand("ADMIN_ADD_RANGE"))
-      return;
-
-   g_Socket->Send("ADD %d", ranges);
-
-   theMessage = g_Socket->Receive(120);
-   while (theMessage && !endLoop)
-   {
-      if (!memcmp(theMessage, "End of Message", 14))
-         endLoop = true;
-      else
-         if (memcmp(theMessage, "keepalive", 9))
-            g_Log->LogMessage(theMessage);
-
-      if (!endLoop)
-         theMessage = g_Socket->Receive(30);
-   }
-}
-
 void  ExpireWorkunit(const char *workunit)
 {
    char       *theMessage;
@@ -659,7 +606,7 @@ void  ExpireWorkunit(const char *workunit)
    }
 }
 
-void  DeleteData(char deleteWhich, char* deleteValue, char deletePrimes, char deleteStats)
+void  DeleteData(char deleteWhich, char* deleteValue, char deletePrimes)
 {
    char* theMessage;
    int32_t     endLoop = false;
@@ -667,7 +614,7 @@ void  DeleteData(char deleteWhich, char* deleteValue, char deletePrimes, char de
    if (!VerifyCommand("DELETE_DATA"))
       return;
 
-   g_Socket->Send("DELETE %c %s %c %c", deleteWhich, deleteValue, deletePrimes, deleteStats);
+   g_Socket->Send("DELETE %c %s %c", deleteWhich, deleteValue, deletePrimes);
 
    theMessage = g_Socket->Receive(120);
    while (theMessage && !endLoop)

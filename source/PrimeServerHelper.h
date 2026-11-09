@@ -22,6 +22,8 @@ public:
    void     UnhideSpecials(int32_t unhideSeconds);
 
    void     LoadABCFile(string abcFile);
+
+   void     UpdateCandidateGroupIds(void);
 };
 
 #endif // #ifndef _PrimeServerHelper_

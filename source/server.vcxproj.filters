@@ -21,28 +21,16 @@
     <ClCompile Include="CandidateTestResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CullenWoodallHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CullenWoodallStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DBInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FactorialHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FactorialStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FixedBKCHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FixedBKCStatsUpdater.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FixedBNCHTML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FixedBNCStatsUpdater.cpp">
@@ -96,9 +84,6 @@
     <ClCompile Include="PrimeWorkSender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PrimorialHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PrimorialStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -123,9 +108,6 @@
     <ClCompile Include="Socket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SophieGermainHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SophieGermainStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -144,24 +126,6 @@
     <ClCompile Include="WorkSender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WWWWHelperThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWHTMLGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWMail.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWStatsUpdater.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWWorkReceiver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWWorkSender.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HTMLGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -169,12 +133,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PrimeServerHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWServerHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LeylandHTML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LeylandStatsUpdater.cpp">
@@ -186,37 +144,19 @@
     <ClCompile Include="GenericStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CyclotomicHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CyclotomicStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CarolKyneaStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CarolKyneaHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MultiFactorialStatsUpdater.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MultiFactorialHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WagstaffHTML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WagstaffStatsUpdater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LifchitzHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LifchitzStatsUpdater.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HyperCullenWoodallHTML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HyperCullenWoodallStatsUpdater.cpp">
@@ -255,9 +195,6 @@
     <ClCompile Include="GFNDivisorHTMLGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GFNHTML.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DMDivisorHTMLGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -269,9 +206,6 @@
     <ClInclude Include="CandidateTestResult.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CullenWoodallHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CullenWoodallStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -281,19 +215,10 @@
     <ClInclude Include="defs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FactorialHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FactorialStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FixedBKCHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FixedBKCStatsUpdater.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FixedBNCHTML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FixedBNCStatsUpdater.h">
@@ -350,9 +275,6 @@
     <ClInclude Include="PrimeWorkSender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PrimorialHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PrimorialStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -377,9 +299,6 @@
     <ClInclude Include="Socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SophieGermainHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SophieGermainStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -401,24 +320,6 @@
     <ClInclude Include="WorkSender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WWWWHelperThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWHTMLGenerator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWMail.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWStatsUpdater.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWWorkReceiver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWWorkSender.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ServerHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -426,12 +327,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PrimeServerHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWServerHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LeylandHTML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LeylandStatsUpdater.h">
@@ -443,37 +338,19 @@
     <ClInclude Include="GenericStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CyclotomicHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CyclotomicStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CarolKyneaStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CarolKyneaHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MultiFactorialStatsUpdater.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MultiFactorialHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WagstaffHTML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WagstaffStatsUpdater.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LifchitzHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LifchitzStatsUpdater.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HyperCullenWoodallHTML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HyperCullenWoodallStatsUpdater.h">
@@ -509,9 +386,6 @@
     <ClInclude Include="GFNDivisorHTMLGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GFNHTML.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DMDivisorHTMLGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -519,6 +393,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GFNDivisorStatsUpdater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimplePrimeHTML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

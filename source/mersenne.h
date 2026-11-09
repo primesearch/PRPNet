@@ -13,10 +13,9 @@ typedef struct {
 // in the server that all ranges are the same size.  The values in this table were selected
 // based upon https://www.doublemersennes.org/productivity.php with the intent to have
 // ranges that can be done in no more than a day.
-// The smallest Mersenne Primes are only in this table so divisors can be searched
-// with PRPNet for testing purposes.  It is best to search for divisors for those Mesenne
-// Primes outside of PRPNet.
-// Support for higher Mesenne Primes will be added in the future.
+// The smaller Mersenne Primes are in this table so divisors can be searched
+// with PRPNet as the time to rest ranges is in a few hours with dmdsievecl.  It is best
+// to search for divisors for those Mesenne Primes outside of PRPNet.
 dmd_t  dmdList[] = {
    {       13,  9, 100000000000},   // 1e11
    {       17,  9, 100000000000},   // 1e11
@@ -29,10 +28,13 @@ dmd_t  dmdList[] = {
    {      521, 10,  10000000000},   // 1e10
    {      607, 10,  10000000000},   // 1e10
    {     1279,  9,   1000000000},   // 1e9
-   {     2203,  9,   1000000000},   // 1e9
-   {     2281,  9,   1000000000},   // 1e9
+   {     2203,  9,    100000000},   // 1e8
+   {     2281,  9,    100000000},   // 1e8
    {     3217,  8,    100000000},   // 1e8
    {     4253,  8,    100000000},   // 1e8
    {     4423,  8,    100000000},   // 1e8
+   {     9689,  8,    100000000},   // 1e8
+   {     9941,  8,    100000000},   // 1e8
+   {    11213,  8,    100000000},   // 1e8
    {        0,  0,            0} 
 };

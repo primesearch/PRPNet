@@ -75,15 +75,6 @@
     <ClCompile Include="WorkUnitTestFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WWWWProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWWorker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WWWWWorkUnitTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CycloProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -174,18 +165,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WorkUnitTestFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wwww.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWWorker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WWWWWorkUnitTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CycloProgram.h">

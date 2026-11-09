@@ -834,13 +834,108 @@ ServerHelper *PrimeHTMLGenerator::GetServerHelper(void)
    return serverHelper;
 }
 
+void     PrimeHTMLGenerator::ServerStats(void)
+{
+   SQLStatement* sqlStatement;
+
+   char        candidateGroupId[ID_LENGTH + 1];
+   int32_t     countInGroup, minInGroup, maxInGroup, countInProgress;
+   int32_t     countedTested, countDoubleChecked, countUntested;
+   int32_t     completedThru, leadingEdge, prpsAndPrimesFound;
+   int32_t     groupCount = 0, summaryCountInGroup = 0, summaryMinInGroup = 999999999;
+   int32_t     summaryMaxInGroup = 0, summaryTested = 0, summaryDoubleChecked = 0;
+   int32_t     summaryUntested = 0, summaryCompletedThru = 999999999, summaryLeadingEdge = 999999999;
+   int32_t     summaryPRPsAndPrimesFound = 0, summaryCountInProgress = 0;
+
+   const char* theSelect = "select candidateGroupId, countInGroup, minInGroup, maxInGroup, " \
+      "       countTested, countDoubleChecked, countUntested, " \
+      "       countInProgress, completedThru, leadingEdge, " \
+      "       prpsAndPrimesFound " \
+      "  from CandidateGroupStats cgs " \
+      "order by %s";
+
+   sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect, is_GroupStatsSortSequence.c_str());
+
+   sqlStatement->BindSelectedColumn(candidateGroupId, ID_LENGTH);
+   sqlStatement->BindSelectedColumn(&countInGroup);
+   sqlStatement->BindSelectedColumn(&minInGroup);
+   sqlStatement->BindSelectedColumn(&maxInGroup);
+   sqlStatement->BindSelectedColumn(&countedTested);
+   sqlStatement->BindSelectedColumn(&countDoubleChecked);
+   sqlStatement->BindSelectedColumn(&countUntested);
+   sqlStatement->BindSelectedColumn(&countInProgress);
+   sqlStatement->BindSelectedColumn(&completedThru);
+   sqlStatement->BindSelectedColumn(&leadingEdge);
+   sqlStatement->BindSelectedColumn(&prpsAndPrimesFound);
+
+   if (!CheckIfRecordsWereFound(sqlStatement, "No group stats found"))
+      return;
+
+   ServerStatsHeader();
+
+   do
+   {
+      groupCount++;
+      summaryCountInGroup += countInGroup;
+      summaryCountInProgress += countInProgress;
+      summaryMinInGroup = (minInGroup < summaryMinInGroup ? minInGroup : summaryMinInGroup);
+      summaryMaxInGroup = (maxInGroup > summaryMaxInGroup ? maxInGroup : summaryMaxInGroup);
+      summaryTested += countedTested;
+      summaryDoubleChecked += countDoubleChecked;
+      summaryUntested += countUntested;
+      summaryCompletedThru = (completedThru < summaryCompletedThru ? completedThru : summaryCompletedThru);
+      summaryLeadingEdge = (leadingEdge < summaryLeadingEdge ? leadingEdge : summaryLeadingEdge);
+      summaryPRPsAndPrimesFound += prpsAndPrimesFound;
+
+      if (ib_ServerStatsSummaryOnly) continue;
+
+      // If the socket was closed, then stop sending data
+      if (!ip_Socket->Send("<tr class=\"%s\">", (countUntested ? "untested" : "tested")))
+         break;
+
+      ip_Socket->Send("<th scope=\"row\">%s</th>", candidateGroupId);
+      TD_32BIT(countInGroup);
+      TD_32BIT(minInGroup);
+      TD_32BIT(maxInGroup);
+      TD_32BIT(countedTested);
+      TD_IF_DC(countDoubleChecked);
+      TD_32BIT(countUntested);
+      TD_32BIT(countInProgress);
+      TD_32BIT(completedThru);
+      TD_32BIT(leadingEdge);
+      TD_32BIT(prpsAndPrimesFound);
+
+      ip_Socket->Send("</tr>");
+   } while (sqlStatement->FetchRow(false));
+
+   ip_Socket->Send("</tbody><tfoot><tr>");
+
+   ip_Socket->Send("<th scope=\"row\">Group: %d</th>", groupCount);
+   TD_32BIT(summaryCountInGroup);
+   TD_32BIT(summaryMinInGroup);
+   TD_32BIT(summaryMaxInGroup);
+   TD_32BIT(summaryTested);
+   TD_IF_DC(summaryDoubleChecked);
+   TD_32BIT(summaryUntested);
+   TD_32BIT(summaryCountInProgress);
+   TD_32BIT(summaryCompletedThru);
+   TD_32BIT(summaryLeadingEdge);
+   TD_32BIT(summaryPRPsAndPrimesFound);
+
+   ip_Socket->Send("</tr></tfoot></table></article>");
+
+   delete sqlStatement;
+}
+
 // The server_stats.html table for all of the searches has the same column headings with the exception 
 // of the Min/Max columns.
-void     PrimeHTMLGenerator::ServerStatsHeader(sss_t summarizedBy)
+void     PrimeHTMLGenerator::ServerStatsHeader(void)
 {
+   sss_t summarizedBy = GetSummarizedBy();
+
    ip_Socket->Send("<article><table id=\"server-stats-table\" class=\"sortable\"><thead><tr>");
 
-   TH_CLMN_HDR("Form");
+   TH_CLMN_HDR("Group");
    TH_CLMN_HDR("Total Candidates");
 
    if (summarizedBy == BY_K)

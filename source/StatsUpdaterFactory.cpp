@@ -14,7 +14,6 @@
 #include "CyclotomicStatsUpdater.h"
 #include "CarolKyneaStatsUpdater.h"
 #include "HyperCullenWoodallStatsUpdater.h"
-#include "WWWWStatsUpdater.h"
 #include "WagstaffStatsUpdater.h"
 #include "DMDivisorStatsUpdater.h"
 #include "GFNDivisorStatsUpdater.h"
@@ -89,13 +88,6 @@ StatsUpdater   *StatsUpdaterFactory::GetInstance(DBInterface *dbInterface, Log *
 
       case ST_WAGSTAFF:
          theUpdater = new WagstaffStatsUpdater();
-         break;
-
-      case ST_WIEFERICH:
-      case ST_WILSON:
-      case ST_WALLSUNSUN:
-      case ST_WOLSTENHOLME:
-         theUpdater = new WWWWStatsUpdater();
          break;
 
       case ST_GFNDIVISOR:

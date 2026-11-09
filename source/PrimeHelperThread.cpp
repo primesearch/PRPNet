@@ -4,6 +4,7 @@
 #include "LengthCalculator.h"
 #include "SQLStatement.h"
 #include "StatsUpdaterFactory.h"
+#include "StatsUpdater.h"
 #include "PrimeStatsUpdater.h"
 #include "PrimeWorkSender.h"
 #include "PrimeWorkReceiver.h"
@@ -177,7 +178,7 @@ void      PrimeHelperThread::AdminABCFile(void)
    // These should be done after the admin tool is informed of the results
    // because they could take a wile and the admin tool really doesn't care at
    // this point if this is successful or not
-   if (!su->RollupGroupStats(true))
+   if (!su->RollupCandidateGroupStats(true))
       ip_DBInterface->Rollback();
    else
       ip_DBInterface->Commit();
@@ -302,7 +303,7 @@ void      PrimeHelperThread::AdminFactorFile(void)
 
    suf = new StatsUpdaterFactory();
    su = suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ip_Globals->b_NeedsDoubleCheck);
-   if (!su->RollupGroupStats(true))
+   if (!su->RollupCandidateGroupStats(true))
       ip_DBInterface->Rollback();
    else
       ip_DBInterface->Commit();
@@ -376,11 +377,11 @@ void      PrimeHelperThread::ExpireWorkunitTest(void)
 void      PrimeHelperThread::DeleteData(void)
 {
    char* theMessage;
-   char  deleteWhich, deletePrimes, deleteStats;
+   char  deleteWhich, deletePrimes;
    char  theValue[30];
    uint32_t rows;
 
-   deletePrimes = deleteStats = 'n';
+   deletePrimes;
 
    SQLStatement* sqlStatement;
 
@@ -390,12 +391,11 @@ void      PrimeHelperThread::DeleteData(void)
       " where ct.CandidateName = (select c.CandidateName from Candidate c where c.CandidateName = ct.CandidateName and c.%c <= %" PRId64")";
    const char* deleteCandidateSQL = "delete from Candidate where %c <= %" PRId64"";
    const char* deleteUserPrimesSQL = "delete from UserPrimes where %c <= %" PRId64"";
-   const char* deleteCandidateGroupStatsSQL = "delete from CandidateGroupStats where %c <= %" PRId64"";
 
    theMessage = ip_Socket->Receive();
    if (!theMessage) return;
 
-   if (sscanf(theMessage, "DELETE %c %s %c %c", &deleteWhich, theValue, &deletePrimes, &deleteStats) != 4)
+   if (sscanf(theMessage, "DELETE %c %s %c", &deleteWhich, theValue, &deletePrimes) != 4)
    {
       ip_Socket->Send("Failed to parse mesasge %s", theMessage + 7);
       ip_Socket->Send("End of Message");
@@ -489,25 +489,22 @@ void      PrimeHelperThread::DeleteData(void)
       delete sqlStatement;
    }
 
-   if (deleteStats == 'y')
-   {
-      sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, deleteCandidateGroupStatsSQL, deleteWhich, longValue);
+   StatsUpdaterFactory *suf = new StatsUpdaterFactory();
+   StatsUpdater *su = suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ip_Globals->b_NeedsDoubleCheck);
 
-      if (!sqlStatement->Execute())
-      {
-         ip_Socket->Send("Failed trying to delete CandidateGroupStats");
-         ip_DBInterface->Rollback();
+   boolean success = su->RollupCandidateGroupStats(true);
 
-         ip_Socket->Send("End of Message");
-         return;
-      }
-
-      rows = sqlStatement->GetRowsAffected();
+   if (success)
       ip_DBInterface->Commit();
-      ip_Socket->Send("Deleted %u CandidateGroupStats", rows);
+   else
+      ip_DBInterface->Rollback();
 
-      delete sqlStatement;
-   }
+   ip_DBInterface->Commit();
+   ip_Socket->Send("Update CandidateGroupStats");
+
+   delete suf;
+   delete su;
+   delete sqlStatement;
 
    ip_Socket->Send("End of Message");
 }

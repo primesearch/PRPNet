@@ -259,8 +259,7 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    delete selectStatement;
    delete abcParser;
 
-   if (ii_ServerType == ST_GENERIC || ii_ServerType == ST_FACTORIAL ||
-      ii_ServerType == ST_MULTIFACTORIAL || ii_ServerType == ST_PRIMORIAL)
+   if (ii_ServerType == ST_FACTORIAL || ii_ServerType == ST_MULTIFACTORIAL || ii_ServerType == ST_PRIMORIAL)
       lengthCalculator->CalculateDecimalLengths(0);
 
    delete lengthCalculator;
@@ -270,9 +269,8 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    ip_Log->LogMessage("     New candidates added = %6d", newEntries);
    ip_Log->LogMessage("      Duplicates rejected = %6d", dupEntries);
    ip_Log->LogMessage("Bad entries from ABC file = %6d", badEntries);
-   ip_Log->LogMessage("End of Message");
 
-   if (!su->RollupGroupStats(true))
+   if (!su->RollupCandidateGroupStats(true))
       ip_DBInterface->Rollback();
    else
       ip_DBInterface->Commit();
@@ -282,4 +280,81 @@ void      PrimeServerHelper::LoadABCFile(string abcFile)
    ip_DBInterface->Disconnect();
 
    ip_Log->LogMessage("%d new candidates added through the ABC file", newEntries);
+}
+
+void      PrimeServerHelper::UpdateCandidateGroupIds(void)
+{
+   SQLStatement* selectStatement;
+   StatsUpdaterFactory* suf;
+   PrimeStatsUpdater* su;
+   int32_t     totalSuccess, totalFailed, countFound  = 0;
+   int64_t     theK, theC;
+   int32_t     theB, theN, theD;
+   char        candidateName[NAME_LENGTH+1];
+   const char* selectSQL1 = "select count(*) from Candidate where candidateGroupId is null";
+   const char* selectSQL2 = "select candidateName, k, b, n, c, d from Candidate where candidateGroupId is null";
+
+   ip_DBInterface->Connect(3);
+
+   suf = new StatsUpdaterFactory();
+   su = (PrimeStatsUpdater*)suf->GetInstance(ip_DBInterface, ip_Log, ii_ServerType, ib_NeedsDoubleCheck);
+   delete suf;
+
+   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1);
+   selectStatement->BindSelectedColumn(&countFound);
+
+   selectStatement->FetchRow(true);
+   delete selectStatement;
+
+   if (countFound == 0)
+   {
+      ip_DBInterface->Disconnect();
+      return;
+   }
+
+   ip_Log->LogMessage("Updating Candidate.candidateGroupId due to upgrade");
+
+   totalSuccess = totalFailed = 0;
+
+   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2);
+   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
+   selectStatement->BindSelectedColumn(&theK);
+   selectStatement->BindSelectedColumn(&theB);
+   selectStatement->BindSelectedColumn(&theN);
+   selectStatement->BindSelectedColumn(&theC);
+   selectStatement->BindSelectedColumn(&theD);
+
+   while (selectStatement->FetchRow(false))
+   {
+      if (su->SetCandidateGroupId(candidateName, theK, theB, theN, theC, theD))
+         totalSuccess++;
+      else
+         totalFailed++;
+
+      if ((totalSuccess + totalFailed) % 1000 == 0)
+      {
+         printf(" Updated candidateGroupId on %d of %d Candidates with %d failures\r", totalSuccess, countFound, totalFailed);
+         fflush(stdout);
+         ip_DBInterface->Commit();
+      }
+   }
+
+   ip_DBInterface->Commit();
+
+   delete selectStatement;
+
+   ip_Log->LogMessage("Candidates requiring a candidateGroupId = %6d", countFound);
+   ip_Log->LogMessage("                         Failed Updates = %6d", totalFailed);
+   ip_Log->LogMessage("                     Successful Updates = %6d", totalSuccess);
+
+   if (!su->RollupCandidateGroupStats(true))
+      ip_DBInterface->Rollback();
+   else
+      ip_DBInterface->Commit();
+
+   delete su;
+
+   ip_DBInterface->Disconnect();
+
+   ip_Log->LogMessage("CandidateGroupStats are updated.  Ready to send work to clients");
 }

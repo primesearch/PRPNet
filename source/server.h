@@ -50,6 +50,7 @@ typedef struct
    int32_t  i_MinutesBetweenStatsRefresh;
    delay_t *p_Delay;
    string   s_SortSequence;
+   string   s_GroupStatsSortSequence;
    string   s_AllPrimesSortSequence;
    string   s_HTMLTitle;
    string   s_ProjectTitle;

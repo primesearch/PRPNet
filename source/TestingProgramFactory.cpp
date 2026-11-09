@@ -12,7 +12,6 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
    ip_PFGWProgram = nullptr;
    ip_GeneferProgram = nullptr;
    ip_CycloProgram = nullptr;
-   ip_WWWWProgram = nullptr;
    ip_PRSTProgram = nullptr;
    ip_DMDivisorProgram = nullptr;
    ip_GFNDivisorProgram = nullptr;
@@ -33,8 +32,6 @@ TestingProgramFactory::TestingProgramFactory(Log *theLog, string configFile)
       else if (!memcmp(line, "pfgwexe=", 8) && strlen(line) > 8)
          ip_PFGWProgram = new PFGWProgram(theLog, line+8);
       else if (!memcmp(line, "wwwwexe=", 8) && strlen(line) > 8)
-         ip_WWWWProgram = new WWWWProgram(theLog, line+8);
-      else if (!memcmp(line, "cycloexe=", 9) && strlen(line) > 9)
          ip_CycloProgram = new CycloProgram(theLog, line+9);
       else if (!memcmp(line, "geneferexe=", 11) && strlen(line) > 11)
       {
@@ -70,7 +67,6 @@ TestingProgramFactory::~TestingProgramFactory()
    if (ip_PRSTProgram)       delete ip_PRSTProgram;
    if (ip_GeneferProgram)    delete ip_GeneferProgram;
    if (ip_CycloProgram)      delete ip_CycloProgram;
-   if (ip_WWWWProgram)       delete ip_WWWWProgram;
    if (ip_DMDivisorProgram)  delete ip_DMDivisorProgram;
    if (ip_GFNDivisorProgram) delete ip_GFNDivisorProgram;
 }
@@ -113,12 +109,6 @@ bool     TestingProgramFactory::ValidatePrograms(void)
       ip_CycloProgram = nullptr;
    }
 
-   if (ip_WWWWProgram && !ip_WWWWProgram->ValidateExe())
-   {
-      delete ip_WWWWProgram;
-      ip_WWWWProgram = nullptr;
-   }
-
    if (ip_GFNDivisorProgram && !ip_GFNDivisorProgram->ValidateExe())
    {
       delete ip_GFNDivisorProgram;
@@ -131,9 +121,9 @@ bool     TestingProgramFactory::ValidatePrograms(void)
       ip_DMDivisorProgram = nullptr;
    }
 
-   if (!ip_LLRProgram && !ip_PhrotProgram && !ip_PFGWProgram && !ip_GeneferProgram && !ip_PRSTProgram && !ip_CycloProgram && !ip_WWWWProgram)
+   if (!ip_LLRProgram && !ip_PhrotProgram && !ip_PFGWProgram && !ip_GeneferProgram && !ip_PRSTProgram && !ip_CycloProgram)
    {
-      printf("At least one valid exe (llrexe, phrotexe, pfgwexe, prstexe, geneferexe, cycloexe, wwwwexe) must be specified.\n");
+      printf("At least one valid exe (llrexe, phrotexe, pfgwexe, prstexe, geneferexe, cycloexe) must be specified.\n");
       return false;
    }
 
@@ -148,7 +138,6 @@ void     TestingProgramFactory::SendPrograms(Socket *theSocket)
    if (ip_PFGWProgram)        ip_PFGWProgram->SendStandardizedName(theSocket, false);
    if (ip_GeneferProgram)     ip_GeneferProgram->SendStandardizedName(theSocket, false);
    if (ip_CycloProgram)       ip_CycloProgram->SendStandardizedName(theSocket, false);
-   if (ip_WWWWProgram)        ip_WWWWProgram->SendStandardizedName(theSocket, false);
    if (ip_GFNDivisorProgram)  ip_GFNDivisorProgram->SendStandardizedName(theSocket, false);
    if (ip_DMDivisorProgram)   ip_DMDivisorProgram->SendStandardizedName(theSocket, false);
 }

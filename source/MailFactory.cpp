@@ -1,6 +1,5 @@
 #include "MailFactory.h"
 #include "PrimeMail.h"
-#include "WWWWMail.h"
 
 Mail   *MailFactory::GetInstance(const globals_t * const globals, const string &smtpServer, const int32_t smtpPort) const
 {
@@ -26,13 +25,6 @@ Mail   *MailFactory::GetInstance(const globals_t * const globals, const string &
       case ST_WAGSTAFF:
       case ST_TWINANDSOPHIE:
          pMail = new PrimeMail(globals, smtpServer, smtpPort);
-         break;
-
-      case ST_WIEFERICH:
-      case ST_WILSON:
-      case ST_WALLSUNSUN:
-      case ST_WOLSTENHOLME:
-         pMail = new WWWWMail(globals, smtpServer, smtpPort);
          break;
 
       default:

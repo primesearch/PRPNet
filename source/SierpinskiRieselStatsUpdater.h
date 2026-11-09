@@ -7,17 +7,18 @@
 class SierpinskiRieselStatsUpdater : public PrimeStatsUpdater
 {
 public:
-   bool  SetSierspinkiRieselPrimeN(int64_t theK, int32_t theB, int64_t theC, int32_t theD, int32_t theN);
+
+public:
+   bool  SetSierspinkiRieselPrimeN(char *candidateGroupId, int32_t theN);
 
 private:
-   bool  SetHasSierspinkiRieselPrime(int64_t theK, int32_t theB, int64_t theC, int32_t theD, bool &foundOne);
+   char* GetGroupingColumnForCandidateGroupStats(void) { return "n"; }
 
-   bool  RollupGroupStats(bool deleteInsert);
+   char* GetInsertSqlForCandidateGroupStats(void) {
+      return "insert into CandidateGroupStats (candidateGroupId, k, b, c, d) (select distinct candidateGroupId, k, b, c, d from Candidate)";
+   };
 
-   bool  UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
-
-   bool  InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                         int64_t theC, int32_t theD, double decimalLength);
+   string GenerateCandidateGroupId(int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
 };
 
 #endif // #ifndef _SierpinskiRieselStatsUpdater_

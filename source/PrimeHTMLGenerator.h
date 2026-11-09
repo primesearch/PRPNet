@@ -32,11 +32,13 @@ public:
    void     UserTeamStats(void);
    void     TeamUserStats(void);
    void     TeamStats(void);
-   void     ServerStatsHeader(sss_t summarizedBy);
-
-   virtual void  ServerStats(void) {};
 
 protected:
+   void     ServerStats(void);
+
+   void     ServerStatsHeader(void);
+
+   virtual sss_t GetSummarizedBy(void) { return BY_N; };
 
    bool          SendSpecificPage(string thePage);
    ServerHelper *GetServerHelper(void);

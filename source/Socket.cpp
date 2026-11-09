@@ -139,7 +139,7 @@ char    *Socket::GetNextMessageFromReadBuffer(void)
 
    is_TempReadBuffer[pos - is_ReadBuffer] = 0;
 
-   ip_Log->Debug(DEBUG_SOCKET, "parsed %s\n", is_TempReadBuffer);
+   ip_Log->Debug(DEBUG_SOCKET, "%s: parsed %s\n", is_SocketDescription.c_str(), is_TempReadBuffer);
 
    // Point to the 0 that we just put into is_TempReadBuffer
    pos = &is_TempReadBuffer[pos - is_ReadBuffer];
@@ -149,7 +149,7 @@ char    *Socket::GetNextMessageFromReadBuffer(void)
    if (*pos)
    {
       strcpy(is_ReadBuffer, pos);
-      ip_Log->Debug(DEBUG_SOCKET, "next %s\n", is_ReadBuffer);
+      ip_Log->Debug(DEBUG_SOCKET, "%s: next %s\n", is_SocketDescription.c_str(), is_ReadBuffer);
 }
    else
       ClearBuffer();
@@ -272,7 +272,7 @@ char    *Socket::Receive(int32_t maxWaitSeconds)
             strcat(is_ReadBuffer, is_TempReadBuffer);
             is_ReadBuffer[totalBytesReceived] = 0;
 
-            ip_Log->Debug(DEBUG_SOCKET, "read %s\n", is_ReadBuffer);
+            ip_Log->Debug(DEBUG_SOCKET, "%s: read %s\n", is_SocketDescription.c_str(), is_ReadBuffer);
 
             theTime = time(NULL);
          }
@@ -281,9 +281,11 @@ char    *Socket::Receive(int32_t maxWaitSeconds)
 
    if (!totalBytesReceived)
    {
-      if (!clientDisconnected)
-         ip_Log->LogMessage("%s: nothing was received on socket after %d seconds",
-                            is_SocketDescription.c_str(), maxWaitSeconds);
+      // This tends to happen when accessing stats from a browser.  The browser opens multiple connections, but only
+      // sends messages on one of the connections.  This is commented out to reduce server noise.
+      //if (!clientDisconnected)
+      //   ip_Log->LogMessage("%s: nothing was received on socket after %d seconds",
+      //                      is_SocketDescription.c_str(), maxWaitSeconds);
       return NULL;
    }
 

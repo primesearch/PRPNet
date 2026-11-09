@@ -17,7 +17,7 @@ public:
 
    bool     RollupAllStats(void);
 
-   virtual bool   RollupGroupStats(bool deleteInsert) { return true; };
+   virtual bool   RollupCandidateGroupStats(bool deleteInsert) { return true; };
 
 protected:
    int32_t       ib_NeedsDoubleCheck;

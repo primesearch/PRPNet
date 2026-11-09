@@ -99,7 +99,7 @@ bool  PrimeMail::NotifyUser(const string &toEmailID, const string &candidateName
                                    "order by TestIndex";
    const string srStatSelect = "select count(*) from CandidateGroupStats "
                                " where k = ? and b = ? and c = ? " \
-                               "   and PRPandPrimesFound = 0";
+                               "   and prpsAndPrimesFound = 0";
 
    testStatment = new SQLStatement(ip_Log, ip_DBInterface, testResultSelect);
    testStatment->BindInputParameter(candidateName, NAME_LENGTH);

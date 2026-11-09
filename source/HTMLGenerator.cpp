@@ -10,6 +10,7 @@ HTMLGenerator::HTMLGenerator(globals_t *theGlobals)
    is_SortLink = theGlobals->s_SortLink;
    ib_ServerStatsSummaryOnly = theGlobals->b_ServerStatsSummaryOnly;
    is_AllPrimesSortSequence = theGlobals->s_AllPrimesSortSequence;
+   is_GroupStatsSortSequence = theGlobals->s_GroupStatsSortSequence;
 
    ib_ShowTeamsOnHtml = theGlobals->b_ShowTeamsOnHtml;
    ib_NeedsDoubleCheck = theGlobals->b_NeedsDoubleCheck;

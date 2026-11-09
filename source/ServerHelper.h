@@ -34,6 +34,8 @@ public:
 
    virtual void      LoadABCFile(string abcFile) {};
 
+   virtual void      UpdateCandidateGroupIds(void) {};
+
 protected:
    DBInterface  *ip_DBInterface;
    Log          *ip_Log;

@@ -94,7 +94,8 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
       case ST_CULLENWOODALL:
          doubleB = (double) intB;
          doubleN = (double) intN;
-         unroundedLength = log10(doubleB) * doubleN + log10(doubleN);
+         doubleK = (double) intK;
+         unroundedLength = log10(doubleB) * doubleN + log10(doubleK);
          break;
 
       case ST_GFN:
@@ -162,6 +163,9 @@ double   LengthCalculator::CalculateDecimalLength(int64_t intK, int32_t intB, in
 
          unroundedLength = log10(doubleB) * doubleN + log10(doubleK);
          break;
+
+      case ST_GENERIC:
+         return 1.0;
 
       default:
          return 0.0;

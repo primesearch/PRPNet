@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -23,40 +15,20 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -69,33 +41,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)..\server\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)..\server\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\prpserver\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\server\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\server\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\prpserver\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|x64'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <TargetName>prpserver32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>prpserver</TargetName>
@@ -103,49 +60,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>prpserver</TargetName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <TargetName>prpserver32d</TargetName>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Midl>
-      <TypeLibraryName>.\Release/server.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeaderOutputFile>.\Release/server.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>wsock32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ProgramDatabaseFile>.\Release/prpserver.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Release/server.bsc</OutputFile>
-    </Bscmake>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
@@ -186,46 +100,6 @@
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Release/server.bsc</OutputFile>
-    </Bscmake>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Midl>
-      <TypeLibraryName>.\Debug/server.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <PreprocessorDefinitions>MEMLEAK;WIN32;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\Debug/server.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
-      <ObjectFileName>.\Debug/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <Optimization>Disabled</Optimization>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x0409</Culture>
-    </ResourceCompile>
-    <Link>
-      <AdditionalDependencies>wsock32.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)\$(TargetName)$(TargetExt)</OutputFile>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/prpserver.pdb</ProgramDatabaseFile>
-      <SubSystem>Console</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Debug/server.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -273,11 +147,8 @@
   <ItemGroup>
     <ClCompile Include="ABCParser.cpp" />
     <ClCompile Include="CandidateTestResult.cpp" />
-    <ClCompile Include="CarolKyneaHTML.cpp" />
     <ClCompile Include="CarolKyneaStatsUpdater.cpp" />
-    <ClCompile Include="CullenWoodallHTML.cpp" />
     <ClCompile Include="CullenWoodallStatsUpdater.cpp" />
-    <ClCompile Include="CyclotomicHTML.cpp" />
     <ClCompile Include="CyclotomicStatsUpdater.cpp" />
     <ClCompile Include="DBInterface.cpp" />
     <ClCompile Include="DMDivisorHTMLGenerator.cpp" />
@@ -286,11 +157,8 @@
     <ClCompile Include="DMDivisorWorkReceiver.cpp" />
     <ClCompile Include="DMDivisorWorkSender.cpp" />
     <ClCompile Include="DMDivisorServerHelper.cpp" />
-    <ClCompile Include="FactorialHTML.cpp" />
     <ClCompile Include="FactorialStatsUpdater.cpp" />
-    <ClCompile Include="FixedBKCHTML.cpp" />
     <ClCompile Include="FixedBKCStatsUpdater.cpp" />
-    <ClCompile Include="FixedBNCHTML.cpp" />
     <ClCompile Include="FixedBNCStatsUpdater.cpp" />
     <ClCompile Include="GenericHTML.cpp" />
     <ClCompile Include="GenericStatsUpdater.cpp" />
@@ -300,33 +168,25 @@
     <ClCompile Include="GFNDivisorWorkReceiver.cpp" />
     <ClCompile Include="GFNDivisorWorkSender.cpp" />
     <ClCompile Include="GFNDivisorServerHelper.cpp" />
-    <ClCompile Include="GFNHTML.cpp" />
     <ClCompile Include="GFNStatsUpdater.cpp" />
     <ClCompile Include="HelperSocket.cpp" />
     <ClCompile Include="HelperThread.cpp" />
     <ClCompile Include="HTMLGenerator.cpp" />
     <ClCompile Include="HTMLGeneratorFactory.cpp" />
-    <ClCompile Include="HyperCullenWoodallHTML.cpp" />
     <ClCompile Include="HyperCullenWoodallStatsUpdater.cpp" />
     <ClCompile Include="KeepAliveThread.cpp" />
     <ClCompile Include="LengthCalculator.cpp" />
-    <ClCompile Include="LifchitzHTML.cpp" />
     <ClCompile Include="LifchitzStatsUpdater.cpp" />
     <ClCompile Include="Log.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="Mail.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="MailFactory.cpp" />
     <ClCompile Include="MailSocket.cpp" />
-    <ClCompile Include="MultiFactorialHTML.cpp" />
     <ClCompile Include="MultiFactorialStatsUpdater.cpp" />
     <ClCompile Include="PrimeHelperThread.cpp" />
     <ClCompile Include="PrimeHTMLGenerator.cpp" />
@@ -335,12 +195,9 @@
     <ClCompile Include="PrimeStatsUpdater.cpp" />
     <ClCompile Include="PrimeWorkReceiver.cpp" />
     <ClCompile Include="PrimeWorkSender.cpp" />
-    <ClCompile Include="PrimorialHTML.cpp" />
     <ClCompile Include="PrimorialStatsUpdater.cpp" />
     <ClCompile Include="prpserver.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="ServerHelperFactory.cpp" />
@@ -350,38 +207,23 @@
     <ClCompile Include="SierpinskiRieselHTML.cpp" />
     <ClCompile Include="SierpinskiRieselStatsUpdater.cpp" />
     <ClCompile Include="Socket.cpp">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="SophieGermainHTML.cpp" />
     <ClCompile Include="SophieGermainStatsUpdater.cpp" />
     <ClCompile Include="SQLStatement.cpp" />
     <ClCompile Include="StatsUpdater.cpp" />
     <ClCompile Include="StatsUpdaterFactory.cpp" />
-    <ClCompile Include="WagstaffHTML.cpp" />
     <ClCompile Include="WagstaffStatsUpdater.cpp" />
     <ClCompile Include="WorkReceiver.cpp" />
     <ClCompile Include="WorkSender.cpp" />
-    <ClCompile Include="WWWWHelperThread.cpp" />
-    <ClCompile Include="WWWWHTMLGenerator.cpp" />
-    <ClCompile Include="WWWWMail.cpp" />
-    <ClCompile Include="WWWWServerHelper.cpp" />
-    <ClCompile Include="WWWWStatsUpdater.cpp" />
-    <ClCompile Include="WWWWWorkReceiver.cpp" />
-    <ClCompile Include="WWWWWorkSender.cpp" />
-    <ClCompile Include="LeylandHTML.cpp" />
     <ClCompile Include="LeylandStatsUpdater.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ABCParser.h" />
     <ClInclude Include="CandidateTestResult.h" />
-    <ClInclude Include="CarolKyneaHTML.h" />
     <ClInclude Include="CarolKyneaStatsUpdater.h" />
-    <ClInclude Include="CullenWoodallHTML.h" />
     <ClInclude Include="CullenWoodallStatsUpdater.h" />
-    <ClInclude Include="CyclotomicHTML.h" />
     <ClInclude Include="CyclotomicStatsUpdater.h" />
     <ClInclude Include="DBInterface.h" />
     <ClInclude Include="defs.h" />
@@ -391,11 +233,8 @@
     <ClInclude Include="DMDivisorWorkReceiver.h" />
     <ClInclude Include="DMDivisorWorkSender.h" />
     <ClInclude Include="DMDivisorServerHelper.h" />
-    <ClInclude Include="FactorialHTML.h" />
     <ClInclude Include="FactorialStatsUpdater.h" />
-    <ClInclude Include="FixedBKCHTML.h" />
     <ClInclude Include="FixedBKCStatsUpdater.h" />
-    <ClInclude Include="FixedBNCHTML.h" />
     <ClInclude Include="FixedBNCStatsUpdater.h" />
     <ClInclude Include="GenericHTML.h" />
     <ClInclude Include="GenericStatsUpdater.h" />
@@ -405,24 +244,20 @@
     <ClInclude Include="GFNDivisorWorkReceiver.h" />
     <ClInclude Include="GFNDivisorWorkSender.h" />
     <ClInclude Include="GFNDivisorServerHelper.h" />
-    <ClInclude Include="GFNHTML.h" />
     <ClInclude Include="GFNStatsUpdater.h" />
     <ClInclude Include="HelperSocket.h" />
     <ClInclude Include="HelperThread.h" />
     <ClInclude Include="HTMLGenerator.h" />
     <ClInclude Include="HTMLGeneratorFactory.h" />
-    <ClInclude Include="HyperCullenWoodallHTML.h" />
     <ClInclude Include="HyperCullenWoodallStatsUpdater.h" />
     <ClInclude Include="KeepAliveThread.h" />
     <ClInclude Include="LengthCalculator.h" />
-    <ClInclude Include="LifchitzHTML.h" />
     <ClInclude Include="LifchitzStatsUpdater.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Mail.h" />
     <ClInclude Include="MailFactory.h" />
     <ClInclude Include="MailSocket.h" />
     <ClInclude Include="mersenne.h" />
-    <ClInclude Include="MultiFactorialHTML.h" />
     <ClInclude Include="MultiFactorialStatsUpdater.h" />
     <ClInclude Include="PrimeHelperThread.h" />
     <ClInclude Include="PrimeHTMLGenerator.h" />
@@ -431,7 +266,6 @@
     <ClInclude Include="PrimeStatsUpdater.h" />
     <ClInclude Include="PrimeWorkReceiver.h" />
     <ClInclude Include="PrimeWorkSender.h" />
-    <ClInclude Include="PrimorialHTML.h" />
     <ClInclude Include="PrimorialStatsUpdater.h" />
     <ClInclude Include="server.h" />
     <ClInclude Include="ServerHelper.h" />
@@ -441,25 +275,16 @@
     <ClInclude Include="SharedMemoryItem.h" />
     <ClInclude Include="SierpinskiRieselHTML.h" />
     <ClInclude Include="SierpinskiRieselStatsUpdater.h" />
+    <ClInclude Include="SimplePrimeHTML.h" />
     <ClInclude Include="Socket.h" />
-    <ClInclude Include="SophieGermainHTML.h" />
     <ClInclude Include="SophieGermainStatsUpdater.h" />
     <ClInclude Include="SQLStatement.h" />
     <ClInclude Include="StatsUpdater.h" />
     <ClInclude Include="StatsUpdaterFactory.h" />
     <ClInclude Include="Thread.h" />
-    <ClInclude Include="WagstaffHTML.h" />
     <ClInclude Include="WagstaffStatsUpdater.h" />
     <ClInclude Include="WorkReceiver.h" />
     <ClInclude Include="WorkSender.h" />
-    <ClInclude Include="WWWWHelperThread.h" />
-    <ClInclude Include="WWWWHTMLGenerator.h" />
-    <ClInclude Include="WWWWMail.h" />
-    <ClInclude Include="WWWWServerHelper.h" />
-    <ClInclude Include="WWWWStatsUpdater.h" />
-    <ClInclude Include="WWWWWorkReceiver.h" />
-    <ClInclude Include="WWWWWorkSender.h" />
-    <ClInclude Include="LeylandHTML.h" />
     <ClInclude Include="LeylandStatsUpdater.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

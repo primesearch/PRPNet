@@ -4,6 +4,7 @@
 void SierpinskiRieselHTML::ServerStats(void)
 {
    SQLStatement *sqlStatement;
+   char        candidateGroupId[ID_LENGTH + 1];
    int64_t     k;
    int32_t     b, c, d, prevB, prevC, prevD;
    int32_t     kCountInGroup, kMinN, kMaxN, kCountInProgress;
@@ -18,15 +19,16 @@ void SierpinskiRieselHTML::ServerStats(void)
    int32_t     totalUntested = 0, totalCompletedThru = 999999999, totalLeadingEdge = 999999999;
    int32_t     totalPRPsAndPrimesFound = 0, totalCountInProgress = 0, totalTestsSkipped = 0;
 
-   const char *theSelect = "select k, b, c, d, CountInGroup, MinInGroup, MaxInGroup, " \
-                           "       CountTested, CountDoubleChecked, CountUntested, " \
-                           "       CountInProgress, CompletedThru, LeadingEdge, PRPandPrimesFound, " \
-                           "       SierpinskiRieselPrimeN " \
+   const char *theSelect = "select candidateGroupId, k, b, c, d, countInGroup, minInGroup, maxInGroup, " \
+                           "       countTested, countDoubleChecked, countUntested, " \
+                           "       countInProgress, completedThru, leadingEdge, prpsAndPrimesFound, " \
+                           "       sierpinskiRieselPrimeN " \
                            "  from CandidateGroupStats " \
                            "order by b, c, k, d";
 
    sqlStatement = new SQLStatement(ip_Log, ip_DBInterface, theSelect);
 
+   sqlStatement->BindSelectedColumn(candidateGroupId, ID_LENGTH);
    sqlStatement->BindSelectedColumn(&k);
    sqlStatement->BindSelectedColumn(&b);
    sqlStatement->BindSelectedColumn(&c);
@@ -50,7 +52,7 @@ void SierpinskiRieselHTML::ServerStats(void)
    {
       ip_Socket->Send("<table class=\"server-stats sortable\"><thead><tr>");
 
-      TH_CLMN_HDR("Form");
+      TH_CLMN_HDR("Group Id");
       TH_CLMN_HDR("Total Candidates");
       TH_CLMN_HDR("Min <var>N</var>");
       TH_CLMN_HDR("Max <var>N</var>");
@@ -108,7 +110,7 @@ void SierpinskiRieselHTML::ServerStats(void)
             ip_Socket->Send("</div>");
             ip_Socket->Send("<table class=\"server-stats sortable\"><thead><tr>");
 
-            TH_CLMN_HDR("Form");
+            TH_CLMN_HDR("Group");
             TH_CLMN_HDR("Total Candidates");
             TH_CLMN_HDR("Min <var>N</var>");
             TH_CLMN_HDR("Max <var>N</var>");
@@ -176,21 +178,7 @@ void SierpinskiRieselHTML::ServerStats(void)
       if (!ib_ServerStatsSummaryOnly)
       {
          ip_Socket->Send("<tr class=\"%s\">", ((sierpinskiRieselPrimeN > 0) ? "found" : (kCountUntested ? "untested" : "tested")));
-
-         if (d > 1)
-         {
-            if (k > 1)
-               ip_Socket->Send("<th scope=\"row\">(%" PRIu64"*%d^<var>n</var>%+d)/%d</th>", k, b, c, d);
-            else
-               ip_Socket->Send("<th scope=\"row\">(%d^<var>n</var>%+d)/%d</th>", b, c, d);
-         }
-         else
-         {
-            if (k > 1)
-               ip_Socket->Send("<th scope=\"row\">%" PRIu64"*%d^<var>n</var>%+d</th>", k, b, c);
-            else
-               ip_Socket->Send("<th scope=\"row\">%d^<var>n</var>%+d</th>", b, c);
-         }
+         ip_Socket->Send("<th scope=\"row\">%s</th>", candidateGroupId);
 
          TD_32BIT(kCountInGroup);
          TD_32BIT(kMinN);

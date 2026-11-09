@@ -11,7 +11,6 @@
 #include "PRSTProgram.h"
 #include "GeneferProgram.h"
 #include "CycloProgram.h"
-#include "WWWWProgram.h"
 #include "GFNDivisorProgram.h"
 #include "DMDivisorProgram.h"
 
@@ -39,7 +38,6 @@ public:
    PhrotProgram      *GetPhrotProgram(void)      { return ip_PhrotProgram;      };
    GeneferProgram    *GetGeneferProgram(void)    { return ip_GeneferProgram;    };
    CycloProgram      *GetCycloProgram(void)      { return ip_CycloProgram;      };
-   WWWWProgram       *GetWWWWProgram(void)       { return ip_WWWWProgram;       };
    GFNDivisorProgram *GetGFNDivisorProgram(void) { return ip_GFNDivisorProgram; };
    DMDivisorProgram  *GetDMDivisorProgram(void)  { return ip_DMDivisorProgram;  };
 
@@ -51,7 +49,6 @@ private:
    GeneferProgram    *ip_GeneferProgram;
    CycloProgram      *ip_CycloProgram;
    PRSTProgram       *ip_PRSTProgram;
-   WWWWProgram       *ip_WWWWProgram;
    GFNDivisorProgram *ip_GFNDivisorProgram;
    DMDivisorProgram  *ip_DMDivisorProgram;
 };

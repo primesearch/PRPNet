@@ -1,59 +1,71 @@
 This history file covers all modifications made to PRPNet Client/Server.
 
-Version 5.9.2:  May 4, 2026 - New Release
+Version 6.0.0:  June xx, 2026
+          all:  Remove support for wwww server types (Wall-Sun-Sun, Wieferich, Wilson, Wolstenholme)
+    prpserver:  Changed columns names to start with a lower case letter.  This shouldn't be an
+                issue since MySQL and PostgreSQL are case agnostic for column names.
+                Added candidateGroupId to Candidate and CandidateGroupStats which should
+                improve performance when updating CandidateGroupStats.
+                Update the new candidateGroupId column to improve performance when onekperinstance=1.
+                With candidateGroupId, most of the stats updating and HTML generating code
+                was removed since it was duplicated.
+                candidateGroupId will be set on Candidate and CandidateGroupStatus when the server
+                is started, if the server type requires it.
+
+Version 5.9.2:  May 4, 2026 
           all:  Fixed issue for PRP testing created by 5.9.1 release.
-		        Added support for prst to test multi-factorials.
+		          Added support for prst to test multi-factorials.
 				
-Version 5.9.1:  January 18, 2026 - New Release
+Version 5.9.1:  January 18, 2026 
           all:  Add support for GFN divisor and DM divisor searches.
     prpserver:  Removed support for clients older then 5.3.
 
-Version 5.9.0:  May 20, 2025 - New Release
+Version 5.9.0:  May 20, 2025 
           all:  Add support for Hyper-Cullen and Hyper-Woodall forms.
 
-Version 5.8.0:  February 17, 2025 - New Release
+Version 5.8.0:  February 17, 2025 
     prpclient:  Fix support of Cullen/Woodall when running against servers that support d > 1.
     prpserver:  Fix handling of ABC files from gcwsieve/gcwsievecl, broken when support for terms with
                 a divisor were added.
 
-Version 5.7.9:  October 25, 2024 - New Release
+Version 5.7.9:  October 25, 2024 
           all:  Remove references or change references to my old e-mail account.
     prpserver:  When serverstatssummaryonly=1 for servertyp=1, accumulate skipped tests and 
                 Primes/PRPs found for the summary row.
 
-Version 5.7.8:  June 8, 2024 - New Release
+Version 5.7.8:  June 8, 2024 
     prpserver:  Fixes for handling Generalized Repunits.
 
-Version 5.7.7:  May 17, 2024 - New Release
+Version 5.7.7:  May 17, 2024 
     prpclient:  Do not use PRST for d > 1 because it doesn't support Generalized Repunits.
     prpserver:  Updates for handling Generalized Repunits.
 
-Version 5.7.6:  May 13, 2024 - New Release
+Version 5.7.6:  May 13, 2024 
           all:  Renamed server type XYYX as Leyland
                 Add server type Lifchitz
      prpadmin:  Added options 21, 22, and 23 to delete data on server by k, b, or n.
     prpserver:  Support new prpadmin options.
 
-Version 5.7.5:  May 7, 2024 - New Release
+Version 5.7.5:  May 7, 2024 
     prpserver:  Ensure d = 1 if not specified for new candidates for servertypes that need it.
     prpclient:  Fixed issue where using prst would terminate the client.
 
-Version 5.7.4:  April 14, 2024 - New Release
+Version 5.7.4:  April 14, 2024 
           all:  Add support for c up to 2^63.
     prpclient:  Modify handling of prst output to correctly identify prime and to get time for the test.
     
-Version 5.7.3:  March 31, 2024 - New Release
+Version 5.7.3:  March 31, 2024 
     prpclient:  Use clock time to get time used by the helper program instead of the output of that program.
     prpserver:  Fix issue with input files that have multiple ABC lines.
 
-Version 5.7.2:  March 17, 2024 - New Release
+Version 5.7.2:  March 17, 2024 
     prpclient:  Fix issue with fixed kbn and fixed bnc formats introduced in 5.7.0.
                 
-Version 5.7.1:  March 15, 2024 - New Release
+Version 5.7.1:  March 15, 2024 
     prpclient:  For generalized repunits, if using pfgw for the PRP test and b % 3 = 0, then
                 tell pfgw to use base 5 for the PRP test.
           
-Version 5.7.0:  March 14, 2024 - New Release
+Version 5.7.0:  March 14, 2024 
           all:  Add support for (k*b^n+c)/d forms.
                 The new client should be backward compatible to older servers.
                 The new server should be backward compatible to older clients, except 
@@ -61,22 +73,22 @@ Version 5.7.0:  March 14, 2024 - New Release
                 
                 To upgrade older servers, run the upgrade_to_5.7.0.sql script in your db.
 
-Version 5.6.6:  December 14, 2023 - New Release
+Version 5.6.6:  December 14, 2023 
     prpclient:  Fix prst usage error for some PRP tests.
                 Separate out PRP and primality testing program checks.
                 
-Verison 5.6.5:  December 12, 2023 - New Release
+Verison 5.6.5:  December 12, 2023 
     prpserver:  Finally add code to fully support -l option for loading ABC/ABCD files, which
                 is much faster than doing thru prpadmin.
                 Due to limitations on some db servers, k, b, and n are limited to 63-bits
                 or 31-bits on all db servers upon loading of candidates.
     prpclient:  Change parameters for prst for more efficient usage. 
 
-Version 5.6.4:  November 27, 2023 - New Release
+Version 5.6.4:  November 27, 2023 
     prpserver:  Change the stats update to account for all tests that are run for a Candidate.
     prpclient:  Fix issue receiving workunits from the server for Fixed BKC and Fixed BNC.
 
-Version 5.6.3:  November 14, 2023 - New Release
+Version 5.6.3:  November 14, 2023 
           all:  Change table creation scripts to ensure that k, b, and n are unsigned.
                 Since k is unsigned 64-bit in the server, ensure that all uses are consistent.
                 Since b is unsigned 32-bit in the server, ensure that all uses are consistent.
@@ -84,12 +96,12 @@ Version 5.6.3:  November 14, 2023 - New Release
                 Since c is signed 32-bit in the server, ensure that all uses are consistent.
                 Added combined Twin/Sophie-Germain server type.
                 
-Version 5.6.2:  November 13, 2023 - New Release
+Version 5.6.2:  November 13, 2023 
           all:  Adjust makefile for *nix builds.
     prpserver:  Updates for ODBC 3.0
     prpclient:  Ensure that workunits have + or - for the c term.
 
-Version 5.6.1:  November 10, 2023 - New Release
+Version 5.6.1:  November 10, 2023 
           all:  Address all Visual Studio compiler warnings.
     prpserver:  Add support for prst.
                 Remove usepfgwoverllr= config option as client will always choose llr
@@ -110,10 +122,10 @@ Version 5.6.0:  September 3, 2023 - Unofficial Release
     prpadmin:   Fix error handling when sending factors.
     prpclient:  Support additional command line arguements on exe names in ini file.
 
-Version 5.5.2:  July 3, 2023 - New Release
+Version 5.5.2:  July 3, 2023 
     prpclient:  Avoid infinite loop if unable to connect to server.
 
-Version 5.5.1:  April 28, 2023 - New Release
+Version 5.5.1:  April 28, 2023 
     prpserver:  Added showteamsonhtml configuration switch to control HTML generation.
                 Fix length calculation for Carol/Kynea servers.
                 Added all_primes.html page which can be sorted per prpserver.ini configuration.
@@ -127,7 +139,7 @@ Version 5.5.1:  April 28, 2023 - New Release
                 Fix check for ? in id fields.
                 Reconnect to server if connection was lost.
 
-Version 5.5.0:  March 31, 2023 - New Release
+Version 5.5.0:  March 31, 2023 
     prpserver:  Added HTML5 support.
                 Updated prpnet.css for HTML5 and provided default URL for it in prpserver.ini.
                 Replaced sprintf and vsprintf with snprintf and vsnprintf.
@@ -138,27 +150,27 @@ Version 5.5.0:  March 31, 2023 - New Release
     prpclient:  Add support for new -A parameter for pfgw.  This allows targeting pfgw to
                 a specific CPU (Windows only).
                 
-Verions 5.4.5:  February 15, 2021 - New Release
+Verions 5.4.5:  February 15, 2021 
     prpserver:  Update CandidateGroupStats column SierpinskiRieselPrimeN immediately upon
                 finding a prime to prevent tests for higher n from being sent to clients.
 
-Version 5.4.4:  March 18, 2020 - New Release
+Version 5.4.4:  March 18, 2020 
     prpserver:  Add column to CandidateGroupStats to improve performance of "onekperinstance".
           all:  Update usage of PRIu64/PRId64/SCNu64/SCNd64 with printf/scanf to avoid
                 compiler warnings.
 
-Version 5.4.3:  December 19, 2016 - New Release
+Version 5.4.3:  December 19, 2016 
     prpserver:  Change candidate selection to address issues with finding doublecheck work.
 	             Show default sortsequence in prpserver.ini for configurations that do not
 				    allow a change to that configuration.
 
-Version 5.4.2:  September 11, 2016 - New Release
+Version 5.4.2:  September 11, 2016 
           all:  Add support for Multifactorial searhes.
 	
-Version 5.4.1:  December 29, 2015 - New Release
+Version 5.4.1:  December 29, 2015 
           all:  Add support for Carol/Kynea searches, (k*b^n+/-1)^2-12.
 	
-Version 5.4.0:  January 31, 2015 - New Release
+Version 5.4.0:  January 31, 2015 
           all:  Add support for generic searches (pfgw only).
                 Add support for cyclotomic searches.  The cyclotomic form is Phi(k,b^n}.
                 if k=3 and n=2^N for some integer N, cyclo will be used (if configured 
@@ -189,7 +201,7 @@ Version 5.3.1:  May 2, 2014 - Patch Release
     prpserver:  Fix an issue with length calculation of candidates.
     
 
-Version 5.3.0:  September 19, 2013 - New Release
+Version 5.3.0:  September 19, 2013 
           all:  Cleaned up compiler warnings with sockets.
                 Use PRId64/PRIu64 where needed.
                 Convert to using the string datatype for most function parameters.
@@ -277,7 +289,7 @@ Version 5.2.1:  November 26, 2012 - Patch Release
                 Upgrade Visual Studio solution for VS2010.
 
 
-Version 5.2.0:  November 1, 2012 - New Release
+Version 5.2.0:  November 1, 2012 
     prpclient:  Replace clientid in ini with machineid and instanceid.
                 Fix bug for wwww projects where client couldn't extract program name.
     prpserver:  Rename column ClientID in database to MachineID.  Add InstanceID.
@@ -390,7 +402,7 @@ Version 5.0.1:  December 2011 - Patch Release
               
 
 
-Version 5.0.0:  December 2011 - New Release
+Version 5.0.0:  December 2011 
           all:  Added support for Wieferich, Wolstenholme, Wilson and Wall-Sun-Sun
                 searches (note that wwww client only handles Wieferich and Wall-Sun-Sun
                 at this time).
@@ -467,7 +479,7 @@ Version 4.3.1:  April 2011 - Patch Release
                 Fix candidate loading of GFNs, primorials, and factorials.
 
 
-Version 4.3.0:  March 2011 - New Release
+Version 4.3.0:  March 2011 
     prpadmin:   Ignore ERR messages when sending ABC files and factor files to the server.
     prpclient:  If starting client and all work is done, return it immediately so that 
                 client can get more work rather than sleeping due to error timeout.
@@ -516,7 +528,7 @@ Version 4.2.1:  February 2011 - Patch Release
                 Add CSS support to generated HTML.
 
 
-Version 4.2.0:  February 2011 - New Release
+Version 4.2.0:  February 2011 
     prpclient:  Added new startoptions.  Read prpclient.ini for more information.
                 Use llrpi to prove primality on k*b^n+/-1 numbers if phrot is
                 used for the PRP test.  Note that phrot should only be needed on
@@ -570,7 +582,7 @@ Version 4.1.1:  January 2011 - Patch Release
     prpserver:  Fix HTML when TeamID is null.
 
 
-Version 4.1.0:  December 2010 - New Release
+Version 4.1.0:  December 2010 
     prpclient:  Added teamid= option to the prpclient.ini file.  This allows the client to
                 do tests on behalf of a team.
                 Added support for "genefer_cuda" version of genefer.
@@ -653,7 +665,7 @@ Version 4.0.1:  October 2010 - Patch Release
                 Do not send e-mail if SMTP authentication needed and password not supplied.
 
 
-Version 4.0.0:  October 2010 - New Release
+Version 4.0.0:  October 2010 
           all:  Added support for Sophie/Germain prime searches.
                 Fixed many compiler warnings on *nix.
                 Stripped "<candidate> is a Factor of" from GFN divisors.
@@ -723,7 +735,7 @@ Version 3.3.1:  June 2010 - Patch Release
                 Change summary lines on Sierpinski/Riesel HTML to bold text.
 
 
-Version 3.3.0:  May 2010 - New Release
+Version 3.3.0:  May 2010 
           all:  Code infrastructure changes WRT sockets.  The Socket class was
                 cumbersome.  I changed it so that Socket is an ancestor class and
                 that specific server/client/mail functionality would be in descendent
@@ -856,7 +868,7 @@ Version 3.2.1:  February 2010 - Patch Release
                 Fixed ordering of k on server_stats.html.
                 Added all.html as the default webpage.
 
-Version 3.2.0:  February 2010 - New Release
+Version 3.2.0:  February 2010 
           all:  Fixed an issue on Linux builds with an uninitialized mutex
                 causing the software to crash.
     prpclient:  Added "echotest" option to prpclient.ini.  Setting this to 0
@@ -931,7 +943,7 @@ Version 3.1.2:  January 2010 - Patch Release
 Version 3.1.1:  January 2010 - Patch Release
     prpserver:  Fix bug with handling factors from admin tool.
 
-Version 3.1.0:  January 2010 - New Release
+Version 3.1.0:  January 2010 
     prpserver:  Send a single INFO or ERROR message for each workunit instead of
                 an acknowledgement and then immediately commit/rollback the
                 transaction in the database.  This will significantly reduce the
@@ -977,7 +989,7 @@ Version 3.0.1:  January 2010 - Patch Release
                 When using PFGW, do not create ABC file, just write candidate
                 to input as it will reduce the amount of output generated by PFGW.
 
-Version 3.0.0:  January 2010 - New Release
+Version 3.0.0:  January 2010 
      prpadmin:  Buffer factors and candidates from ABC files to reduce the
                 number of send/receive requests on the socket.
     prpserver:  The server now runs with a MySQL database instead of the
@@ -1053,7 +1065,7 @@ Version 2.4.1:  October 2009 - Un-official Patch Release
     prpserver:  Add an extra carriage return so HTML is correctly generated in
                 browsers.
     
-Version 2.4.0:  September 2009 - New Release
+Version 2.4.0:  September 2009 
     prpserver:  When a client has established a new connection, send a
                 message so that the client does not send any additional
                 data until it receives that confirmation.
@@ -1083,7 +1095,7 @@ Version 2.4.0:  September 2009 - New Release
                 presumes that users have upgraded to phrot 0.71.
                 Added support for GFN servers (and genefer software).
 
-Version 2.3.0:  August 2009 - New Release
+Version 2.3.0:  August 2009 
     prpserver:  Display count of primes by user on user_stats.html on pages
                 where it was missing.
                 Fixed an issue with Twin Prime servertype where it did not
@@ -1148,7 +1160,7 @@ Version 2.2.1:  June 2009 - Patch Release
                 Fixed issue with counting of completed and current work units.
                 The client will drop tests that are not known on the server.
 
-Version 2.2.0:  June 2009 - New Release
+Version 2.2.0:  June 2009 
     prpserver:  Add ability to expire tests (see prpserver.delay for information).
                 Check for pending tests before removing candidates from the server.
                 Add support for Twin Prime searches.
@@ -1190,7 +1202,7 @@ Version 2.1.1:  May 2009 - Patch Release (beta)
                 Modified to skip lines in lresults.txt that are not related to
                 the results of the test.
 
-Version 2.1.0:  May 2009 - New Release (alpha)
+Version 2.1.0:  May 2009  (alpha)
     prpclient:  Modify handling of ^C with Visual Studio build used by Windows.
                 After returning work, continue to read from socket until getting
                 "End of Message" semaphore.
@@ -1223,7 +1235,7 @@ Version 2.0.2:  April 2009 - Patch Release (beta)
 Version 2.0.1:  April 2009 - Patch Release (beta)
           all:  Address issues with uninitialized variables when using Visual Studio.
 
-Version 2.0.0:  April 2009 - New Release (alpha)
+Version 2.0.0:  April 2009  (alpha)
           all:  Add userid support which can be different than emailid.
                 emailid is still required for uniqueness.
     prpadmin:   This gives an administrator access to the server to add new candidates (via 

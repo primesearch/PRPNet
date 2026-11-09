@@ -60,8 +60,10 @@ MainWorkUnitTest::MainWorkUnitTest(Log *theLog, int32_t serverType, string workS
            snprintf(tempName, sizeof(tempName), "(%" PRIu64"*%d^%d%+" PRId64")/%d", il_k, ii_b, ii_n, il_c, ii_d);
         else if (ii_d > 1)
            snprintf(tempName, sizeof(tempName), "(%d^%d%+" PRId64")/%d", ii_b, ii_n, il_c, ii_d);
-        else
+        else if (il_k > 1)
            snprintf(tempName, sizeof(tempName), "%" PRIu64"*%d^%d%+" PRId64"", il_k, ii_b, ii_n, il_c);
+        else
+           snprintf(tempName, sizeof(tempName), "%d^%d%+" PRId64"", ii_b, ii_n, il_c);
         break;
    }
 

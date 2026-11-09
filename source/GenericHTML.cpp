@@ -9,9 +9,9 @@ void  GenericHTML::ServerStats(void)
    int32_t     countedTested, countDoubleChecked, countUntested;
    int32_t     prpsAndPrimesFound;
 
-   const char *theSelect = "select c, CountInGroup, " \
-                           "       CountTested, CountDoubleChecked, CountUntested, " \
-                           "       CountInProgress, PRPandPrimesFound " \
+   const char *theSelect = "select c, countInGroup, " \
+                           "       countTested, countDoubleChecked, countUntested, " \
+                           "       countInProgress, prpsandPrimesFound " \
                            "  from CandidateGroupStats " \
                            "order by c";
 

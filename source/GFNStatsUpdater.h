@@ -6,15 +6,13 @@
 
 class GFNStatsUpdater : public StatsUpdater
 {
+public:
+   bool RequiresCandidateGroupId(void) { return true; }
+
 private:
-   bool  RollupGroupStats(bool deleteInsert);
+   char* GetGroupingColumnForCandidateGroupStats(void) { return "b"; }
 
-   bool  UpdateGroupStats(string candidateName);
-
-   bool  UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC);
-
-   bool  InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
-                                               int64_t theC, int32_t theD, double decimalLength);
+   string GenerateCandidateGroupId(int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
 };
 
 #endif // #ifndef _GFNStatsUpdater_

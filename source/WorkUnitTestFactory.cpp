@@ -2,7 +2,6 @@
 #include "MainWorkUnitTest.h"
 #include "TwinWorkUnitTest.h"
 #include "SophieGermainWorkUnitTest.h"
-#include "WWWWWorkUnitTest.h"
 #include "GFNDivisorWorkUnitTest.h"
 #include "DMDivisorWorkUnitTest.h"
 
@@ -73,10 +72,7 @@ void  WorkUnitTestFactory::LoadWorkUnitTest(FILE *saveFile, int32_t serverType,
       }
 
       workUnitTest = NULL;
-      if (serverType == ST_WIEFERICH || serverType == ST_WILSON ||
-          serverType == ST_WALLSUNSUN || serverType == ST_WOLSTENHOLME)
-          workUnitTest = new WWWWWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, specialThreshhold, ip_TestingProgramFactory);
-      else if (serverType == ST_GFNDIVISOR)
+      if (serverType == ST_GFNDIVISOR)
          workUnitTest = new GFNDivisorWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory);
       else if (serverType == ST_DMDIVISOR)
          workUnitTest = new DMDivisorWorkUnitTest(ip_Log, serverType, is_WorkSuffix, wu, ip_TestingProgramFactory);

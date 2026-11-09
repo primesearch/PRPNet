@@ -15,6 +15,7 @@ enum abctype_t {
    ABC_CW_VBP   =  21,
    ABC_CW_VBM   =  22,
    ABC_CW_VBA   =  23,
+   ABC_DUAL_CW  =  24,
    ABC_FKP      =  31,
    ABC_FKM      =  32,
    ABC_FKA      =  33,

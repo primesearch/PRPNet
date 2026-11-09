@@ -20,12 +20,13 @@ public:
 
    bool     RollupAllStats(void);
 
-   virtual bool   RollupGroupStats(bool deleteInsert) { return false; };
+   virtual bool   RollupCandidateGroupStats(bool deleteInsert) { return false; };
 
 protected:
    int32_t       ib_NeedsDoubleCheck;
    DBInterface  *ip_DBInterface;
    SQLStatement *ip_CandidateLoader;
+   SQLStatement* ip_CandidateUpdater;
    Log          *ip_Log;
 
    virtual bool   RollupUserStats(void) { return false; };

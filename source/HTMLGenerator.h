@@ -54,6 +54,7 @@ protected:
    string         is_CSSLink;
    string         is_SortLink;
    string         is_AllPrimesSortSequence;
+   string         is_GroupStatsSortSequence;
    DBInterface   *ip_DBInterface;
    Log           *ip_Log;
    Socket        *ip_Socket;

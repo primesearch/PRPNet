@@ -226,7 +226,7 @@ bool     DMDivisorWorkSender::SendWork(int32_t n, int64_t kMin, int64_t kMax)
       return false;
 
    if (ib_BriefTestLog)
-      ip_Log->TestMessage("%d: n=%u %" PRIu64" <= k <= %" PRIu64" sent to %s/%s/%s/%s", ip_Socket->GetSocketID(),
+      ip_Log->TestMessage("%d: n=%u %" PRIu64" <= k <= %" PRIu64" sent to %s/%s/%s/%s",
          ip_Socket->GetSocketID(), n, kMin, kMax,
          is_EmailID.c_str(), is_UserID.c_str(), is_MachineID.c_str(), is_InstanceID.c_str());
    else

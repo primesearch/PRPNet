@@ -3,7 +3,6 @@
 
 #include "ServerHandler.h"
 #include "PrimeWorker.h"
-#include "WWWWWorker.h"
 #include "DMDivisorWorker.h"
 #include "GFNDivisorWorker.h"
 
@@ -263,12 +262,6 @@ Worker  *ServerHandler::AllocateWorker(int32_t serverType)
 {
    switch (serverType)
    {
-      case ST_WIEFERICH:
-      case ST_WILSON:
-      case ST_WALLSUNSUN:
-      case ST_WOLSTENHOLME:
-         return new WWWWWorker(ip_Log, ip_TestingProgramFactory, ip_Socket, ii_MaxWorkUnits, is_WorkSuffix);
-
       case ST_GFNDIVISOR:
          return new GFNDivisorWorker(ip_Log, ip_TestingProgramFactory, ip_Socket, ii_MaxWorkUnits, is_WorkSuffix);
 

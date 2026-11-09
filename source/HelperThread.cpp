@@ -230,7 +230,7 @@ void      HelperThread::AdminStatsUpdate(bool userStats)
    if (userStats)
       success = su->RollupAllStats();
    else
-      success = su->RollupGroupStats(true);
+      success = su->RollupCandidateGroupStats(true);
 
    if (success)
       ip_DBInterface->Commit();

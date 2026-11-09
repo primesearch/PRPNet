@@ -13,7 +13,6 @@
 #include "TestingProgramFactory.h"
 #include "workunit.h"
 #include "gfndivisor.h"
-#include "wwww.h"
 
 enum wutstate_t { WUT_NOTSTARTED = 1, WUT_INPROGRESS, WUT_COMPLETED };
 

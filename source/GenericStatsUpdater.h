@@ -7,14 +7,18 @@
 class GenericStatsUpdater : public PrimeStatsUpdater
 {
 private:
-   bool  RollupGroupStats(bool deleteInsert);
+   string GenerateCandidateGroupId(int64_t theK, int32_t theB, int32_t theN, int64_t theC, int32_t theD);
 
-   bool  UpdateGroupStats(string candidateName);
+   char* GetInsertSqlForCandidateGroupStats(void) {
+      return "insert into CandidateGroupStats (candidateGroupId) (select distinct candidateGroupId from Candidate)";
+   };
 
-   bool  UpdateGroupStats(int64_t theK, int32_t theB, int32_t theN, int64_t theC);
+   bool   UpdateCandidateGroupStats(char* candidateGroupId);
 
-   bool  InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
+   bool   InsertCandidate(string candidateName, int64_t theK, int32_t theB, int32_t theN,
                                                int64_t theC, int32_t theD, double decimalLength);
+
+   string is_GroupName = "n/a";
 };
 
 #endif // #ifndef _GenericStatsUpdater_

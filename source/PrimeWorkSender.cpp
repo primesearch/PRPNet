@@ -67,14 +67,7 @@ void  PrimeWorkSender::ProcessMessage(string theMessage)
 
    is_ClientVersion = clientVersion;
 
-   if ((ii_ServerType == ST_MULTIFACTORIAL) && !(ib_HasPFGW || ib_HasPRST))
-   {
-      ip_Socket->Send("ERROR:  The client must run PFGW or PRST to use this server.");
-      ip_Socket->Send("End of Message");
-      return;
-   }
-
-   if ((ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL) && !(ib_HasPFGW || ib_HasPRST))
+   if ((ii_ServerType == ST_PRIMORIAL || ii_ServerType == ST_FACTORIAL || ii_ServerType == ST_MULTIFACTORIAL) && !(ib_HasPFGW || ib_HasPRST))
    {
       ip_Socket->Send("ERROR:  The client must run PFGW or PRST to use this server.");
       ip_Socket->Send("End of Message");
@@ -322,6 +315,7 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
 {
    SQLStatement *selectKBCStatement;
    SQLStatement *selectStatement;
+   char     candidateGroupId[ID_LENGTH + 1];
    char     candidateName[NAME_LENGTH+1];
    int64_t  theK, theC;
    int32_t  theB, theD, theN = 0;
@@ -335,74 +329,67 @@ int32_t  PrimeWorkSender::SelectOneKPerClientCandidates(int32_t sendWorkUnits, b
     
    // This will allow a second client to grab the same k, b, c that another client has
    // but only if no clients have that k, b, c assigned to them.
-   const char* selectKBCSQL1 = "select distinct k, b, c, d, CountInProgress, SierpinskiRieselPrimeN " \
+   const char* selectKBCSQL1 = "select candidateGroupId, countInProgress, sierpinskiRieselPrimeN " \
 	                           "  from CandidateGroupStats cgs " \
-	                           " where SierpinskiRieselPrimeN = 0 " \
-	                           "   and CountUntested > CountInProgress " \
-	                           "order by CountInProgress, k, b, c, d ";
+	                           " where sierpinskiRieselPrimeN = 0 " \
+	                           "   and countUntested > 0 " \
+                              "   and countInProgress = 0 " \
+	                           "order by countInProgress, k, b, c, d ";
 
    // In the second pass, look for n < SierpinskiRieselPrimeN without a test
-   const char* selectKBCSQL2 = "select distinct k, b, c, d, CountInProgress, SierpinskiRieselPrimeN " \
+   const char* selectKBCSQL2 = "select candidateGroupId, countInProgress, sierpinskiRieselPrimeN " \
 	                           "  from CandidateGroupStats cgs " \
-	                           " where SierpinskiRieselPrimeN > (select min(n) " \
+	                           " where sierpinskiRieselPrimeN > (select min(n) " \
                                                               "   from Candidate " \
-                                                              "  where b = cgs.b " \
-                                                              "    and k = cgs.k " \
-                                                              "    and c = cgs.c " \
-                                                              "    and d = cgs.d " \
-                                                              "    and CompletedTests = 0 " \
-                                                              "    and HasPendingTest = 0) " \
-	                           "   and CountUntested > CountInProgress " \
-	                           "order by CountInProgress, k, b, c ";
+                                                              "  where candidateGroupId = cgs.candidateGroupId " \
+                                                              "    and completedTests = 0 " \
+                                                              "    and hasPendingTest = 0) " \
+	                           "   and countUntested > countInProgress " \
+	                           "order by countInProgress, k, b, c ";
 
-   const char *selectSQL1 = "select CandidateName, n " \
+   const char *selectSQL1 = "select candidateName, k, b, n, c, d " \
                            "  from Candidate c " \
-                           " where CompletedTests = 0 " \
-                           "   and HasPendingTest = 0 " \
-                           "   and DecimalLength > 0 " \
-                           "   and k = %" PRIu64" " \
-                           "   and b = %d " \
-                           "   and c = %d " \
-                           "   and d = %d " \
-                           "   and n < %d " \
+                           " where completedTests = 0 " \
+                           "   and hasPendingTest = 0 " \
+                           "   and decimalLength > 0 " \
+                           "   and candidateGroupId = ? " \
+                           "   and n < ? " \
                            "order by %s limit 100";
 
-   const char* selectSQL2 = "select CandidateName, n " \
+   const char* selectSQL2 = "select candidateName, k, b, n, c, d " \
                             "  from Candidate c " \
-                            " where CompletedTests = 0 " \
-                            "   and HasPendingTest = 0 " \
-                            "   and DecimalLength > 0 " \
-                            "   and k = %" PRIu64" " \
-                            "   and b = %d " \
-                            "   and c = %d " \
-                            "   and d = %d " \
+                            " where completedTests = 0 " \
+                            "   and hasPendingTest = 0 " \
+                            "   and decimalLength > 0 " \
+                           "    and candidateGroupId = ? " \
                             "order by %s limit 100";
 
    // Allow only one thread through this method at a time since each thread
    // is locking all Candidates for a single k/b/c.
    ip_Locker->Lock();
 
-   if (firstPass)
-      selectKBCStatement = new SQLStatement(ip_Log, ip_DBInterface, selectKBCSQL1);
-   else
-      selectKBCStatement = new SQLStatement(ip_Log, ip_DBInterface, selectKBCSQL2);
-
-   selectKBCStatement->BindSelectedColumn(&theK);
-   selectKBCStatement->BindSelectedColumn(&theB);
-   selectKBCStatement->BindSelectedColumn(&theC);
-   selectKBCStatement->BindSelectedColumn(&theD);
+   selectKBCStatement = new SQLStatement(ip_Log, ip_DBInterface, (firstPass ? selectKBCSQL1 : selectKBCSQL2));
+   selectKBCStatement->BindSelectedColumn(candidateGroupId, ID_LENGTH);
    selectKBCStatement->BindSelectedColumn(&countInProgress);
    selectKBCStatement->BindSelectedColumn(&sierpinskiRieselPrimeN);
    
    if (selectKBCStatement->FetchRow(false))
    {
       if (sierpinskiRieselPrimeN > 0)
-   	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1, theK, theB, theC, theD, sierpinskiRieselPrimeN, is_OrderBy.c_str());
+   	   selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL1, is_OrderBy.c_str());
       else
-         selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2, theK, theB, theC, theD, is_OrderBy.c_str());
+         selectStatement = new SQLStatement(ip_Log, ip_DBInterface, selectSQL2, is_OrderBy.c_str());
+
+      selectStatement->BindInputParameter(candidateGroupId, ID_LENGTH, true);
+      if (sierpinskiRieselPrimeN > 0)
+         selectStatement->BindInputParameter(sierpinskiRieselPrimeN);
 
 	   selectStatement->BindSelectedColumn(candidateName, NAME_LENGTH);
-	   selectStatement->BindSelectedColumn(&theN);
+	   selectStatement->BindSelectedColumn(&theK);
+      selectStatement->BindSelectedColumn(&theB);
+      selectStatement->BindSelectedColumn(&theN);
+      selectStatement->BindSelectedColumn(&theC);
+      selectStatement->BindSelectedColumn(&theD);
 
 	   encounteredError = false;
 

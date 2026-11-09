@@ -216,7 +216,7 @@ int   main(int argc, char *argv[])
    serverThread->StartThread(gp_Globals);
 
    gp_Globals->p_Log->LogMessage("PRPNet Server application v%s started.", PRPNET_VERSION);
-   gp_Globals->p_Log->LogMessage("Please contact Mark Rodenkirch at rogue@wi.rr.com for support");
+   gp_Globals->p_Log->LogMessage("Please contact Mark Rodenkirch at roguemgr@gmail.com for support");
    gp_Globals->p_Log->LogMessage("Waiting for connections on port %d", gp_Globals->i_PortID);
 
    timerDBInterface = new DBInterface(gp_Globals->p_Log, "database.ini");
@@ -226,6 +226,8 @@ int   main(int argc, char *argv[])
 
    if (abcFile.length() > 0)
       serverHelper->LoadABCFile(abcFile);
+
+   serverHelper->UpdateCandidateGroupIds();
 
    // A minimum 10 minute wait
    unhideSeconds = gp_Globals->i_UnhidePrimeHours * 3600 + 600;
@@ -413,6 +415,8 @@ void  ProcessINIFile(string configFile, string &smtpServer)
          gp_Globals->s_SortSequence = &line[11];
       else if (!memcmp(line, "allprimessortoption=", 20))
          gp_Globals->s_AllPrimesSortSequence = &line[20];
+      else if (!memcmp(line, "groupstatssortoption=", 21))
+         gp_Globals->s_GroupStatsSortSequence = &line[21];
       else if (!memcmp(line, "specialthreshhold=", 18))
          gp_Globals->i_SpecialThreshhold = atoi(&line[18]);
       else if (!memcmp(line, "showteamsonhtml=", 16))
@@ -519,13 +523,6 @@ void  ProcessDelayFile(string delayFile)
                gp_Globals->p_Delay[ii].doubleCheckDelay = 60 * dcDelay * (dcScope == 'm' ? 1 : (dcScope == 'h' ? 60 : (60*24)));
                gp_Globals->p_Delay[ii].expireDelay = 60 * expDelay * (expScope == 'm' ? 1 : (expScope == 'h' ? 60 : (60*24)));
                ii++;
-
-               if (gp_Globals->i_ServerType == ST_WIEFERICH ||
-                   gp_Globals->i_ServerType == ST_WILSON ||
-                   gp_Globals->i_ServerType == ST_WALLSUNSUN ||
-                   gp_Globals->i_ServerType == ST_WOLSTENHOLME ||
-                   gp_Globals->i_ServerType == ST_GFNDIVISOR ||
-                   gp_Globals->i_ServerType == ST_DMDIVISOR) break;
             }
 
             if (ii == 0)
@@ -598,11 +595,7 @@ bool     ValidateConfiguration(string smtpServer)
        gp_Globals->i_ServerType != ST_HYPERCW          &&
        gp_Globals->i_ServerType != ST_GENERIC          &&
        gp_Globals->i_ServerType != ST_GFNDIVISOR       &&
-       gp_Globals->i_ServerType != ST_DMDIVISOR        &&
-       gp_Globals->i_ServerType != ST_WIEFERICH        &&
-       gp_Globals->i_ServerType != ST_WILSON           &&
-       gp_Globals->i_ServerType != ST_WALLSUNSUN       &&
-       gp_Globals->i_ServerType != ST_WOLSTENHOLME)
+       gp_Globals->i_ServerType != ST_DMDIVISOR)
    {
       printf("servertype is invalid.\n");
       return false;
@@ -627,14 +620,7 @@ bool     ValidateConfiguration(string smtpServer)
    }
 
    length = (int32_t) gp_Globals->s_SortSequence.length();
-   if (gp_Globals->i_ServerType == ST_WIEFERICH    ||
-       gp_Globals->i_ServerType == ST_WILSON       ||
-       gp_Globals->i_ServerType == ST_WALLSUNSUN   ||
-       gp_Globals->i_ServerType == ST_WOLSTENHOLME)
-   {
-      gp_Globals->s_SortSequence = "LowerPrime";
-   }
-   else if (gp_Globals->i_ServerType == ST_GFNDIVISOR ||
+   if (gp_Globals->i_ServerType == ST_GFNDIVISOR ||
       gp_Globals->i_ServerType == ST_DMDIVISOR)
    {
       gp_Globals->s_SortSequence = "n,minK";
@@ -749,6 +735,53 @@ bool     ValidateConfiguration(string smtpServer)
       }
    }
 
+   length = (int32_t)gp_Globals->s_GroupStatsSortSequence.length();
+   if (!length || length > 10 || !(length & 0x01))
+   {
+      printf("groupstatssortoption is invalid.  Will set it to b.\n");
+      gp_Globals->s_AllPrimesSortSequence = "cgs.b";
+   }
+   else
+   {
+      strcpy(sortOption, gp_Globals->s_GroupStatsSortSequence.c_str());
+      gp_Globals->s_GroupStatsSortSequence = "";
+      ptr = sortOption;
+
+
+      first = true;
+      while (*ptr)
+      {
+         if (!first) gp_Globals->s_GroupStatsSortSequence += ",";
+         first = false;
+
+         switch (toupper(*ptr))
+         {
+         case 'B':
+            gp_Globals->s_GroupStatsSortSequence += "cgs.b";
+            break;
+         case 'K':
+            gp_Globals->s_GroupStatsSortSequence += "cgs.k";
+            break;
+         case 'N':
+            gp_Globals->s_GroupStatsSortSequence += "cgs.n";
+            break;
+         case 'C':
+            gp_Globals->s_GroupStatsSortSequence += "cgs.c";
+            break;
+
+         default:
+            printf("groupstatssortoption %c is invalid. It will be ignored.\n", *ptr);
+         }
+         ptr++;
+         if (!*ptr)
+            break;
+
+         if (*ptr != ',')
+            printf("groupstatssortoption delimiter %c is invalid. It will be ignored.\n", *ptr);
+         ptr++;
+      }
+   }
+
    if (gp_Globals->i_DoubleChecker != DC_DIFFBOTH && gp_Globals->i_DoubleChecker != DC_DIFFEMAIL &&
        gp_Globals->i_DoubleChecker != DC_DIFFMACHINE && gp_Globals->i_DoubleChecker != DC_ANY)
    {
@@ -838,7 +871,7 @@ void     SyncGroupStats(DBInterface* dbInterface, bool doubleCheck)
    statsUpdater = suf->GetInstance(dbInterface, gp_Globals->p_Log, gp_Globals->i_ServerType, gp_Globals->b_NeedsDoubleCheck);
    delete suf;
 
-   if (statsUpdater->RollupGroupStats(false))
+   if (statsUpdater->RollupCandidateGroupStats(false))
       dbInterface->Commit();
    else
       dbInterface->Rollback();

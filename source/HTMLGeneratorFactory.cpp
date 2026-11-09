@@ -1,21 +1,7 @@
 #include "HTMLGeneratorFactory.h"
-#include "WWWWHTMLGenerator.h"
-#include "CullenWoodallHTML.h"
+#include "SimplePrimeHTML.h"
 #include "SierpinskiRieselHTML.h"
-#include "FixedBKCHTML.h"
-#include "FixedBNCHTML.h"
-#include "GFNHTML.h"
-#include "LeylandHTML.h"
-#include "LifchitzHTML.h"
-#include "PrimorialHTML.h"
-#include "FactorialHTML.h"
-#include "MultiFactorialHTML.h"
-#include "SophieGermainHTML.h"
-#include "CyclotomicHTML.h"
-#include "CarolKyneaHTML.h"
-#include "HyperCullenWoodallHTML.h"
 #include "GenericHTML.h"
-#include "WagstaffHTML.h"
 #include "DMDivisorHTMLGenerator.h"
 #include "GFNDivisorHTMLGenerator.h"
 
@@ -30,72 +16,32 @@ HTMLGenerator  *HTMLGeneratorFactory::GetHTMLGenerator(globals_t *globals)
          break;
 
       case ST_CULLENWOODALL:
-         htmlGenerator = new CullenWoodallHTML(globals);
-         break;
-
       case ST_PRIMORIAL:
-         htmlGenerator = new PrimorialHTML(globals);
-         break;
-
       case ST_FACTORIAL:
-         htmlGenerator = new FactorialHTML(globals);
-         break;
-
       case ST_MULTIFACTORIAL:
-         htmlGenerator = new MultiFactorialHTML(globals);
-         break;
-
-      case ST_GFN:
-         htmlGenerator = new GFNHTML(globals);
-         break;
-
-      case ST_FIXEDBNC:
       case ST_TWIN:
       case ST_TWINANDSOPHIE:
-         htmlGenerator = new FixedBNCHTML(globals);
-         break;
-
       case ST_SOPHIEGERMAIN:
-         htmlGenerator = new SophieGermainHTML(globals);
-         break;
-
       case ST_FIXEDBKC:
-         htmlGenerator = new FixedBKCHTML(globals);
-         break;
-
-      case ST_LEYLAND:
-         htmlGenerator = new LeylandHTML(globals);
-         break;
-
-      case ST_LIFCHITZ:
-         htmlGenerator = new LifchitzHTML(globals);
+      case ST_CAROLKYNEA:
+      case ST_HYPERCW:
+      case ST_GENERIC:
+      case ST_WAGSTAFF:
+         htmlGenerator = new SimplePrimeHTML(globals, BY_N);
          break;
 
       case ST_CYCLOTOMIC:
-         htmlGenerator = new CyclotomicHTML(globals);
-         break;
-         
-      case ST_CAROLKYNEA:
-         htmlGenerator = new CarolKyneaHTML(globals);
+      case ST_GFN:
+         htmlGenerator = new SimplePrimeHTML(globals, BY_B);
          break;
 
-      case ST_HYPERCW:
-         htmlGenerator = new HyperCullenWoodallHTML(globals);
+      case ST_FIXEDBNC:
+         htmlGenerator = new SimplePrimeHTML(globals, BY_K);
          break;
 
-      case ST_GENERIC:
-         htmlGenerator = new GenericHTML(globals);
-         break;
-
-      case ST_WIEFERICH:
-      case ST_WILSON:
-      case ST_WALLSUNSUN:
-      case ST_WOLSTENHOLME:
-         htmlGenerator = new WWWWHTMLGenerator(globals);
-         break;
-         
-      case ST_WAGSTAFF:
-         htmlGenerator = new WagstaffHTML(globals);
+      case ST_LEYLAND:
+      case ST_LIFCHITZ:
+         htmlGenerator = new SimplePrimeHTML(globals, BY_Y);
          break;
 
       case ST_DMDIVISOR:
